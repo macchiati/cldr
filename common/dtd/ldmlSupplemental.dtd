@@ -608,7 +608,7 @@ Except as contained in this notice, the name of a copyright holder shall not be 
 
 <!ELEMENT scriptAlias EMPTY >
 <!ATTLIST scriptAlias type NMTOKEN #REQUIRED >
-	<!--@MATCH:validity/script-->
+	<!--@MATCH:or/validity/script||literal/Qaai-->
 <!ATTLIST scriptAlias replacement NMTOKEN #REQUIRED >
 	<!--@MATCH:validity/script-->
     <!--@VALUE-->
@@ -617,7 +617,7 @@ Except as contained in this notice, the name of a copyright holder shall not be 
 
 <!ELEMENT territoryAlias EMPTY >
 <!ATTLIST territoryAlias type NMTOKEN #REQUIRED >
-	<!--@MATCH:set/or/validity/region||regex/[0-9]{3}|[A-Z]{3}||literal/CT, DY, FQ, HV, JT, MI, NH, NQ, PC, PU, PZ, RH, UK, VD, WK-->
+	<!--@MATCH:set/or/validity/region+regular+deprecated||regex/[0-9]{3}|[A-Z]{3}||literal/CT, DY, FQ, HV, JT, MI, NH, NQ, PC, PU, PZ, RH, UK, VD, WK-->
 <!ATTLIST territoryAlias replacement NMTOKENS #REQUIRED >
 	<!--@MATCH:set/validity/region-->
     <!--@VALUE-->
@@ -626,7 +626,7 @@ Except as contained in this notice, the name of a copyright holder shall not be 
 
 <!ELEMENT subdivisionAlias EMPTY >
 <!ATTLIST subdivisionAlias type NMTOKEN #REQUIRED >
-	<!--@MATCH:validity/subdivision-->
+	<!--@MATCH:validity/subdivision+regular+deprecated-->
 <!ATTLIST subdivisionAlias replacement NMTOKENS #REQUIRED >
 	<!--@MATCH:set/or/validity/region||validity/subdivision-->
     <!--@VALUE-->
@@ -635,7 +635,7 @@ Except as contained in this notice, the name of a copyright holder shall not be 
 
 <!ELEMENT variantAlias EMPTY >
 <!ATTLIST variantAlias type NMTOKEN #REQUIRED >
-	<!--@MATCH:or/validity/variant||literal/AALAND, POLYTONI-->
+	<!--@MATCH:or/validity/variant||literal/AALAND, POLYTONI, HEPLOC, arevela, arevmda, heploc-->
 <!ATTLIST variantAlias replacement NMTOKEN #REQUIRED >
 	<!--@MATCH:or/validity/variant||validity/region-->
     <!--@VALUE-->
@@ -859,7 +859,7 @@ Except as contained in this notice, the name of a copyright holder shall not be 
 
 <!ELEMENT pluralRules ( pluralRule* ) >
 <!ATTLIST pluralRules locales NMTOKENS #REQUIRED >
-	<!--@MATCH:set/validity/locale-->
+	<!--@MATCH:set/or/validity/locale||literal/mo, tl-->
 <!ATTLIST pluralRules draft (approved | contributed | provisional | unconfirmed) #IMPLIED >
     <!--@METADATA-->
     <!--@DEPRECATED-->

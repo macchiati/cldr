@@ -2,8 +2,10 @@ package org.unicode.cldr.util;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -13,6 +15,7 @@ import java.util.function.IntFunction;
 import java.util.regex.Pattern;
 
 import org.unicode.cldr.util.StandardCodes.LstrType;
+import org.unicode.cldr.util.Validity.Status;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -102,9 +105,19 @@ public abstract class MatchValue implements Predicate<String> {
         private final Predicate<String> region = new ValidityMatchValue(LstrType.region);
         private final Predicate<String> variant = new ValidityMatchValue(LstrType.variant);
 
+        public LocaleMatchValue(Collection<Status> allowed) {
+            allowedStatus = ImmutableSet.copyOf(allowed);
+        }
+        
+        private final Set<Validity.Status> allowedStatus;
+
         @Override
         public String getName() {
-            return "validity/locale";
+            String suffix = "";
+            if (!DEFAULT_STATUS_VALUES.equals(allowedStatus)) {
+                suffix = "+" + CollectionUtilities.join(allowedStatus,"+");
+            }
+            return "validity/locale" + suffix;
         }
 
         @Override
@@ -155,24 +168,56 @@ public abstract class MatchValue implements Predicate<String> {
         return false;
     }
 
+    static final Set<Validity.Status> DEFAULT_STATUS_VALUES = ImmutableSet.of(
+        Status.regular, 
+        Status.macroregion, 
+        Status.unknown);
+
     static public class ValidityMatchValue extends MatchValue {
         private final LstrType type;
+        private final Set<Validity.Status> allowedStatus;
 
         @Override
         public String getName() {
-            return "validity/" + type.toString();
+            String suffix = "";
+            if (!DEFAULT_STATUS_VALUES.equals(allowedStatus)) {
+                suffix = "+" + CollectionUtilities.join(allowedStatus,"+");
+            }
+            return "validity/" + type.toString() + suffix;
+        }
+
+        private ValidityMatchValue(LstrType type, Collection<Validity.Status> allowedStatus) {
+            this.type = type;
+            this.allowedStatus = ImmutableSet.copyOf(allowedStatus);
         }
 
         private ValidityMatchValue(LstrType type) {
-            this.type = type;
+            this(type, DEFAULT_STATUS_VALUES);
+        }
+
+        public ValidityMatchValue(LstrType type2, Status... values) {
+            this(type2, ImmutableSet.copyOf(values));
         }
 
         public static MatchValue of(String typeName) {
-            if (typeName.equals("locale")) {
-                return new LocaleMatchValue();
+            Collection<Status> allowed = DEFAULT_STATUS_VALUES;
+            if (typeName.contains("+")) {
+                allowed = new LinkedHashSet<Validity.Status>();
+                String newTypeName = null;
+                for (String item : Splitter.on('+').trimResults().splitToList(typeName)) {
+                    if (newTypeName == null) {
+                        newTypeName = item;
+                    } else {
+                        allowed.add(Status.valueOf(item));
+                    }
+                }
+                typeName = newTypeName;
+            }
+            if (typeName.startsWith("locale")) {
+                return new LocaleMatchValue(allowed);
             }
             LstrType type = LstrType.valueOf(typeName);
-            return new ValidityMatchValue(type);
+            return new ValidityMatchValue(type, allowed);
         }
 
         @Override
@@ -191,11 +236,20 @@ public abstract class MatchValue implements Predicate<String> {
                 item = item.toLowerCase(Locale.ROOT); 
                 break;
             case language: 
-                item = item.equals("root") ? "und" : item; 
+                switch(item) {
+                case "root": item = "und"; break;
+                // Java hacks
+                case "in": item = "id"; break;
+                case "iw": item = "he"; break;
+                case "no": item = "nb"; break;
+                case "sh": item = "hr"; break;
+                case "jw": item = "jv"; break;
+                }
                 break;
             default: break;
             }
-            return Validity.getInstance().getCodeToStatus(type).get(item) != null;
+            Status status = Validity.getInstance().getCodeToStatus(type).get(item);
+            return allowedStatus.contains(status);
         }
     }
 

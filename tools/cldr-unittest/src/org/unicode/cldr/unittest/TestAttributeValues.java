@@ -152,7 +152,6 @@ public class TestAttributeValues extends TestFmwk {
         }
     }
 
-
     private void checkFile(PathChecker pathChecker, String fullFile) {
         if (!fullFile.endsWith(".xml")) {
             return;
