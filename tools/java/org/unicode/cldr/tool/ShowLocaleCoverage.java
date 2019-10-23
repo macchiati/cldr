@@ -67,7 +67,6 @@ import org.unicode.cldr.util.VettingViewer.MissingStatus;
 import org.unicode.cldr.util.VoteResolver.VoterInfo;
 import org.unicode.cldr.util.XPathParts;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.LinkedHashMultimap;
@@ -552,6 +551,8 @@ public class ShowLocaleCoverage {
         showCoverage(anchors, matcher, null, false);
     }
 
+    private static final CLDRFile vxmlCldrFile2 = null;
+    
     public static void showCoverage(Anchors anchors, Matcher matcher, Set<String> locales, boolean useOrgLevel) throws IOException {
         final String title = "Locale Coverage";
         try (PrintWriter pw = new PrintWriter(new FormattedFileWriter(null, title, null, anchors));
@@ -730,7 +731,7 @@ public class ShowLocaleCoverage {
                         continue;
                     }
 
-                    CLDRFile vxmlCldrFile2 = getVxmlCldrFile(locale);
+//                    CLDRFile vxmlCldrFile2 = getVxmlCldrFile(locale);
 
                     tsv_summary.flush();
                     tsv_missing_summary.flush();
@@ -776,32 +777,32 @@ public class ShowLocaleCoverage {
                         missingCounter, missingPaths, unconfirmed);
 
                     // HACK Fix up missing items. Remove once vxml is ok.
-                    if (vxmlCldrFile != null) {
-                        Multimap<MissingStatus,String> toRemove = HashMultimap.create();
-                        for (Entry<MissingStatus, String> entry : missingPaths.entrySet()) {
-                            String mPath = entry.getValue();
-                            String vxmlValue = vxmlCldrFile.getStringValue(mPath);
-                            if (vxmlValue != null) {
-                                if (vxmlValue.equals(CldrUtility.INHERITANCE_MARKER)) {
-                                    vxmlValue = vxmlCldrFile.getBaileyValue(mPath, null, null);
-                                }
-                                if (vxmlValue != null) {
-                                    String bailey = file.getStringValue(mPath);
-                                    if (vxmlValue.equals(bailey)) {
-                                        String fullPath = vxmlCldrFile.getFullXPath(mPath);
-                                        if (!fullPath.contains("provisional") && !fullPath.contains("unconfirmed")) {
-                                            toRemove.put(entry.getKey(), mPath);
-                                            Level level = coverageInfo.getCoverageLevel(mPath, locale);
-                                            missingCounter.add(level, -1);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        for (Entry<MissingStatus, String> entry : toRemove.entries()) {
-                            missingPaths.remove(entry.getKey(), entry.getValue());
-                        }
-                    }
+//                    if (vxmlCldrFile != null) {
+//                        Multimap<MissingStatus,String> toRemove = HashMultimap.create();
+//                        for (Entry<MissingStatus, String> entry : missingPaths.entrySet()) {
+//                            String mPath = entry.getValue();
+//                            String vxmlValue = vxmlCldrFile.getStringValue(mPath);
+//                            if (vxmlValue != null) {
+//                                if (vxmlValue.equals(CldrUtility.INHERITANCE_MARKER)) {
+//                                    vxmlValue = vxmlCldrFile.getBaileyValue(mPath, null, null);
+//                                }
+//                                if (vxmlValue != null) {
+//                                    String bailey = file.getStringValue(mPath);
+//                                    if (vxmlValue.equals(bailey)) {
+//                                        String fullPath = vxmlCldrFile.getFullXPath(mPath);
+//                                        if (!fullPath.contains("provisional") && !fullPath.contains("unconfirmed")) {
+//                                            toRemove.put(entry.getKey(), mPath);
+//                                            Level level = coverageInfo.getCoverageLevel(mPath, locale);
+//                                            missingCounter.add(level, -1);
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        for (Entry<MissingStatus, String> entry : toRemove.entries()) {
+//                            missingPaths.remove(entry.getKey(), entry.getValue());
+//                        }
+//                    }
 
                     Set<String> sublocales = languageToRegion.get(language);
                     if (sublocales == null) {
@@ -1265,23 +1266,26 @@ public class ShowLocaleCoverage {
     };
 
 
-    static org.unicode.cldr.util.Factory VXML_FACTORY = SimpleFactory.make(new File[] {
-        new File(VXML_CONSTANT + "main"),
-        new File(VXML_CONSTANT + "annotations") }, ".*");
-    static CLDRFile vxmlCldrFile;
-    static String vxmlLocale = "";
-
-    private static CLDRFile getVxmlCldrFile(String locale) {
-        if (!vxmlLocale.equals(locale)) {
-            try {
-                vxmlCldrFile = VXML_FACTORY.make(locale, false);
-            } catch (Exception e) {
-                vxmlCldrFile = null;
-            }
-            vxmlLocale = locale;
-        }
-        return vxmlCldrFile;
-    }
+//    static org.unicode.cldr.util.Factory VXML_FACTORY = null;
+//    static CLDRFile vxmlCldrFile;
+//    static String vxmlLocale = "";
+//
+//    private static CLDRFile getVxmlCldrFile(String locale) {
+//        if (!vxmlLocale.equals(locale)) {
+//            try {
+//                if (VXML_FACTORY == null) {
+//                    VXML_FACTORY = SimpleFactory.make(new File[] {
+//                        new File(VXML_CONSTANT + "main"),
+//                        new File(VXML_CONSTANT + "annotations") }, ".*");
+//                }
+//                vxmlCldrFile = VXML_FACTORY.make(locale, false);
+//            } catch (Exception e) {
+//                vxmlCldrFile = null;
+//            }
+//            vxmlLocale = locale;
+//        }
+//        return vxmlCldrFile;
+//    }
 
     public static void gatherStarred(String path, Counter<String> starredCounter) {
         starredCounter.add(new PathStarrer().setSubstitutionPattern("*").set(path), 1);
