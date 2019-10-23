@@ -36,7 +36,7 @@ import com.ibm.icu.util.ULocale;
 
 public class ChartAnnotations extends Chart {
 
-    private static final String LDML_ANNOTATIONS = "<a href='http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-general.html#Annotations'>LDML Annotations</a>";
+    private static final String LDML_ANNOTATIONS = "<a href='http://unicode.org/reports/tr35/tr35-general.html#Annotations'>LDML Annotations</a>";
 
     private static final String MAIN_HEADER = "<p>Annotations provide names and keywords for Unicode characters, currently focusing on emoji. "
         + "If you see any problems, please <a target='_blank' href='http://unicode.org/cldr/trac/newticket'>file a ticket</a> with the corrected values for the locale. "
