@@ -1440,12 +1440,12 @@
 1F473 1F3FE 200D 2640                      ; minimally-qualified # 👳🏾‍♀ woman wearing turban: medium-dark skin tone
 1F473 1F3FF 200D 2640 FE0F                 ; fully-qualified     # 👳🏿‍♀️ woman wearing turban: dark skin tone
 1F473 1F3FF 200D 2640                      ; minimally-qualified # 👳🏿‍♀ woman wearing turban: dark skin tone
-1F472                                      ; fully-qualified     # 👲 man with skullcap
-1F472 1F3FB                                ; fully-qualified     # 👲🏻 man with skullcap: light skin tone
-1F472 1F3FC                                ; fully-qualified     # 👲🏼 man with skullcap: medium-light skin tone
-1F472 1F3FD                                ; fully-qualified     # 👲🏽 man with skullcap: medium skin tone
-1F472 1F3FE                                ; fully-qualified     # 👲🏾 man with skullcap: medium-dark skin tone
-1F472 1F3FF                                ; fully-qualified     # 👲🏿 man with skullcap: dark skin tone
+1F472                                      ; fully-qualified     # 👲 person with skullcap
+1F472 1F3FB                                ; fully-qualified     # 👲🏻 person with skullcap: light skin tone
+1F472 1F3FC                                ; fully-qualified     # 👲🏼 person with skullcap: medium-light skin tone
+1F472 1F3FD                                ; fully-qualified     # 👲🏽 person with skullcap: medium skin tone
+1F472 1F3FE                                ; fully-qualified     # 👲🏾 person with skullcap: medium-dark skin tone
+1F472 1F3FF                                ; fully-qualified     # 👲🏿 person with skullcap: dark skin tone
 1F9D5                                      ; fully-qualified     # 🧕 woman with headscarf
 1F935                                      ; fully-qualified     # 🤵 person in tuxedo
 1F935 200D 2642 FE0F                       ; fully-qualified     # 🤵‍♂️ man in tuxedo
@@ -2651,7 +2651,7 @@
 1F468 1F3FF 200D 1F91D 200D 1F468 1F3FE    ; fully-qualified     # 👨🏿‍🤝‍👨🏾 men holding hands: dark skin tone, medium-dark skin tone
 1F46C 1F3FF                                ; fully-qualified     # 👬🏿 men holding hands: dark skin tone
 1F48F                                      ; fully-qualified     # 💏 kiss
-1F469 200D 2764 FE0F 200D 1F48B 200D 1F468 ; fully-qualified     # 👩‍❤️‍����‍👨 kiss: woman, man
+1F469 200D 2764 FE0F 200D 1F48B 200D 1F468 ; fully-qualified     # 👩‍❤️‍💋‍👨 kiss: woman, man
 1F469 200D 2764 200D 1F48B 200D 1F468      ; minimally-qualified # 👩‍❤‍💋‍👨 kiss: woman, man
 1F468 200D 2764 FE0F 200D 1F48B 200D 1F468 ; fully-qualified     # 👨‍❤️‍💋‍👨 kiss: man, man
 1F468 200D 2764 200D 1F48B 200D 1F468      ; minimally-qualified # 👨‍❤‍💋‍👨 kiss: man, man
@@ -3601,8 +3601,6 @@
 1F4B3                                      ; fully-qualified     # 💳 credit card
 1F9FE                                      ; fully-qualified     # 🧾 receipt
 1F4B9                                      ; fully-qualified     # 💹 chart increasing with yen
-1F4B1                                      ; fully-qualified     # 💱 currency exchange
-1F4B2                                      ; fully-qualified     # 💲 heavy dollar sign
 
 # subgroup: mail
 2709 FE0F                                  ; fully-qualified     # ✉️ envelope
@@ -3923,11 +3921,34 @@
 26A7 FE0F                                  ; fully-qualified     # ⚧️ transgender symbol
 26A7                                       ; unqualified         # ⚧ transgender symbol
 
+# subgroup: math
+2716 FE0F                                  ; fully-qualified     # ✖️ multiplication sign
+2716                                       ; unqualified         # ✖ multiplication sign
+2795                                       ; fully-qualified     # ➕ plus sign
+2796                                       ; fully-qualified     # ➖ minus sign
+2797                                       ; fully-qualified     # ➗ division sign
+267E FE0F                                  ; fully-qualified     # ♾️ infinity
+267E                                       ; unqualified         # ♾ infinity
+
+# subgroup: punctuation
+203C FE0F                                  ; fully-qualified     # ‼️ double exclamation mark
+203C                                       ; unqualified         # ‼ double exclamation mark
+2049 FE0F                                  ; fully-qualified     # ⁉️ exclamation question mark
+2049                                       ; unqualified         # ⁉ exclamation question mark
+2753                                       ; fully-qualified     # ❓ question mark
+2754                                       ; fully-qualified     # ❔ white question mark
+2755                                       ; fully-qualified     # ❕ white exclamation mark
+2757                                       ; fully-qualified     # ❗ exclamation mark
+3030 FE0F                                  ; fully-qualified     # 〰️ wavy dash
+3030                                       ; unqualified         # 〰 wavy dash
+
+# subgroup: currency
+1F4B1                                      ; fully-qualified     # 💱 currency exchange
+1F4B2                                      ; fully-qualified     # 💲 heavy dollar sign
+
 # subgroup: other-symbol
 2695 FE0F                                  ; fully-qualified     # ⚕️ medical symbol
 2695                                       ; unqualified         # ⚕ medical symbol
-267E FE0F                                  ; fully-qualified     # ♾️ infinity
-267E                                       ; unqualified         # ♾ infinity
 267B FE0F                                  ; fully-qualified     # ♻️ recycling symbol
 267B                                       ; unqualified         # ♻ recycling symbol
 269C FE0F                                  ; fully-qualified     # ⚜️ fleur-de-lis
@@ -3941,13 +3962,8 @@
 2611                                       ; unqualified         # ☑ check box with check
 2714 FE0F                                  ; fully-qualified     # ✔️ check mark
 2714                                       ; unqualified         # ✔ check mark
-2716 FE0F                                  ; fully-qualified     # ✖️ multiplication sign
-2716                                       ; unqualified         # ✖ multiplication sign
 274C                                       ; fully-qualified     # ❌ cross mark
 274E                                       ; fully-qualified     # ❎ cross mark button
-2795                                       ; fully-qualified     # ➕ plus sign
-2796                                       ; fully-qualified     # ➖ minus sign
-2797                                       ; fully-qualified     # ➗ division sign
 27B0                                       ; fully-qualified     # ➰ curly loop
 27BF                                       ; fully-qualified     # ➿ double curly loop
 303D FE0F                                  ; fully-qualified     # 〽️ part alternation mark
@@ -3958,16 +3974,6 @@
 2734                                       ; unqualified         # ✴ eight-pointed star
 2747 FE0F                                  ; fully-qualified     # ❇️ sparkle
 2747                                       ; unqualified         # ❇ sparkle
-203C FE0F                                  ; fully-qualified     # ‼️ double exclamation mark
-203C                                       ; unqualified         # ‼ double exclamation mark
-2049 FE0F                                  ; fully-qualified     # ⁉️ exclamation question mark
-2049                                       ; unqualified         # ⁉ exclamation question mark
-2753                                       ; fully-qualified     # ❓ question mark
-2754                                       ; fully-qualified     # ❔ white question mark
-2755                                       ; fully-qualified     # ❕ white exclamation mark
-2757                                       ; fully-qualified     # ❗ exclamation mark
-3030 FE0F                                  ; fully-qualified     # 〰️ wavy dash
-3030                                       ; unqualified         # 〰 wavy dash
 00A9 FE0F                                  ; fully-qualified     # ©️ copyright
 00A9                                       ; unqualified         # © copyright
 00AE FE0F                                  ; fully-qualified     # ®️ registered
