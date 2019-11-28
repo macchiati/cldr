@@ -77,7 +77,6 @@
 
 # subgroup: face-hat
 1F920                                      ; fully-qualified     # 🤠 cowboy hat face
-1F977                                      ; fully-qualified     # 🥷 ninja
 1F973                                      ; fully-qualified     # 🥳 partying face
 1F978                                      ; fully-qualified     # 🥸 disguised face
 
@@ -231,12 +230,17 @@
 
 # subgroup: hand-fingers-partial
 1F44C                                      ; fully-qualified     # 👌 OK hand
-1F90C                                      ; fully-qualified     # 🤌 pinched fingers
+1F90C 1F3FB                                ; fully-qualified     # 🤌🏻 pinched fingers: light skin tone
+1F90C 1F3FC                                ; fully-qualified     # 🤌🏼 pinched fingers: medium-light skin tone
+1F90C 1F3FD                                ; fully-qualified     # 🤌🏽 pinched fingers: medium skin tone
+1F90C 1F3FE                                ; fully-qualified     # 🤌🏾 pinched fingers: medium-dark skin tone
+1F90C 1F3FF                                ; fully-qualified     # 🤌🏿 pinched fingers: dark skin tone
 1F44C 1F3FB                                ; fully-qualified     # 👌🏻 OK hand: light skin tone
 1F44C 1F3FC                                ; fully-qualified     # 👌🏼 OK hand: medium-light skin tone
 1F44C 1F3FD                                ; fully-qualified     # 👌🏽 OK hand: medium skin tone
 1F44C 1F3FE                                ; fully-qualified     # 👌🏾 OK hand: medium-dark skin tone
 1F44C 1F3FF                                ; fully-qualified     # 👌🏿 OK hand: dark skin tone
+1F90C                                      ; fully-qualified     # 🤌 pinched fingers
 1F90F                                      ; fully-qualified     # 🤏 pinching hand
 1F90F 1F3FB                                ; fully-qualified     # 🤏🏻 pinching hand: light skin tone
 1F90F 1F3FC                                ; fully-qualified     # 🤏🏼 pinching hand: medium-light skin tone
@@ -422,32 +426,32 @@
 1F9B5 1F3FE                                ; fully-qualified     # 🦵🏾 leg: medium-dark skin tone
 1F9B5 1F3FF                                ; fully-qualified     # 🦵🏿 leg: dark skin tone
 1F9B6                                      ; fully-qualified     # 🦶 foot
-1F442                                      ; fully-qualified     # 👂 ear
-1F9BB                                      ; fully-qualified     # 🦻 ear with hearing aid
-1F443                                      ; fully-qualified     # 👃 nose
-1F9E0                                      ; fully-qualified     # 🧠 brain
-1FAC0                                      ; fully-qualified     # 🫀 anatomical heart
-1FAC1                                      ; fully-qualified     # 🫁 lungs
 1F9B6 1F3FB                                ; fully-qualified     # 🦶🏻 foot: light skin tone
 1F9B6 1F3FC                                ; fully-qualified     # 🦶🏼 foot: medium-light skin tone
 1F9B6 1F3FD                                ; fully-qualified     # 🦶🏽 foot: medium skin tone
 1F9B6 1F3FE                                ; fully-qualified     # 🦶🏾 foot: medium-dark skin tone
 1F9B6 1F3FF                                ; fully-qualified     # 🦶🏿 foot: dark skin tone
+1F442                                      ; fully-qualified     # 👂 ear
 1F442 1F3FB                                ; fully-qualified     # 👂🏻 ear: light skin tone
 1F442 1F3FC                                ; fully-qualified     # 👂🏼 ear: medium-light skin tone
 1F442 1F3FD                                ; fully-qualified     # 👂🏽 ear: medium skin tone
 1F442 1F3FE                                ; fully-qualified     # 👂🏾 ear: medium-dark skin tone
 1F442 1F3FF                                ; fully-qualified     # 👂🏿 ear: dark skin tone
+1F9BB                                      ; fully-qualified     # 🦻 ear with hearing aid
 1F9BB 1F3FB                                ; fully-qualified     # 🦻🏻 ear with hearing aid: light skin tone
 1F9BB 1F3FC                                ; fully-qualified     # 🦻🏼 ear with hearing aid: medium-light skin tone
 1F9BB 1F3FD                                ; fully-qualified     # 🦻🏽 ear with hearing aid: medium skin tone
 1F9BB 1F3FE                                ; fully-qualified     # 🦻🏾 ear with hearing aid: medium-dark skin tone
 1F9BB 1F3FF                                ; fully-qualified     # 🦻🏿 ear with hearing aid: dark skin tone
+1F443                                      ; fully-qualified     # 👃 nose
 1F443 1F3FB                                ; fully-qualified     # 👃🏻 nose: light skin tone
 1F443 1F3FC                                ; fully-qualified     # 👃🏼 nose: medium-light skin tone
 1F443 1F3FD                                ; fully-qualified     # 👃🏽 nose: medium skin tone
 1F443 1F3FE                                ; fully-qualified     # 👃🏾 nose: medium-dark skin tone
 1F443 1F3FF                                ; fully-qualified     # 👃🏿 nose: dark skin tone
+1F9E0                                      ; fully-qualified     # 🧠 brain
+1FAC0                                      ; fully-qualified     # 🫀 anatomical heart
+1FAC1                                      ; fully-qualified     # 🫁 lungs
 1F9B7                                      ; fully-qualified     # 🦷 tooth
 1F9B4                                      ; fully-qualified     # 🦴 bone
 1F440                                      ; fully-qualified     # 👀 eyes
@@ -505,18 +509,6 @@
 1F9D4 1F3FD                                ; fully-qualified     # 🧔🏽 man: medium skin tone, beard
 1F9D4 1F3FE                                ; fully-qualified     # 🧔🏾 man: medium-dark skin tone, beard
 1F9D4 1F3FF                                ; fully-qualified     # 🧔🏿 man: dark skin tone, beard
-1F471 200D 2642 FE0F                       ; fully-qualified     # 👱‍♂️ man: blond hair
-1F471 200D 2642                            ; minimally-qualified # 👱‍♂ man: blond hair
-1F471 1F3FB 200D 2642 FE0F                 ; fully-qualified     # 👱🏻‍♂️ man: light skin tone, blond hair
-1F471 1F3FB 200D 2642                      ; minimally-qualified # 👱🏻‍♂ man: light skin tone, blond hair
-1F471 1F3FC 200D 2642 FE0F                 ; fully-qualified     # 👱🏼‍♂️ man: medium-light skin tone, blond hair
-1F471 1F3FC 200D 2642                      ; minimally-qualified # 👱🏼‍♂ man: medium-light skin tone, blond hair
-1F471 1F3FD 200D 2642 FE0F                 ; fully-qualified     # 👱🏽‍♂️ man: medium skin tone, blond hair
-1F471 1F3FD 200D 2642                      ; minimally-qualified # 👱🏽‍♂ man: medium skin tone, blond hair
-1F471 1F3FE 200D 2642 FE0F                 ; fully-qualified     # 👱🏾‍♂️ man: medium-dark skin tone, blond hair
-1F471 1F3FE 200D 2642                      ; minimally-qualified # 👱🏾‍♂ man: medium-dark skin tone, blond hair
-1F471 1F3FF 200D 2642 FE0F                 ; fully-qualified     # 👱🏿‍♂️ man: dark skin tone, blond hair
-1F471 1F3FF 200D 2642                      ; minimally-qualified # 👱🏿‍♂ man: dark skin tone, blond hair
 1F468 200D 1F9B0                           ; fully-qualified     # 👨‍🦰 man: red hair
 1F468 1F3FB 200D 1F9B0                     ; fully-qualified     # 👨🏻‍🦰 man: light skin tone, red hair
 1F468 1F3FC 200D 1F9B0                     ; fully-qualified     # 👨🏼‍🦰 man: medium-light skin tone, red hair
@@ -547,18 +539,6 @@
 1F469 1F3FD                                ; fully-qualified     # 👩🏽 woman: medium skin tone
 1F469 1F3FE                                ; fully-qualified     # 👩🏾 woman: medium-dark skin tone
 1F469 1F3FF                                ; fully-qualified     # 👩🏿 woman: dark skin tone
-1F471 200D 2640 FE0F                       ; fully-qualified     # 👱‍♀️ woman: blond hair
-1F471 200D 2640                            ; minimally-qualified # 👱‍♀ woman: blond hair
-1F471 1F3FB 200D 2640 FE0F                 ; fully-qualified     # 👱🏻‍♀️ woman: light skin tone, blond hair
-1F471 1F3FB 200D 2640                      ; minimally-qualified # 👱🏻‍♀ woman: light skin tone, blond hair
-1F471 1F3FC 200D 2640 FE0F                 ; fully-qualified     # 👱🏼‍♀️ woman: medium-light skin tone, blond hair
-1F471 1F3FC 200D 2640                      ; minimally-qualified # 👱🏼‍♀ woman: medium-light skin tone, blond hair
-1F471 1F3FD 200D 2640 FE0F                 ; fully-qualified     # 👱🏽‍♀️ woman: medium skin tone, blond hair
-1F471 1F3FD 200D 2640                      ; minimally-qualified # 👱🏽‍♀ woman: medium skin tone, blond hair
-1F471 1F3FE 200D 2640 FE0F                 ; fully-qualified     # 👱🏾‍♀️ woman: medium-dark skin tone, blond hair
-1F471 1F3FE 200D 2640                      ; minimally-qualified # 👱🏾‍♀ woman: medium-dark skin tone, blond hair
-1F471 1F3FF 200D 2640 FE0F                 ; fully-qualified     # 👱🏿‍♀️ woman: dark skin tone, blond hair
-1F471 1F3FF 200D 2640                      ; minimally-qualified # 👱🏿‍♀ woman: dark skin tone, blond hair
 1F469 200D 1F9B0                           ; fully-qualified     # 👩‍🦰 woman: red hair
 1F9D1 200D 1F9B0                           ; fully-qualified     # 🧑‍🦰 person: red hair
 1F9D1 1F3FB 200D 1F9B0                     ; fully-qualified     # 🧑🏻‍🦰 person: light skin tone, red hair
@@ -607,6 +587,30 @@
 1F469 1F3FD 200D 1F9B2                     ; fully-qualified     # 👩🏽‍🦲 woman: medium skin tone, bald
 1F469 1F3FE 200D 1F9B2                     ; fully-qualified     # 👩🏾‍🦲 woman: medium-dark skin tone, bald
 1F469 1F3FF 200D 1F9B2                     ; fully-qualified     # 👩🏿‍🦲 woman: dark skin tone, bald
+1F471 200D 2640 FE0F                       ; fully-qualified     # 👱‍♀️ woman: blond hair
+1F471 200D 2640                            ; minimally-qualified # 👱‍♀ woman: blond hair
+1F471 1F3FB 200D 2640 FE0F                 ; fully-qualified     # 👱🏻‍♀️ woman: light skin tone, blond hair
+1F471 1F3FB 200D 2640                      ; minimally-qualified # 👱🏻‍♀ woman: light skin tone, blond hair
+1F471 1F3FC 200D 2640 FE0F                 ; fully-qualified     # 👱🏼‍♀️ woman: medium-light skin tone, blond hair
+1F471 1F3FC 200D 2640                      ; minimally-qualified # 👱🏼‍♀ woman: medium-light skin tone, blond hair
+1F471 1F3FD 200D 2640 FE0F                 ; fully-qualified     # 👱🏽‍♀️ woman: medium skin tone, blond hair
+1F471 1F3FD 200D 2640                      ; minimally-qualified # 👱🏽‍♀ woman: medium skin tone, blond hair
+1F471 1F3FE 200D 2640 FE0F                 ; fully-qualified     # 👱🏾‍♀️ woman: medium-dark skin tone, blond hair
+1F471 1F3FE 200D 2640                      ; minimally-qualified # 👱🏾‍♀ woman: medium-dark skin tone, blond hair
+1F471 1F3FF 200D 2640 FE0F                 ; fully-qualified     # 👱🏿‍♀️ woman: dark skin tone, blond hair
+1F471 1F3FF 200D 2640                      ; minimally-qualified # 👱🏿‍♀ woman: dark skin tone, blond hair
+1F471 200D 2642 FE0F                       ; fully-qualified     # 👱‍♂️ man: blond hair
+1F471 200D 2642                            ; minimally-qualified # 👱‍♂ man: blond hair
+1F471 1F3FB 200D 2642 FE0F                 ; fully-qualified     # 👱🏻‍♂️ man: light skin tone, blond hair
+1F471 1F3FB 200D 2642                      ; minimally-qualified # 👱🏻‍♂ man: light skin tone, blond hair
+1F471 1F3FC 200D 2642 FE0F                 ; fully-qualified     # 👱🏼‍♂️ man: medium-light skin tone, blond hair
+1F471 1F3FC 200D 2642                      ; minimally-qualified # 👱🏼‍♂ man: medium-light skin tone, blond hair
+1F471 1F3FD 200D 2642 FE0F                 ; fully-qualified     # 👱🏽‍♂️ man: medium skin tone, blond hair
+1F471 1F3FD 200D 2642                      ; minimally-qualified # 👱🏽‍♂ man: medium skin tone, blond hair
+1F471 1F3FE 200D 2642 FE0F                 ; fully-qualified     # 👱🏾‍♂️ man: medium-dark skin tone, blond hair
+1F471 1F3FE 200D 2642                      ; minimally-qualified # 👱🏾‍♂ man: medium-dark skin tone, blond hair
+1F471 1F3FF 200D 2642 FE0F                 ; fully-qualified     # 👱🏿‍♂️ man: dark skin tone, blond hair
+1F471 1F3FF 200D 2642                      ; minimally-qualified # 👱🏿‍♂ man: dark skin tone, blond hair
 1F9D3                                      ; fully-qualified     # 🧓 older person
 1F9D3 1F3FB                                ; fully-qualified     # 🧓🏻 older person: light skin tone
 1F9D3 1F3FC                                ; fully-qualified     # 🧓🏼 older person: medium-light skin tone
@@ -929,6 +933,18 @@
 1F937 1F3FF 200D 2640                      ; minimally-qualified # 🤷🏿‍♀ woman shrugging: dark skin tone
 
 # subgroup: person-role
+1F9D1 200D 2695 FE0F                       ; fully-qualified     # 🧑‍⚕️ health worker
+1F9D1 200D 2695                            ; minimally-qualified # 🧑‍⚕ health worker
+1F9D1 1F3FB 200D 2695 FE0F                 ; fully-qualified     # 🧑🏻‍⚕️ health worker: light skin tone
+1F9D1 1F3FB 200D 2695                      ; minimally-qualified # 🧑🏻‍⚕ health worker: light skin tone
+1F9D1 1F3FC 200D 2695 FE0F                 ; fully-qualified     # 🧑🏼‍⚕️ health worker: medium-light skin tone
+1F9D1 1F3FC 200D 2695                      ; minimally-qualified # 🧑🏼‍⚕ health worker: medium-light skin tone
+1F9D1 1F3FD 200D 2695 FE0F                 ; fully-qualified     # 🧑🏽‍⚕️ health worker: medium skin tone
+1F9D1 1F3FD 200D 2695                      ; minimally-qualified # 🧑🏽‍⚕ health worker: medium skin tone
+1F9D1 1F3FE 200D 2695 FE0F                 ; fully-qualified     # 🧑🏾‍⚕️ health worker: medium-dark skin tone
+1F9D1 1F3FE 200D 2695                      ; minimally-qualified # 🧑🏾‍⚕ health worker: medium-dark skin tone
+1F9D1 1F3FF 200D 2695 FE0F                 ; fully-qualified     # 🧑🏿‍⚕️ health worker: dark skin tone
+1F9D1 1F3FF 200D 2695                      ; minimally-qualified # 🧑🏿‍⚕ health worker: dark skin tone
 1F468 200D 2695 FE0F                       ; fully-qualified     # 👨‍⚕️ man health worker
 1F468 200D 2695                            ; minimally-qualified # 👨‍⚕ man health worker
 1F468 1F3FB 200D 2695 FE0F                 ; fully-qualified     # 👨🏻‍⚕️ man health worker: light skin tone
@@ -943,18 +959,6 @@
 1F468 1F3FF 200D 2695                      ; minimally-qualified # 👨🏿‍⚕ man health worker: dark skin tone
 1F469 200D 2695 FE0F                       ; fully-qualified     # 👩‍⚕️ woman health worker
 1F469 200D 2695                            ; minimally-qualified # 👩‍⚕ woman health worker
-1F9D1 200D 2695 FE0F                       ; fully-qualified     # 🧑‍⚕️ health worker
-1F9D1 200D 2695                            ; minimally-qualified # 🧑‍⚕ health worker
-1F9D1 1F3FB 200D 2695 FE0F                 ; fully-qualified     # 🧑🏻‍⚕️ health worker: light skin tone
-1F9D1 1F3FB 200D 2695                      ; minimally-qualified # 🧑🏻‍⚕ health worker: light skin tone
-1F9D1 1F3FC 200D 2695 FE0F                 ; fully-qualified     # 🧑🏼‍⚕️ health worker: medium-light skin tone
-1F9D1 1F3FC 200D 2695                      ; minimally-qualified # 🧑🏼‍⚕ health worker: medium-light skin tone
-1F9D1 1F3FD 200D 2695 FE0F                 ; fully-qualified     # 🧑🏽‍⚕️ health worker: medium skin tone
-1F9D1 1F3FD 200D 2695                      ; minimally-qualified # 🧑🏽‍⚕ health worker: medium skin tone
-1F9D1 1F3FE 200D 2695 FE0F                 ; fully-qualified     # 🧑🏾‍⚕️ health worker: medium-dark skin tone
-1F9D1 1F3FE 200D 2695                      ; minimally-qualified # 🧑🏾‍⚕ health worker: medium-dark skin tone
-1F9D1 1F3FF 200D 2695 FE0F                 ; fully-qualified     # 🧑🏿‍⚕️ health worker: dark skin tone
-1F9D1 1F3FF 200D 2695                      ; minimally-qualified # 🧑🏿‍⚕ health worker: dark skin tone
 1F469 1F3FB 200D 2695 FE0F                 ; fully-qualified     # 👩🏻‍⚕️ woman health worker: light skin tone
 1F469 1F3FB 200D 2695                      ; minimally-qualified # 👩🏻‍⚕ woman health worker: light skin tone
 1F469 1F3FC 200D 2695 FE0F                 ; fully-qualified     # 👩🏼‍⚕️ woman health worker: medium-light skin tone
@@ -1001,6 +1005,18 @@
 1F469 1F3FD 200D 1F3EB                     ; fully-qualified     # 👩🏽‍🏫 woman teacher: medium skin tone
 1F469 1F3FE 200D 1F3EB                     ; fully-qualified     # 👩🏾‍🏫 woman teacher: medium-dark skin tone
 1F469 1F3FF 200D 1F3EB                     ; fully-qualified     # 👩🏿‍🏫 woman teacher: dark skin tone
+1F9D1 200D 2696 FE0F                       ; fully-qualified     # 🧑‍⚖️ judge
+1F9D1 200D 2696                            ; minimally-qualified # 🧑‍⚖ judge
+1F9D1 1F3FB 200D 2696 FE0F                 ; fully-qualified     # 🧑🏻‍⚖️ judge: light skin tone
+1F9D1 1F3FB 200D 2696                      ; minimally-qualified # 🧑🏻‍⚖ judge: light skin tone
+1F9D1 1F3FC 200D 2696 FE0F                 ; fully-qualified     # 🧑🏼‍⚖️ judge: medium-light skin tone
+1F9D1 1F3FC 200D 2696                      ; minimally-qualified # 🧑🏼‍⚖ judge: medium-light skin tone
+1F9D1 1F3FD 200D 2696 FE0F                 ; fully-qualified     # 🧑🏽‍⚖️ judge: medium skin tone
+1F9D1 1F3FD 200D 2696                      ; minimally-qualified # 🧑🏽‍⚖ judge: medium skin tone
+1F9D1 1F3FE 200D 2696 FE0F                 ; fully-qualified     # 🧑🏾‍⚖️ judge: medium-dark skin tone
+1F9D1 1F3FE 200D 2696                      ; minimally-qualified # 🧑🏾‍⚖ judge: medium-dark skin tone
+1F9D1 1F3FF 200D 2696 FE0F                 ; fully-qualified     # 🧑🏿‍⚖️ judge: dark skin tone
+1F9D1 1F3FF 200D 2696                      ; minimally-qualified # 🧑🏿‍⚖ judge: dark skin tone
 1F468 200D 2696 FE0F                       ; fully-qualified     # 👨‍⚖️ man judge
 1F468 200D 2696                            ; minimally-qualified # 👨‍⚖ man judge
 1F468 1F3FB 200D 2696 FE0F                 ; fully-qualified     # 👨🏻‍⚖️ man judge: light skin tone
@@ -1015,18 +1031,6 @@
 1F468 1F3FF 200D 2696                      ; minimally-qualified # 👨🏿‍⚖ man judge: dark skin tone
 1F469 200D 2696 FE0F                       ; fully-qualified     # 👩‍⚖️ woman judge
 1F469 200D 2696                            ; minimally-qualified # 👩‍⚖ woman judge
-1F9D1 200D 2696 FE0F                       ; fully-qualified     # 🧑‍⚖️ judge
-1F9D1 200D 2696                            ; minimally-qualified # 🧑‍⚖ judge
-1F9D1 1F3FB 200D 2696 FE0F                 ; fully-qualified     # 🧑🏻‍⚖️ judge: light skin tone
-1F9D1 1F3FB 200D 2696                      ; minimally-qualified # 🧑🏻‍⚖ judge: light skin tone
-1F9D1 1F3FC 200D 2696 FE0F                 ; fully-qualified     # 🧑🏼‍⚖️ judge: medium-light skin tone
-1F9D1 1F3FC 200D 2696                      ; minimally-qualified # 🧑🏼‍⚖ judge: medium-light skin tone
-1F9D1 1F3FD 200D 2696 FE0F                 ; fully-qualified     # 🧑🏽‍⚖️ judge: medium skin tone
-1F9D1 1F3FD 200D 2696                      ; minimally-qualified # 🧑🏽‍⚖ judge: medium skin tone
-1F9D1 1F3FE 200D 2696 FE0F                 ; fully-qualified     # 🧑🏾‍⚖️ judge: medium-dark skin tone
-1F9D1 1F3FE 200D 2696                      ; minimally-qualified # 🧑🏾‍⚖ judge: medium-dark skin tone
-1F9D1 1F3FF 200D 2696 FE0F                 ; fully-qualified     # 🧑🏿‍⚖️ judge: dark skin tone
-1F9D1 1F3FF 200D 2696                      ; minimally-qualified # 🧑🏿‍⚖ judge: dark skin tone
 1F469 1F3FB 200D 2696 FE0F                 ; fully-qualified     # 👩🏻‍⚖️ woman judge: light skin tone
 1F469 1F3FB 200D 2696                      ; minimally-qualified # 👩🏻‍⚖ woman judge: light skin tone
 1F469 1F3FC 200D 2696 FE0F                 ; fully-qualified     # 👩🏼‍⚖️ woman judge: medium-light skin tone
@@ -1199,6 +1203,18 @@
 1F469 1F3FD 200D 1F3A8                     ; fully-qualified     # 👩🏽‍🎨 woman artist: medium skin tone
 1F469 1F3FE 200D 1F3A8                     ; fully-qualified     # 👩🏾‍🎨 woman artist: medium-dark skin tone
 1F469 1F3FF 200D 1F3A8                     ; fully-qualified     # 👩🏿‍🎨 woman artist: dark skin tone
+1F9D1 200D 2708 FE0F                       ; fully-qualified     # 🧑‍✈️ pilot
+1F9D1 200D 2708                            ; minimally-qualified # 🧑‍✈ pilot
+1F9D1 1F3FB 200D 2708 FE0F                 ; fully-qualified     # 🧑🏻‍✈️ pilot: light skin tone
+1F9D1 1F3FB 200D 2708                      ; minimally-qualified # 🧑🏻‍✈ pilot: light skin tone
+1F9D1 1F3FC 200D 2708 FE0F                 ; fully-qualified     # 🧑🏼‍✈️ pilot: medium-light skin tone
+1F9D1 1F3FC 200D 2708                      ; minimally-qualified # 🧑🏼‍✈ pilot: medium-light skin tone
+1F9D1 1F3FD 200D 2708 FE0F                 ; fully-qualified     # 🧑🏽‍✈️ pilot: medium skin tone
+1F9D1 1F3FD 200D 2708                      ; minimally-qualified # 🧑🏽‍✈ pilot: medium skin tone
+1F9D1 1F3FE 200D 2708 FE0F                 ; fully-qualified     # 🧑🏾‍✈️ pilot: medium-dark skin tone
+1F9D1 1F3FE 200D 2708                      ; minimally-qualified # 🧑🏾‍✈ pilot: medium-dark skin tone
+1F9D1 1F3FF 200D 2708 FE0F                 ; fully-qualified     # 🧑🏿‍✈️ pilot: dark skin tone
+1F9D1 1F3FF 200D 2708                      ; minimally-qualified # 🧑🏿‍✈ pilot: dark skin tone
 1F468 200D 2708 FE0F                       ; fully-qualified     # 👨‍✈️ man pilot
 1F468 200D 2708                            ; minimally-qualified # 👨‍✈ man pilot
 1F468 1F3FB 200D 2708 FE0F                 ; fully-qualified     # 👨🏻‍✈️ man pilot: light skin tone
@@ -1213,18 +1229,6 @@
 1F468 1F3FF 200D 2708                      ; minimally-qualified # 👨🏿‍✈ man pilot: dark skin tone
 1F469 200D 2708 FE0F                       ; fully-qualified     # 👩‍✈️ woman pilot
 1F469 200D 2708                            ; minimally-qualified # 👩‍✈ woman pilot
-1F9D1 200D 2708 FE0F                       ; fully-qualified     # 🧑‍✈️ pilot
-1F9D1 200D 2708                            ; minimally-qualified # 🧑‍✈ pilot
-1F9D1 1F3FB 200D 2708 FE0F                 ; fully-qualified     # 🧑🏻‍✈️ pilot: light skin tone
-1F9D1 1F3FB 200D 2708                      ; minimally-qualified # 🧑🏻‍✈ pilot: light skin tone
-1F9D1 1F3FC 200D 2708 FE0F                 ; fully-qualified     # 🧑🏼‍✈️ pilot: medium-light skin tone
-1F9D1 1F3FC 200D 2708                      ; minimally-qualified # 🧑🏼‍✈ pilot: medium-light skin tone
-1F9D1 1F3FD 200D 2708 FE0F                 ; fully-qualified     # 🧑🏽‍✈️ pilot: medium skin tone
-1F9D1 1F3FD 200D 2708                      ; minimally-qualified # 🧑🏽‍✈ pilot: medium skin tone
-1F9D1 1F3FE 200D 2708 FE0F                 ; fully-qualified     # 🧑🏾‍✈️ pilot: medium-dark skin tone
-1F9D1 1F3FE 200D 2708                      ; minimally-qualified # 🧑🏾‍✈ pilot: medium-dark skin tone
-1F9D1 1F3FF 200D 2708 FE0F                 ; fully-qualified     # 🧑🏿‍✈️ pilot: dark skin tone
-1F9D1 1F3FF 200D 2708                      ; minimally-qualified # 🧑🏿‍✈ pilot: dark skin tone
 1F469 1F3FB 200D 2708 FE0F                 ; fully-qualified     # 👩🏻‍✈️ woman pilot: light skin tone
 1F469 1F3FB 200D 2708                      ; minimally-qualified # 👩🏻‍✈ woman pilot: light skin tone
 1F469 1F3FC 200D 2708 FE0F                 ; fully-qualified     # 👩🏼‍✈️ woman pilot: medium-light skin tone
@@ -1436,30 +1440,78 @@
 1F473 1F3FE 200D 2640                      ; minimally-qualified # 👳🏾‍♀ woman wearing turban: medium-dark skin tone
 1F473 1F3FF 200D 2640 FE0F                 ; fully-qualified     # 👳🏿‍♀️ woman wearing turban: dark skin tone
 1F473 1F3FF 200D 2640                      ; minimally-qualified # 👳🏿‍♀ woman wearing turban: dark skin tone
-1F472                                      ; fully-qualified     # 👲 man with Chinese cap
-1F472 1F3FB                                ; fully-qualified     # 👲🏻 man with Chinese cap: light skin tone
-1F472 1F3FC                                ; fully-qualified     # 👲🏼 man with Chinese cap: medium-light skin tone
-1F472 1F3FD                                ; fully-qualified     # 👲🏽 man with Chinese cap: medium skin tone
-1F472 1F3FE                                ; fully-qualified     # 👲🏾 man with Chinese cap: medium-dark skin tone
-1F472 1F3FF                                ; fully-qualified     # 👲🏿 man with Chinese cap: dark skin tone
+1F472                                      ; fully-qualified     # 👲 man with skullcap
+1F472 1F3FB                                ; fully-qualified     # 👲🏻 man with skullcap: light skin tone
+1F472 1F3FC                                ; fully-qualified     # 👲🏼 man with skullcap: medium-light skin tone
+1F472 1F3FD                                ; fully-qualified     # 👲🏽 man with skullcap: medium skin tone
+1F472 1F3FE                                ; fully-qualified     # 👲🏾 man with skullcap: medium-dark skin tone
+1F472 1F3FF                                ; fully-qualified     # 👲🏿 man with skullcap: dark skin tone
 1F9D5                                      ; fully-qualified     # 🧕 woman with headscarf
+1F935                                      ; fully-qualified     # 🤵 person in tuxedo
+1F935 200D 2642 FE0F                       ; fully-qualified     # 🤵‍♂️ man in tuxedo
+1F935 200D 2642                            ; minimally-qualified # 🤵‍♂ man in tuxedo
+1F935 1F3FB 200D 2642 FE0F                 ; fully-qualified     # 🤵🏻‍♂️ man in tuxedo: light skin tone
+1F935 1F3FB 200D 2642                      ; minimally-qualified # 🤵🏻‍♂ man in tuxedo: light skin tone
+1F935 1F3FC 200D 2642 FE0F                 ; fully-qualified     # 🤵🏼‍♂️ man in tuxedo: medium-light skin tone
+1F935 1F3FC 200D 2642                      ; minimally-qualified # 🤵🏼‍♂ man in tuxedo: medium-light skin tone
+1F935 1F3FD 200D 2642 FE0F                 ; fully-qualified     # 🤵🏽‍♂️ man in tuxedo: medium skin tone
+1F935 1F3FD 200D 2642                      ; minimally-qualified # 🤵🏽‍♂ man in tuxedo: medium skin tone
+1F935 1F3FE 200D 2642 FE0F                 ; fully-qualified     # 🤵🏾‍♂️ man in tuxedo: medium-dark skin tone
+1F935 1F3FE 200D 2642                      ; minimally-qualified # 🤵🏾‍♂ man in tuxedo: medium-dark skin tone
+1F935 1F3FF 200D 2642 FE0F                 ; fully-qualified     # 🤵🏿‍♂️ man in tuxedo: dark skin tone
+1F935 1F3FF 200D 2642                      ; minimally-qualified # 🤵🏿‍♂ man in tuxedo: dark skin tone
+1F935 200D 2640 FE0F                       ; fully-qualified     # 🤵‍♀️ woman in tuxedo
+1F935 200D 2640                            ; minimally-qualified # 🤵‍♀ woman in tuxedo
+1F935 1F3FB 200D 2640 FE0F                 ; fully-qualified     # 🤵🏻‍♀️ woman in tuxedo: light skin tone
+1F935 1F3FB 200D 2640                      ; minimally-qualified # 🤵🏻‍♀ woman in tuxedo: light skin tone
+1F935 1F3FC 200D 2640 FE0F                 ; fully-qualified     # 🤵🏼‍♀️ woman in tuxedo: medium-light skin tone
+1F935 1F3FC 200D 2640                      ; minimally-qualified # 🤵🏼‍♀ woman in tuxedo: medium-light skin tone
+1F935 1F3FD 200D 2640 FE0F                 ; fully-qualified     # 🤵🏽‍♀️ woman in tuxedo: medium skin tone
+1F935 1F3FD 200D 2640                      ; minimally-qualified # 🤵🏽‍♀ woman in tuxedo: medium skin tone
+1F935 1F3FE 200D 2640 FE0F                 ; fully-qualified     # 🤵🏾‍♀️ woman in tuxedo: medium-dark skin tone
+1F935 1F3FE 200D 2640                      ; minimally-qualified # 🤵🏾‍♀ woman in tuxedo: medium-dark skin tone
+1F935 1F3FF 200D 2640 FE0F                 ; fully-qualified     # 🤵🏿‍♀️ woman in tuxedo: dark skin tone
+1F935 1F3FF 200D 2640                      ; minimally-qualified # 🤵🏿‍♀ woman in tuxedo: dark skin tone
 1F9D5 1F3FB                                ; fully-qualified     # 🧕🏻 woman with headscarf: light skin tone
 1F9D5 1F3FC                                ; fully-qualified     # 🧕🏼 woman with headscarf: medium-light skin tone
 1F9D5 1F3FD                                ; fully-qualified     # 🧕🏽 woman with headscarf: medium skin tone
 1F9D5 1F3FE                                ; fully-qualified     # 🧕🏾 woman with headscarf: medium-dark skin tone
 1F9D5 1F3FF                                ; fully-qualified     # 🧕🏿 woman with headscarf: dark skin tone
-1F935                                      ; fully-qualified     # 🤵 man in tuxedo
-1F935 1F3FB                                ; fully-qualified     # 🤵🏻 man in tuxedo: light skin tone
-1F935 1F3FC                                ; fully-qualified     # 🤵🏼 man in tuxedo: medium-light skin tone
-1F935 1F3FD                                ; fully-qualified     # 🤵🏽 man in tuxedo: medium skin tone
-1F935 1F3FE                                ; fully-qualified     # 🤵🏾 man in tuxedo: medium-dark skin tone
-1F935 1F3FF                                ; fully-qualified     # 🤵🏿 man in tuxedo: dark skin tone
-1F470                                      ; fully-qualified     # 👰 bride with veil
-1F470 1F3FB                                ; fully-qualified     # 👰🏻 bride with veil: light skin tone
-1F470 1F3FC                                ; fully-qualified     # 👰🏼 bride with veil: medium-light skin tone
-1F470 1F3FD                                ; fully-qualified     # 👰🏽 bride with veil: medium skin tone
-1F470 1F3FE                                ; fully-qualified     # 👰🏾 bride with veil: medium-dark skin tone
-1F470 1F3FF                                ; fully-qualified     # 👰🏿 bride with veil: dark skin tone
+1F935 1F3FB                                ; fully-qualified     # 🤵🏻 person in tuxedo: light skin tone
+1F935 1F3FC                                ; fully-qualified     # 🤵🏼 person in tuxedo: medium-light skin tone
+1F935 1F3FD                                ; fully-qualified     # 🤵🏽 person in tuxedo: medium skin tone
+1F935 1F3FE                                ; fully-qualified     # 🤵🏾 person in tuxedo: medium-dark skin tone
+1F935 1F3FF                                ; fully-qualified     # 🤵🏿 person in tuxedo: dark skin tone
+1F470                                      ; fully-qualified     # 👰 person with veil
+1F470 200D 2640 FE0F                       ; fully-qualified     # 👰‍♀️ woman with veil
+1F470 200D 2640                            ; minimally-qualified # 👰‍♀ woman with veil
+1F470 1F3FB 200D 2640 FE0F                 ; fully-qualified     # 👰🏻‍♀️ woman with veil: light skin tone
+1F470 1F3FB 200D 2640                      ; minimally-qualified # 👰🏻‍♀ woman with veil: light skin tone
+1F470 1F3FC 200D 2640 FE0F                 ; fully-qualified     # 👰🏼‍♀️ woman with veil: medium-light skin tone
+1F470 1F3FC 200D 2640                      ; minimally-qualified # 👰🏼‍♀ woman with veil: medium-light skin tone
+1F470 1F3FD 200D 2640 FE0F                 ; fully-qualified     # 👰🏽‍♀️ woman with veil: medium skin tone
+1F470 1F3FD 200D 2640                      ; minimally-qualified # 👰🏽‍♀ woman with veil: medium skin tone
+1F470 1F3FE 200D 2640 FE0F                 ; fully-qualified     # 👰🏾‍♀️ woman with veil: medium-dark skin tone
+1F470 1F3FE 200D 2640                      ; minimally-qualified # 👰🏾‍♀ woman with veil: medium-dark skin tone
+1F470 1F3FF 200D 2640 FE0F                 ; fully-qualified     # 👰🏿‍♀️ woman with veil: dark skin tone
+1F470 1F3FF 200D 2640                      ; minimally-qualified # 👰🏿‍♀ woman with veil: dark skin tone
+1F470 200D 2642 FE0F                       ; fully-qualified     # 👰‍♂️ man with veil
+1F470 200D 2642                            ; minimally-qualified # 👰‍♂ man with veil
+1F470 1F3FB 200D 2642 FE0F                 ; fully-qualified     # 👰🏻‍♂️ man with veil: light skin tone
+1F470 1F3FB 200D 2642                      ; minimally-qualified # 👰🏻‍♂ man with veil: light skin tone
+1F470 1F3FC 200D 2642 FE0F                 ; fully-qualified     # 👰🏼‍♂️ man with veil: medium-light skin tone
+1F470 1F3FC 200D 2642                      ; minimally-qualified # 👰🏼‍♂ man with veil: medium-light skin tone
+1F470 1F3FD 200D 2642 FE0F                 ; fully-qualified     # 👰🏽‍♂️ man with veil: medium skin tone
+1F470 1F3FD 200D 2642                      ; minimally-qualified # 👰🏽‍♂ man with veil: medium skin tone
+1F470 1F3FE 200D 2642 FE0F                 ; fully-qualified     # 👰🏾‍♂️ man with veil: medium-dark skin tone
+1F470 1F3FE 200D 2642                      ; minimally-qualified # 👰🏾‍♂ man with veil: medium-dark skin tone
+1F470 1F3FF 200D 2642 FE0F                 ; fully-qualified     # 👰🏿‍♂️ man with veil: dark skin tone
+1F470 1F3FF 200D 2642                      ; minimally-qualified # 👰🏿‍♂ man with veil: dark skin tone
+1F470 1F3FB                                ; fully-qualified     # 👰🏻 person with veil: light skin tone
+1F470 1F3FC                                ; fully-qualified     # 👰🏼 person with veil: medium-light skin tone
+1F470 1F3FD                                ; fully-qualified     # 👰🏽 person with veil: medium skin tone
+1F470 1F3FE                                ; fully-qualified     # 👰🏾 person with veil: medium-dark skin tone
+1F470 1F3FF                                ; fully-qualified     # 👰🏿 person with veil: dark skin tone
 1F930                                      ; fully-qualified     # 🤰 pregnant woman
 1F930 1F3FB                                ; fully-qualified     # 🤰🏻 pregnant woman: light skin tone
 1F930 1F3FC                                ; fully-qualified     # 🤰🏼 pregnant woman: medium-light skin tone
@@ -1472,6 +1524,24 @@
 1F931 1F3FD                                ; fully-qualified     # 🤱🏽 breast-feeding: medium skin tone
 1F931 1F3FE                                ; fully-qualified     # 🤱🏾 breast-feeding: medium-dark skin tone
 1F931 1F3FF                                ; fully-qualified     # 🤱🏿 breast-feeding: dark skin tone
+1F469 200D 1F37C                           ; fully-qualified     # 👩‍🍼 woman feeding baby
+1F469 1F3FB 200D 1F37C                     ; fully-qualified     # 👩🏻‍🍼 woman feeding baby: light skin tone
+1F469 1F3FC 200D 1F37C                     ; fully-qualified     # 👩🏼‍🍼 woman feeding baby: medium-light skin tone
+1F469 1F3FD 200D 1F37C                     ; fully-qualified     # 👩🏽‍🍼 woman feeding baby: medium skin tone
+1F469 1F3FE 200D 1F37C                     ; fully-qualified     # 👩🏾‍🍼 woman feeding baby: medium-dark skin tone
+1F469 1F3FF 200D 1F37C                     ; fully-qualified     # 👩🏿‍🍼 woman feeding baby: dark skin tone
+1F468 200D 1F37C                           ; fully-qualified     # 👨‍🍼 man feeding baby
+1F468 1F3FB 200D 1F37C                     ; fully-qualified     # 👨🏻‍🍼 man feeding baby: light skin tone
+1F468 1F3FC 200D 1F37C                     ; fully-qualified     # 👨🏼‍🍼 man feeding baby: medium-light skin tone
+1F468 1F3FD 200D 1F37C                     ; fully-qualified     # 👨🏽‍🍼 man feeding baby: medium skin tone
+1F468 1F3FE 200D 1F37C                     ; fully-qualified     # 👨🏾‍🍼 man feeding baby: medium-dark skin tone
+1F468 1F3FF 200D 1F37C                     ; fully-qualified     # 👨🏿‍🍼 man feeding baby: dark skin tone
+1F9D1 200D 1F37C                           ; fully-qualified     # 🧑‍🍼 person feeding baby
+1F9D1 1F3FB 200D 1F37C                     ; fully-qualified     # 🧑🏻‍🍼 person feeding baby: light skin tone
+1F9D1 1F3FC 200D 1F37C                     ; fully-qualified     # 🧑🏼‍🍼 person feeding baby: medium-light skin tone
+1F9D1 1F3FD 200D 1F37C                     ; fully-qualified     # 🧑🏽‍🍼 person feeding baby: medium skin tone
+1F9D1 1F3FE 200D 1F37C                     ; fully-qualified     # 🧑🏾‍🍼 person feeding baby: medium-dark skin tone
+1F9D1 1F3FF 200D 1F37C                     ; fully-qualified     # 🧑🏿‍🍼 person feeding baby: dark skin tone
 
 # subgroup: person-fantasy
 1F47C                                      ; fully-qualified     # 👼 baby angel
@@ -1487,6 +1557,12 @@
 1F385 1F3FE                                ; fully-qualified     # 🎅🏾 Santa Claus: medium-dark skin tone
 1F385 1F3FF                                ; fully-qualified     # 🎅🏿 Santa Claus: dark skin tone
 1F936                                      ; fully-qualified     # 🤶 Mrs. Claus
+1F9D1 200D 1F384                           ; fully-qualified     # 🧑‍🎄 mx claus
+1F9D1 1F3FB 200D 1F384                     ; fully-qualified     # 🧑🏻‍🎄 mx claus: light skin tone
+1F9D1 1F3FC 200D 1F384                     ; fully-qualified     # 🧑🏼‍🎄 mx claus: medium-light skin tone
+1F9D1 1F3FD 200D 1F384                     ; fully-qualified     # 🧑🏽‍🎄 mx claus: medium skin tone
+1F9D1 1F3FE 200D 1F384                     ; fully-qualified     # 🧑🏾‍🎄 mx claus: medium-dark skin tone
+1F9D1 1F3FF 200D 1F384                     ; fully-qualified     # 🧑🏿‍🎄 mx claus: dark skin tone
 1F936 1F3FB                                ; fully-qualified     # 🤶🏻 Mrs. Claus: light skin tone
 1F936 1F3FC                                ; fully-qualified     # 🤶🏼 Mrs. Claus: medium-light skin tone
 1F936 1F3FD                                ; fully-qualified     # 🤶🏽 Mrs. Claus: medium skin tone
@@ -1960,13 +2036,13 @@
 1F57A 1F3FD                                ; fully-qualified     # 🕺🏽 man dancing: medium skin tone
 1F57A 1F3FE                                ; fully-qualified     # 🕺🏾 man dancing: medium-dark skin tone
 1F57A 1F3FF                                ; fully-qualified     # 🕺🏿 man dancing: dark skin tone
-1F574 FE0F                                 ; fully-qualified     # 🕴️ man in suit levitating
-1F574                                      ; unqualified         # 🕴 man in suit levitating
-1F574 1F3FB                                ; fully-qualified     # 🕴🏻 man in suit levitating: light skin tone
-1F574 1F3FC                                ; fully-qualified     # 🕴🏼 man in suit levitating: medium-light skin tone
-1F574 1F3FD                                ; fully-qualified     # 🕴🏽 man in suit levitating: medium skin tone
-1F574 1F3FE                                ; fully-qualified     # 🕴🏾 man in suit levitating: medium-dark skin tone
-1F574 1F3FF                                ; fully-qualified     # 🕴🏿 man in suit levitating: dark skin tone
+1F574 FE0F                                 ; fully-qualified     # 🕴️ person in suit levitating
+1F574                                      ; unqualified         # 🕴 person in suit levitating
+1F574 1F3FB                                ; fully-qualified     # 🕴🏻 person in suit levitating: light skin tone
+1F574 1F3FC                                ; fully-qualified     # 🕴🏼 person in suit levitating: medium-light skin tone
+1F574 1F3FD                                ; fully-qualified     # 🕴🏽 person in suit levitating: medium skin tone
+1F574 1F3FE                                ; fully-qualified     # 🕴🏾 person in suit levitating: medium-dark skin tone
+1F574 1F3FF                                ; fully-qualified     # 🕴🏿 person in suit levitating: dark skin tone
 1F46F                                      ; fully-qualified     # 👯 people with bunny ears
 1F46F 200D 2642 FE0F                       ; fully-qualified     # 👯‍♂️ men with bunny ears
 1F46F 200D 2642                            ; minimally-qualified # 👯‍♂ men with bunny ears
@@ -2032,6 +2108,7 @@
 1F9D7 1F3FE 200D 2640                      ; minimally-qualified # 🧗🏾‍♀ woman climbing: medium-dark skin tone
 1F9D7 1F3FF 200D 2640 FE0F                 ; fully-qualified     # 🧗🏿‍♀️ woman climbing: dark skin tone
 1F9D7 1F3FF 200D 2640                      ; minimally-qualified # 🧗🏿‍♀ woman climbing: dark skin tone
+1F977                                      ; fully-qualified     # 🥷 ninja
 
 # subgroup: person-sport
 1F93A                                      ; fully-qualified     # 🤺 person fencing
@@ -2469,33 +2546,32 @@
 1F6CC 1F3FF                                ; fully-qualified     # 🛌🏿 person in bed: dark skin tone
 
 # subgroup: family
-1F9D1 200D 1F91D 200D 1F9D1                ; fully-qualified     # 🧑‍🤝‍🧑 people holding hands
 1F9D1 1F3FB 200D 1F91D 200D 1F9D1 1F3FB    ; fully-qualified     # 🧑🏻‍🤝‍🧑🏻 people holding hands: light skin tone
-1F9D1 1F3FC 200D 1F91D 200D 1F9D1 1F3FB    ; fully-qualified     # 🧑🏼‍🤝‍🧑🏻 people holding hands: medium-light skin tone, light skin tone
 1F9D1 1F3FC 200D 1F91D 200D 1F9D1 1F3FC    ; fully-qualified     # 🧑🏼‍🤝‍🧑🏼 people holding hands: medium-light skin tone
-1F9D1 1F3FD 200D 1F91D 200D 1F9D1 1F3FB    ; fully-qualified     # 🧑🏽‍🤝‍🧑🏻 people holding hands: medium skin tone, light skin tone
-1F9D1 1F3FD 200D 1F91D 200D 1F9D1 1F3FC    ; fully-qualified     # 🧑🏽‍🤝‍🧑🏼 people holding hands: medium skin tone, medium-light skin tone
 1F9D1 1F3FD 200D 1F91D 200D 1F9D1 1F3FD    ; fully-qualified     # 🧑🏽‍🤝‍🧑🏽 people holding hands: medium skin tone
-1F9D1 1F3FE 200D 1F91D 200D 1F9D1 1F3FB    ; fully-qualified     # 🧑🏾‍🤝‍🧑🏻 people holding hands: medium-dark skin tone, light skin tone
-1F9D1 1F3FE 200D 1F91D 200D 1F9D1 1F3FC    ; fully-qualified     # 🧑🏾‍🤝‍🧑🏼 people holding hands: medium-dark skin tone, medium-light skin tone
-1F9D1 1F3FE 200D 1F91D 200D 1F9D1 1F3FD    ; fully-qualified     # 🧑🏾‍🤝‍🧑🏽 people holding hands: medium-dark skin tone, medium skin tone
 1F9D1 1F3FE 200D 1F91D 200D 1F9D1 1F3FE    ; fully-qualified     # 🧑🏾‍🤝‍🧑🏾 people holding hands: medium-dark skin tone
-1F9D1 1F3FF 200D 1F91D 200D 1F9D1 1F3FB    ; fully-qualified     # 🧑🏿‍🤝‍🧑🏻 people holding hands: dark skin tone, light skin tone
-1F9D1 1F3FF 200D 1F91D 200D 1F9D1 1F3FC    ; fully-qualified     # 🧑🏿‍🤝‍🧑🏼 people holding hands: dark skin tone, medium-light skin tone
-1F9D1 1F3FF 200D 1F91D 200D 1F9D1 1F3FD    ; fully-qualified     # 🧑🏿‍🤝‍🧑🏽 people holding hands: dark skin tone, medium skin tone
-1F9D1 1F3FF 200D 1F91D 200D 1F9D1 1F3FE    ; fully-qualified     # 🧑🏿‍🤝‍🧑🏾 people holding hands: dark skin tone, medium-dark skin tone
 1F9D1 1F3FF 200D 1F91D 200D 1F9D1 1F3FF    ; fully-qualified     # 🧑🏿‍🤝‍🧑🏿 people holding hands: dark skin tone
 1F46D                                      ; fully-qualified     # 👭 women holding hands
 1F46D 1F3FB                                ; fully-qualified     # 👭🏻 women holding hands: light skin tone
+1F469 1F3FB 200D 1F91D 200D 1F469 1F3FC    ; fully-qualified     # 👩🏻‍🤝‍👩🏼 women holding hands: light skin tone, medium-light skin tone
+1F469 1F3FB 200D 1F91D 200D 1F469 1F3FD    ; fully-qualified     # 👩🏻‍🤝‍👩🏽 women holding hands: light skin tone, medium skin tone
+1F469 1F3FB 200D 1F91D 200D 1F469 1F3FE    ; fully-qualified     # 👩🏻‍🤝‍👩🏾 women holding hands: light skin tone, medium-dark skin tone
+1F469 1F3FB 200D 1F91D 200D 1F469 1F3FF    ; fully-qualified     # 👩🏻‍🤝‍👩🏿 women holding hands: light skin tone, dark skin tone
 1F469 1F3FC 200D 1F91D 200D 1F469 1F3FB    ; fully-qualified     # 👩🏼‍🤝‍👩🏻 women holding hands: medium-light skin tone, light skin tone
 1F46D 1F3FC                                ; fully-qualified     # 👭🏼 women holding hands: medium-light skin tone
+1F469 1F3FC 200D 1F91D 200D 1F469 1F3FD    ; fully-qualified     # 👩🏼‍🤝‍👩🏽 women holding hands: medium-light skin tone, medium skin tone
+1F469 1F3FC 200D 1F91D 200D 1F469 1F3FE    ; fully-qualified     # 👩🏼‍🤝‍👩🏾 women holding hands: medium-light skin tone, medium-dark skin tone
+1F469 1F3FC 200D 1F91D 200D 1F469 1F3FF    ; fully-qualified     # 👩🏼‍🤝‍👩🏿 women holding hands: medium-light skin tone, dark skin tone
 1F469 1F3FD 200D 1F91D 200D 1F469 1F3FB    ; fully-qualified     # 👩🏽‍🤝‍👩🏻 women holding hands: medium skin tone, light skin tone
 1F469 1F3FD 200D 1F91D 200D 1F469 1F3FC    ; fully-qualified     # 👩🏽‍🤝‍👩🏼 women holding hands: medium skin tone, medium-light skin tone
 1F46D 1F3FD                                ; fully-qualified     # 👭🏽 women holding hands: medium skin tone
+1F469 1F3FD 200D 1F91D 200D 1F469 1F3FE    ; fully-qualified     # 👩🏽‍🤝‍👩🏾 women holding hands: medium skin tone, medium-dark skin tone
+1F469 1F3FD 200D 1F91D 200D 1F469 1F3FF    ; fully-qualified     # 👩🏽‍🤝‍👩🏿 women holding hands: medium skin tone, dark skin tone
 1F469 1F3FE 200D 1F91D 200D 1F469 1F3FB    ; fully-qualified     # 👩🏾‍🤝‍👩🏻 women holding hands: medium-dark skin tone, light skin tone
 1F469 1F3FE 200D 1F91D 200D 1F469 1F3FC    ; fully-qualified     # 👩🏾‍🤝‍👩🏼 women holding hands: medium-dark skin tone, medium-light skin tone
 1F469 1F3FE 200D 1F91D 200D 1F469 1F3FD    ; fully-qualified     # 👩🏾‍🤝‍👩🏽 women holding hands: medium-dark skin tone, medium skin tone
 1F46D 1F3FE                                ; fully-qualified     # 👭🏾 women holding hands: medium-dark skin tone
+1F469 1F3FE 200D 1F91D 200D 1F469 1F3FF    ; fully-qualified     # 👩🏾‍🤝‍👩🏿 women holding hands: medium-dark skin tone, dark skin tone
 1F469 1F3FF 200D 1F91D 200D 1F469 1F3FB    ; fully-qualified     # 👩🏿‍🤝‍👩🏻 women holding hands: dark skin tone, light skin tone
 1F469 1F3FF 200D 1F91D 200D 1F469 1F3FC    ; fully-qualified     # 👩🏿‍🤝‍👩🏼 women holding hands: dark skin tone, medium-light skin tone
 1F469 1F3FF 200D 1F91D 200D 1F469 1F3FD    ; fully-qualified     # 👩🏿‍🤝‍👩🏽 women holding hands: dark skin tone, medium skin tone
@@ -2528,23 +2604,54 @@
 1F469 1F3FF 200D 1F91D 200D 1F468 1F3FE    ; fully-qualified     # 👩🏿‍🤝‍👨🏾 woman and man holding hands: dark skin tone, medium-dark skin tone
 1F46B 1F3FF                                ; fully-qualified     # 👫🏿 woman and man holding hands: dark skin tone
 1F46C                                      ; fully-qualified     # 👬 men holding hands
+1F9D1 200D 1F91D 200D 1F9D1                ; fully-qualified     # 🧑‍🤝‍🧑 people holding hands
+1F9D1 1F3FB 200D 1F91D 200D 1F9D1 1F3FC    ; fully-qualified     # 🧑🏻‍🤝‍🧑🏼 people holding hands: light skin tone, medium-light skin tone
+1F9D1 1F3FB 200D 1F91D 200D 1F9D1 1F3FD    ; fully-qualified     # 🧑🏻‍🤝‍🧑🏽 people holding hands: light skin tone, medium skin tone
+1F9D1 1F3FB 200D 1F91D 200D 1F9D1 1F3FE    ; fully-qualified     # 🧑🏻‍🤝‍🧑🏾 people holding hands: light skin tone, medium-dark skin tone
+1F9D1 1F3FB 200D 1F91D 200D 1F9D1 1F3FF    ; fully-qualified     # 🧑🏻‍🤝‍🧑🏿 people holding hands: light skin tone, dark skin tone
+1F9D1 1F3FC 200D 1F91D 200D 1F9D1 1F3FB    ; fully-qualified     # 🧑🏼‍🤝‍🧑🏻 people holding hands: medium-light skin tone, light skin tone
+1F9D1 1F3FC 200D 1F91D 200D 1F9D1 1F3FD    ; fully-qualified     # 🧑🏼‍🤝‍🧑🏽 people holding hands: medium-light skin tone, medium skin tone
+1F9D1 1F3FC 200D 1F91D 200D 1F9D1 1F3FE    ; fully-qualified     # 🧑🏼‍🤝‍🧑🏾 people holding hands: medium-light skin tone, medium-dark skin tone
+1F9D1 1F3FC 200D 1F91D 200D 1F9D1 1F3FF    ; fully-qualified     # 🧑🏼‍🤝‍🧑🏿 people holding hands: medium-light skin tone, dark skin tone
+1F9D1 1F3FD 200D 1F91D 200D 1F9D1 1F3FB    ; fully-qualified     # 🧑🏽‍🤝‍🧑🏻 people holding hands: medium skin tone, light skin tone
+1F9D1 1F3FD 200D 1F91D 200D 1F9D1 1F3FC    ; fully-qualified     # 🧑🏽‍🤝‍🧑🏼 people holding hands: medium skin tone, medium-light skin tone
+1F9D1 1F3FD 200D 1F91D 200D 1F9D1 1F3FE    ; fully-qualified     # 🧑🏽‍🤝‍🧑🏾 people holding hands: medium skin tone, medium-dark skin tone
+1F9D1 1F3FD 200D 1F91D 200D 1F9D1 1F3FF    ; fully-qualified     # 🧑🏽‍🤝‍🧑🏿 people holding hands: medium skin tone, dark skin tone
+1F9D1 1F3FE 200D 1F91D 200D 1F9D1 1F3FB    ; fully-qualified     # 🧑🏾‍🤝‍🧑🏻 people holding hands: medium-dark skin tone, light skin tone
+1F9D1 1F3FE 200D 1F91D 200D 1F9D1 1F3FC    ; fully-qualified     # 🧑🏾‍🤝‍🧑🏼 people holding hands: medium-dark skin tone, medium-light skin tone
+1F9D1 1F3FE 200D 1F91D 200D 1F9D1 1F3FD    ; fully-qualified     # 🧑🏾‍🤝‍🧑🏽 people holding hands: medium-dark skin tone, medium skin tone
+1F9D1 1F3FE 200D 1F91D 200D 1F9D1 1F3FF    ; fully-qualified     # 🧑🏾‍🤝‍🧑🏿 people holding hands: medium-dark skin tone, dark skin tone
+1F9D1 1F3FF 200D 1F91D 200D 1F9D1 1F3FB    ; fully-qualified     # 🧑🏿‍🤝‍🧑🏻 people holding hands: dark skin tone, light skin tone
+1F9D1 1F3FF 200D 1F91D 200D 1F9D1 1F3FC    ; fully-qualified     # 🧑🏿‍🤝‍🧑🏼 people holding hands: dark skin tone, medium-light skin tone
+1F9D1 1F3FF 200D 1F91D 200D 1F9D1 1F3FD    ; fully-qualified     # 🧑🏿‍🤝‍🧑🏽 people holding hands: dark skin tone, medium skin tone
+1F9D1 1F3FF 200D 1F91D 200D 1F9D1 1F3FE    ; fully-qualified     # 🧑🏿‍🤝‍🧑🏾 people holding hands: dark skin tone, medium-dark skin tone
 1F46C 1F3FB                                ; fully-qualified     # 👬🏻 men holding hands: light skin tone
+1F468 1F3FB 200D 1F91D 200D 1F468 1F3FC    ; fully-qualified     # 👨🏻‍🤝‍👨🏼 men holding hands: light skin tone, medium-light skin tone
+1F468 1F3FB 200D 1F91D 200D 1F468 1F3FD    ; fully-qualified     # 👨🏻‍🤝‍👨🏽 men holding hands: light skin tone, medium skin tone
+1F468 1F3FB 200D 1F91D 200D 1F468 1F3FE    ; fully-qualified     # 👨🏻‍🤝‍👨🏾 men holding hands: light skin tone, medium-dark skin tone
+1F468 1F3FB 200D 1F91D 200D 1F468 1F3FF    ; fully-qualified     # 👨🏻‍🤝‍👨🏿 men holding hands: light skin tone, dark skin tone
 1F468 1F3FC 200D 1F91D 200D 1F468 1F3FB    ; fully-qualified     # 👨🏼‍🤝‍👨🏻 men holding hands: medium-light skin tone, light skin tone
 1F46C 1F3FC                                ; fully-qualified     # 👬🏼 men holding hands: medium-light skin tone
+1F468 1F3FC 200D 1F91D 200D 1F468 1F3FD    ; fully-qualified     # 👨🏼‍🤝‍👨🏽 men holding hands: medium-light skin tone, medium skin tone
+1F468 1F3FC 200D 1F91D 200D 1F468 1F3FE    ; fully-qualified     # 👨🏼‍🤝‍👨🏾 men holding hands: medium-light skin tone, medium-dark skin tone
+1F468 1F3FC 200D 1F91D 200D 1F468 1F3FF    ; fully-qualified     # 👨🏼‍🤝‍👨🏿 men holding hands: medium-light skin tone, dark skin tone
 1F468 1F3FD 200D 1F91D 200D 1F468 1F3FB    ; fully-qualified     # 👨🏽‍🤝‍👨🏻 men holding hands: medium skin tone, light skin tone
 1F468 1F3FD 200D 1F91D 200D 1F468 1F3FC    ; fully-qualified     # 👨🏽‍🤝‍👨🏼 men holding hands: medium skin tone, medium-light skin tone
 1F46C 1F3FD                                ; fully-qualified     # 👬🏽 men holding hands: medium skin tone
+1F468 1F3FD 200D 1F91D 200D 1F468 1F3FE    ; fully-qualified     # 👨🏽‍🤝‍👨🏾 men holding hands: medium skin tone, medium-dark skin tone
+1F468 1F3FD 200D 1F91D 200D 1F468 1F3FF    ; fully-qualified     # 👨🏽‍🤝‍👨🏿 men holding hands: medium skin tone, dark skin tone
 1F468 1F3FE 200D 1F91D 200D 1F468 1F3FB    ; fully-qualified     # 👨🏾‍🤝‍👨🏻 men holding hands: medium-dark skin tone, light skin tone
 1F468 1F3FE 200D 1F91D 200D 1F468 1F3FC    ; fully-qualified     # 👨🏾‍🤝‍👨🏼 men holding hands: medium-dark skin tone, medium-light skin tone
 1F468 1F3FE 200D 1F91D 200D 1F468 1F3FD    ; fully-qualified     # 👨🏾‍🤝‍👨🏽 men holding hands: medium-dark skin tone, medium skin tone
 1F46C 1F3FE                                ; fully-qualified     # 👬🏾 men holding hands: medium-dark skin tone
+1F468 1F3FE 200D 1F91D 200D 1F468 1F3FF    ; fully-qualified     # 👨🏾‍🤝‍👨🏿 men holding hands: medium-dark skin tone, dark skin tone
 1F468 1F3FF 200D 1F91D 200D 1F468 1F3FB    ; fully-qualified     # 👨🏿‍🤝‍👨🏻 men holding hands: dark skin tone, light skin tone
 1F468 1F3FF 200D 1F91D 200D 1F468 1F3FC    ; fully-qualified     # 👨🏿‍🤝‍👨🏼 men holding hands: dark skin tone, medium-light skin tone
 1F468 1F3FF 200D 1F91D 200D 1F468 1F3FD    ; fully-qualified     # 👨🏿‍🤝‍👨🏽 men holding hands: dark skin tone, medium skin tone
 1F468 1F3FF 200D 1F91D 200D 1F468 1F3FE    ; fully-qualified     # 👨🏿‍🤝‍👨🏾 men holding hands: dark skin tone, medium-dark skin tone
 1F46C 1F3FF                                ; fully-qualified     # 👬🏿 men holding hands: dark skin tone
 1F48F                                      ; fully-qualified     # 💏 kiss
-1F469 200D 2764 FE0F 200D 1F48B 200D 1F468 ; fully-qualified     # 👩‍❤️‍💋‍👨 kiss: woman, man
+1F469 200D 2764 FE0F 200D 1F48B 200D 1F468 ; fully-qualified     # 👩‍❤️‍����‍👨 kiss: woman, man
 1F469 200D 2764 200D 1F48B 200D 1F468      ; minimally-qualified # 👩‍❤‍💋‍👨 kiss: woman, man
 1F468 200D 2764 FE0F 200D 1F48B 200D 1F468 ; fully-qualified     # 👨‍❤️‍💋‍👨 kiss: man, man
 1F468 200D 2764 200D 1F48B 200D 1F468      ; minimally-qualified # 👨‍❤‍💋‍👨 kiss: man, man
@@ -2624,6 +2731,7 @@
 1F99D                                      ; fully-qualified     # 🦝 raccoon
 1F431                                      ; fully-qualified     # 🐱 cat face
 1F408                                      ; fully-qualified     # 🐈 cat
+1F408 200D 2B1B                            ; fully-qualified     # 🐈‍⬛ black cat
 1F981                                      ; fully-qualified     # 🦁 lion
 1F42F                                      ; fully-qualified     # 🐯 tiger face
 1F405                                      ; fully-qualified     # 🐅 tiger
@@ -2665,6 +2773,8 @@
 1F994                                      ; fully-qualified     # 🦔 hedgehog
 1F987                                      ; fully-qualified     # 🦇 bat
 1F43B                                      ; fully-qualified     # 🐻 bear
+1F43B 200D 2744 FE0F                       ; fully-qualified     # 🐻‍❄️ polar bear
+1F43B 200D 2744                            ; minimally-qualified # 🐻‍❄ polar bear
 1F428                                      ; fully-qualified     # 🐨 koala
 1F43C                                      ; fully-qualified     # 🐼 panda
 1F9A5                                      ; fully-qualified     # 🦥 sloth
@@ -3264,7 +3374,15 @@
 26F3                                       ; fully-qualified     # ⛳ flag in hole
 26F8 FE0F                                  ; fully-qualified     # ⛸️ ice skate
 26F8                                       ; unqualified         # ⛸ ice skate
+
+# group: Travel & Places
+
+# subgroup: transport-ground
 1F6FC                                      ; fully-qualified     # 🛼 roller skate
+
+# group: Activities
+
+# subgroup: sport
 1F3A3                                      ; fully-qualified     # 🎣 fishing pole
 1F93F                                      ; fully-qualified     # 🤿 diving mask
 1F3BD                                      ; fully-qualified     # 🎽 running shirt
