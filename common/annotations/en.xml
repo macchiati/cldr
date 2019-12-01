@@ -3004,9 +3004,9 @@ annotations.
 		<annotation cp="👩‍🍼" type="tts">woman feeding baby</annotation>
 		<annotation cp="👨‍🍼">baby | feeding | man | nursing</annotation> 	<!-- 1F468 200D 1F37C -->
 		<annotation cp="👨‍🍼" type="tts">man feeding baby</annotation>
-		<annotation cp="🧑‍🍼"></annotation> 	<!-- 1F9D1 200D 1F37C -->
+		<annotation cp="🧑‍🍼">baby, feeding, nursing, person</annotation> 	<!-- 1F9D1 200D 1F37C -->
 		<annotation cp="🧑‍🍼" type="tts">person feeding baby</annotation>
-		<annotation cp="🧑‍🎄"></annotation> 	<!-- 1F9D1 200D 1F384 -->
+		<annotation cp="🧑‍🎄">Claus, christmas</annotation> 	<!-- 1F9D1 200D 1F384 -->
 		<annotation cp="🧑‍🎄" type="tts">mx claus</annotation>
 		<annotation cp="🐈‍⬛">black | cat | unlucky</annotation> 	<!-- 1F408 200D 2B1B -->
 		<annotation cp="🐈‍⬛" type="tts">black cat</annotation>
