@@ -1451,6 +1451,7 @@ public abstract class XMLSource implements Freezable<XMLSource>, Iterable<String
             // }
 
             String[] extraCodes = { 
+                "fa_AF", 
                 "ar_001", 
                 "de_AT", "de_CH", 
                 "en_AU", "en_CA", "en_GB", "en_US", "es_419", "es_ES", "es_MX",

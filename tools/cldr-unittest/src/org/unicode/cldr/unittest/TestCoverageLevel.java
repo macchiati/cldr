@@ -658,4 +658,24 @@ public class TestCoverageLevel extends TestFmwkPlus {
             ++count;
         }
     }
+    
+    public void test_fa_AF() {
+        final String locale = "fa_AF";
+        
+        check_fa_AF(locale, "root");
+        check_fa_AF(locale, "en");
+        check_fa_AF(locale, "fr");
+    }
+
+    private void check_fa_AF(final String locale, final String inLocaleID) {
+        String fa_AF_path = "//ldml/localeDisplayNames/languages/language[@type=\""
+            + locale
+            + "\"]";
+        // System.out.println(fa_AF_path);
+        CLDRFile rootCldrfile = testInfo.getCldrFactory().make(inLocaleID, false);
+        
+        assertNotNull(inLocaleID + " language name for " + locale, rootCldrfile.getStringValue(fa_AF_path));
+        Level level = testInfo.getSupplementalDataInfo().getCoverageLevel(fa_AF_path, inLocaleID);
+        assertEquals(inLocaleID + " level for language Name for " + locale, Level.MODERN, level);
+    }
 }
