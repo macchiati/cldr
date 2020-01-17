@@ -17,7 +17,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 	</unitConstants>
 	<convertUnits>
 		<convertUnit source='atmosphere' target='kilogram-per-meter-square-second' factor='101325'/>
-		<convertUnit source='one' target='1' factor='1'/>
+		<convertUnit source='one' target='one' factor='1'/>
 		<convertUnit source='byte' target='bit' factor='8'/>
 		<convertUnit source='day' target='second' factor='86400'/>
 		<convertUnit source='day-person' target='second' factor='86400'/>
