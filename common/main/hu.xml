@@ -564,7 +564,6 @@ Warnings: All cp values have U+FE0F characters removed. See /annotationsDerived/
 			<language type="zza">zaza</language>
 		</languages>
 		<scripts>
-			<script type="Arab">Arab</script>
 			<script type="Arab" alt="variant">Perzsa-arab</script>
 			<script type="Aran" draft="contributed">Nasztalik</script>
 			<script type="Armi">Birodalmi arámi</script>

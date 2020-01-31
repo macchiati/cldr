@@ -588,7 +588,6 @@ Warnings: All cp values have U+FE0F characters removed. See /annotationsDerived/
 		<scripts>
 			<script type="Afak">Afaka</script>
 			<script type="Aghb">Albania Kaukasia</script>
-			<script type="Arab">Arab</script>
 			<script type="Arab" alt="variant">Arab Persia</script>
 			<script type="Aran" draft="contributed">Nastaliq</script>
 			<script type="Armi">Aram Imperial</script>
