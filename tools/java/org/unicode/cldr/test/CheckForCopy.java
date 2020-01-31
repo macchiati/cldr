@@ -21,7 +21,7 @@ import com.ibm.icu.util.ICUException;
 
 public class CheckForCopy extends FactoryCheckCLDR {
 
-    private static final boolean DEBUG = CldrUtility.getProperty("DEBUG", false);
+    private static final boolean DEBUG = CldrUtility.getProperty("CheckForCopy:DEBUG", false);
 
     public CheckForCopy(Factory factory) {
         super(factory);
@@ -57,7 +57,7 @@ public class CheckForCopy extends FactoryCheckCLDR {
     private static final RegexLookup<Boolean> SKIP_CODE_CHECK = new RegexLookup<Boolean>()
         .add("^//ldml/characterLabels/characterLabel", true)
         .add("^//ldml/dates/fields/field\\[@type=\"(era|week|minute|quarter|second)\"]/displayName", true)
-        .add("^//ldml/localeDisplayNames/scripts/script\\[@type=\"(Jamo|Thai|Ahom|Loma|Moon|Newa)\"]", true)   
+        .add("^//ldml/localeDisplayNames/scripts/script\\[@type=\"(Jamo|Thai|Ahom|Loma|Moon|Newa|Bali|Modi|Cham|Lisu)\"]", true)   
         .add("^//ldml/localeDisplayNames/languages/language\\[@type=\"(fon|gan|luo|tiv|yao|vai)\"]", true)   
         .add("^//ldml/dates/timeZoneNames/metazone\\[@type=\"GMT\"]", true)  
         .add("^//ldml/localeDisplayNames/territories/territory\\[@type=\"[^\"]*+\"]\\[@alt=\"short\"]", true)  
@@ -67,7 +67,7 @@ public class CheckForCopy extends FactoryCheckCLDR {
 
     private static final Set<String> SKIP_TYPES = ImmutableSet.of(
         "CHF", "EUR", "XPD",
-        "Vaii", "Yiii", "Thai",
+        "Vaii", "Yiii", "Thai", "Bali", "Modi", "Cham", "Lisu",
         "SAAHO", "BOONT", "SCOUSE",
         "fon", "ijo", "luo", "tiv", "yao", "zu", "zza", "tw", "ur", "vo", "ha", "hi", "ig", "yo", "ak", "vai",
         "eo", "af",
