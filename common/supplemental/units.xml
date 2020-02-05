@@ -18,24 +18,23 @@ For terms of use, see http://www.unicode.org/copyright.html
 	</unitConstants>
 	<unitQuantities> 
 		<!-- NB: quantity ordering is used in canonical order of derived units. -->
-		<!-- TODO: add type="simple" where appropriate (non-derived) -->
 		<!--  SI Base Units -->
-        <unitQuantity baseUnit='candela' quantity='luminous-intensity'/>
-        <unitQuantity baseUnit='kilogram' quantity='mass'/>
-        <unitQuantity baseUnit='meter' quantity='length'/>
-		<unitQuantity baseUnit='second' quantity='time'/>
-        <unitQuantity baseUnit='year' quantity='year-duration'/> <!-- non-SI but here for ordering -->
-        <unitQuantity baseUnit='ampere' quantity='electric-current'/>
-        <unitQuantity baseUnit='kelvin' quantity='temperature'/>
+        <unitQuantity baseUnit='candela' quantity='luminous-intensity' status='simple'/>
+        <unitQuantity baseUnit='kilogram' quantity='mass' status='simple'/>
+        <unitQuantity baseUnit='meter' quantity='length' status='simple'/>
+		<unitQuantity baseUnit='second' quantity='time' status='simple'/>
+        <unitQuantity baseUnit='year' quantity='year-duration' status='simple'/> <!-- non-SI but here for ordering -->
+        <unitQuantity baseUnit='ampere' quantity='electric-current' status='simple'/>
+        <unitQuantity baseUnit='kelvin' quantity='temperature' status='simple'/>
         
         <!-- Additional base units -->
         
-        <unitQuantity baseUnit='revolution' quantity='angle'/> <!-- = circle, cycle for base -->
-        <unitQuantity baseUnit='item' quantity='substance-amount'/> <!-- use instead of mole -->
-        <unitQuantity baseUnit='portion' quantity='portion'/>
-        <unitQuantity baseUnit='bit' quantity='digital'/>
-        <unitQuantity baseUnit='pixel' quantity='graphics'/>
-        <unitQuantity baseUnit='em' quantity='typewidth'/>
+        <unitQuantity baseUnit='revolution' quantity='angle' status='simple'/> <!-- = circle, cycle for base -->
+        <unitQuantity baseUnit='item' quantity='substance-amount' status='simple'/> <!-- use instead of mole -->
+        <unitQuantity baseUnit='portion' quantity='portion' status='simple'/>
+        <unitQuantity baseUnit='bit' quantity='digital' status='simple'/>
+        <unitQuantity baseUnit='pixel' quantity='graphics' status='simple'/>
+        <unitQuantity baseUnit='em' quantity='typewidth' status='simple'/>
         
         <!--  SI Derived Units -->
         
@@ -76,115 +75,115 @@ For terms of use, see http://www.unicode.org/copyright.html
 
 	</unitQuantities>	
 	<convertUnits>
-		<!-- TODO: (a) put in normalized order, (b) add system="US.." where appropriate  -->
-		<convertUnit source='kilogram' target='kilogram'/>
-		<convertUnit source='candela' target='candela'/>
-		<convertUnit source='meter' target='meter'/>
-		<convertUnit source='second' target='second'/>
-		<convertUnit source='year' target='year'/>
-		<convertUnit source='ampere' target='ampere'/>
-		<convertUnit source='kelvin' target='kelvin'/>
-		<convertUnit source='revolution' target='revolution'/>
-		<convertUnit source='item' target='item'/>
-		<convertUnit source='portion' target='portion'/>
-		<convertUnit source='bit' target='bit'/>
-		<convertUnit source='pixel' target='pixel'/>
-		<convertUnit source='em' target='em'/>
+		<!-- TODO: add system="US.." where appropriate  -->
+		<convertUnit source='kilogram' baseUnit='kilogram'/>
+		<convertUnit source='candela' baseUnit='candela'/>
+		<convertUnit source='meter' baseUnit='meter'/>
+		<convertUnit source='second' baseUnit='second'/>
+		<convertUnit source='year' baseUnit='year'/>
+		<convertUnit source='ampere' baseUnit='ampere'/>
+		<convertUnit source='kelvin' baseUnit='kelvin'/>
+		<convertUnit source='revolution' baseUnit='revolution'/>
+		<convertUnit source='item' baseUnit='item'/>
+		<convertUnit source='portion' baseUnit='portion'/>
+		<convertUnit source='bit' baseUnit='bit'/>
+		<convertUnit source='pixel' baseUnit='pixel'/>
+		<convertUnit source='em' baseUnit='em'/>
 
 		<!-- Values where possible from NIST Special Publication 1038 
 		https://www.govinfo.gov/content/pkg/GOVPUB-C13-f10c2ff9e7af2091314396a2d53213e4/pdf/GOVPUB-C13-f10c2ff9e7af2091314396a2d53213e4.pdf -->
-		<convertUnit source='atmosphere' target='kilogram-per-meter-square-second' factor='101325'/>
-		<convertUnit source='byte' target='bit' factor='8'/>
-		<convertUnit source='day' target='second' factor='86400'/>
-		<convertUnit source='day-person' target='second' factor='86400'/>
-		<convertUnit source='hour' target='second' factor='3600'/>
-		<convertUnit source='minute' target='second' factor='60'/>
-		<convertUnit source='week' target='second' factor='604800'/>
-		<convertUnit source='week-person' target='second' factor='604800'/>
-		<convertUnit source='ohm' target='kilogram-square-meter-per-cubic-second-square-ampere' factor='1'/>
-		<convertUnit source='volt' target='kilogram-square-meter-per-cubic-second-ampere' factor='1'/>
-		<convertUnit source='light-year' target='meter' factor='9460730000000000'/>
-		<convertUnit source='parsec' target='meter' factor='30856780000000000'/>
-		<convertUnit source='g-force' target='meter-per-square-second' factor='gravity'/>
-		<convertUnit source='degree' target='revolution' factor='1/360'/>
-		<convertUnit source='arc-minute' target='revolution' factor='1/360*60'/>
-		<convertUnit source='arc-second' target='revolution' factor='1/360*60*60'/>
-		<convertUnit source='radian' target='revolution' factor='1/2*PI'/>
-		<convertUnit source='mole' target='item' factor='6.02214076E+23'/>
-		<convertUnit source='percent' target='portion' factor='1/100'/>
-		<convertUnit source='permille' target='portion' factor='1/1000'/>
-		<convertUnit source='permyriad' target='portion' factor='1/10000'/>
-		<convertUnit source='calorie' target='kilogram-square-meter-per-square-second' factor='4.184'/>
-		<convertUnit source='electronvolt' target='kilogram-square-meter-per-square-second' factor='1.602177E-19'/>
-		<convertUnit source='foodcalorie' target='kilogram-square-meter-per-square-second' factor='4184'/>
-		<convertUnit source='hertz' target='revolution-per-second' factor='1'/>
-		<convertUnit source='astronomical-unit' target='meter' factor='149597900000'/>
-		<convertUnit source='acre' target='square-meter' factor='ft2m^2 * 43560'/>
-		<convertUnit source='therm-us' target='kilogram-square-meter-per-square-second' factor='105506000'/>
-		<convertUnit source='pound-force' target='kilogram-meter-per-square-second' factor='lb2kg * gravity'/>
-		<convertUnit source='fathom' target='meter' factor='ft2m * 6'/>
-		<convertUnit source='foot' target='meter' factor='ft2m'/>
-		<convertUnit source='furlong' target='meter' factor='ft2m*660'/>
-		<convertUnit source='inch' target='meter' factor='ft2m/12'/>
-		<convertUnit source='mile' target='meter' factor='ft2m*5280'/>
-		<convertUnit source='nautical-mile' target='meter' factor='1852'/>
-		<convertUnit source='yard' target='meter' factor='ft2m*3'/>
-		<convertUnit source='100-kilometer' target='meter' factor='100000'/>
-		<convertUnit source='ounce' target='kilogram' factor='lb2kg/16'/>
-		<convertUnit source='ounce-troy' target='kilogram' factor='0.03110348'/>
-		<convertUnit source='pound' target='kilogram' factor='lb2kg'/>
-		<convertUnit source='stone' target='kilogram' factor='lb2kg*14'/>
-		<convertUnit source='ton' target='kilogram' factor='lb2kg*2000'/>
+		<convertUnit source='atmosphere' baseUnit='kilogram-per-meter-square-second' factor='101325'/>
+		<convertUnit source='byte' baseUnit='bit' factor='8'/>
+		<convertUnit source='day' baseUnit='second' factor='86400'/>
+		<convertUnit source='day-person' baseUnit='second' factor='86400'/>
+		<convertUnit source='hour' baseUnit='second' factor='3600'/>
+		<convertUnit source='minute' baseUnit='second' factor='60'/>
+		<convertUnit source='week' baseUnit='second' factor='604800'/>
+		<convertUnit source='week-person' baseUnit='second' factor='604800'/>
+		<convertUnit source='ohm' baseUnit='kilogram-square-meter-per-cubic-second-square-ampere' factor='1'/>
+		<convertUnit source='volt' baseUnit='kilogram-square-meter-per-cubic-second-ampere' factor='1'/>
+		<convertUnit source='light-year' baseUnit='meter' factor='9460730000000000'/>
+		<convertUnit source='parsec' baseUnit='meter' factor='30856780000000000'/>
+		<convertUnit source='g-force' baseUnit='meter-per-square-second' factor='gravity'/>
+		<convertUnit source='degree' baseUnit='revolution' factor='1/360'/>
+		<convertUnit source='arc-minute' baseUnit='revolution' factor='1/360*60'/>
+		<convertUnit source='arc-second' baseUnit='revolution' factor='1/360*60*60'/>
+		<convertUnit source='radian' baseUnit='revolution' factor='1/2*PI'/>
+		<convertUnit source='mole' baseUnit='item' factor='6.02214076E+23'/>
+		<convertUnit source='percent' baseUnit='portion' factor='1/100'/>
+		<convertUnit source='permille' baseUnit='portion' factor='1/1000'/>
+		<convertUnit source='permyriad' baseUnit='portion' factor='1/10000'/>
+		<convertUnit source='calorie' baseUnit='kilogram-square-meter-per-square-second' factor='4.184'/>
+		<convertUnit source='electronvolt' baseUnit='kilogram-square-meter-per-square-second' factor='1.602177E-19'/>
+		<convertUnit source='foodcalorie' baseUnit='kilogram-square-meter-per-square-second' factor='4184'/>
+		<convertUnit source='hertz' baseUnit='revolution-per-second' factor='1'/>
+		<convertUnit source='astronomical-unit' baseUnit='meter' factor='149597900000'/>
+		<convertUnit source='acre' baseUnit='square-meter' factor='ft2m^2 * 43560'/>
+		<convertUnit source='therm-us' baseUnit='kilogram-square-meter-per-square-second' factor='105506000'/>
+		<convertUnit source='pound-force' baseUnit='kilogram-meter-per-square-second' factor='lb2kg * gravity'/>
+		<convertUnit source='fathom' baseUnit='meter' factor='ft2m * 6'/>
+		<convertUnit source='foot' baseUnit='meter' factor='ft2m'/>
+		<convertUnit source='furlong' baseUnit='meter' factor='ft2m*660'/>
+		<convertUnit source='inch' baseUnit='meter' factor='ft2m/12'/>
+		<convertUnit source='mile' baseUnit='meter' factor='ft2m*5280'/>
+		<convertUnit source='nautical-mile' baseUnit='meter' factor='1852'/>
+		<convertUnit source='yard' baseUnit='meter' factor='ft2m*3'/>
+		<convertUnit source='100-kilometer' baseUnit='meter' factor='100000'/>
+		<convertUnit source='ounce' baseUnit='kilogram' factor='lb2kg/16'/>
+		<convertUnit source='ounce-troy' baseUnit='kilogram' factor='0.03110348'/>
+		<convertUnit source='pound' baseUnit='kilogram' factor='lb2kg'/>
+		<convertUnit source='stone' baseUnit='kilogram' factor='lb2kg*14'/>
+		<convertUnit source='ton' baseUnit='kilogram' factor='lb2kg*2000'/>
 		
-		<convertUnit source='horsepower' target='kilogram-square-meter-per-cubic-second' factor='ft2m * lb2kg * gravity * 550'/>
-		<convertUnit source='inch-hg' target='kilogram-per-meter-square-second' factor='3386.389'/>
-		<convertUnit source='knot' target='meter-per-second' factor='1852/3600'/>
-		<convertUnit source='fahrenheit' target='kelvin' factor='5/9' offset='2298.35/9'/>
-		<convertUnit source='barrel' target='cubic-meter' factor='cup2m3 * 672'/>
-		<convertUnit source='bushel' target='cubic-meter' factor='0.03523907'/>
-		<convertUnit source='cup' target='cubic-meter' factor='cup2m3'/>
-		<convertUnit source='fluid-ounce' target='cubic-meter' factor='cup2m3/8'/>
-		<convertUnit source='gallon' target='cubic-meter' factor='cup2m3*16'/>
-		<convertUnit source='tablespoon' target='cubic-meter' factor='cup2m3/16'/>
-		<convertUnit source='teaspoon' target='cubic-meter' factor='cup2m3/48'/>
-		<convertUnit source='karat' target='portion' factor='1/24'/>
-		<convertUnit source='pint' target='cubic-meter' factor='cup2m3 * 2'/>
-		<convertUnit source='quart' target='cubic-meter' factor='cup2m3 * 4'/>
-		<convertUnit source='fluid-ounce-imperial' target='cubic-meter' factor='0.00002841306'/>
-		<convertUnit source='gallon-imperial' target='cubic-meter' factor='0.00454609'/>
-		<convertUnit source='dunam' target='square-meter' factor='1000'/>
-		<convertUnit source='mile-scandinavian' target='meter' factor='10000'/>
-		<convertUnit source='hectare' target='square-meter' factor='10000'/>
-		<convertUnit source='joule' target='kilogram-square-meter-per-square-second' factor='1'/>
-		<convertUnit source='newton' target='kilogram-meter-per-square-second' factor='1'/>
-		<convertUnit source='carat' target='kilogram' factor='0.0002'/>
-		<convertUnit source='gram' target='kilogram' factor='0.001'/>
-		<convertUnit source='metric-ton' target='kilogram' factor='1000'/>
-		<convertUnit source='watt' target='kilogram-square-meter-per-cubic-second' factor='1'/>
-		<convertUnit source='bar' target='kilogram-per-meter-square-second' factor='100000'/>
-		<convertUnit source='pascal' target='kilogram-per-meter-square-second' factor='1'/>
-		<convertUnit source='celsius' target='kelvin' factor='1' offset='-273.15'/>
-		<convertUnit source='cup-metric' target='cubic-meter' factor='0.00025'/>
-		<convertUnit source='liter' target='cubic-meter' factor='0.001'/>
-		<convertUnit source='pint-metric' target='cubic-meter' factor='0.0005'/>
-		<convertUnit source='centimeter' target='meter' factor='1/100'/>
-		<convertUnit source='century' target='year' factor='100'/>
-		<convertUnit source='decade' target='year' factor='10'/>
-		<convertUnit source='dot' target='pixel' factor='100'/>
-		<convertUnit source='month' target='year' factor='12'/>
-		<convertUnit source='month-person' target='year' factor='12'/>
-		<convertUnit source='solar-luminosity' target='kilogram-square-meter-per-cubic-second' factor='3.828E+26'/>
-		<convertUnit source='solar-radius' target='meter' factor='1.3271244E20/G'/> <!-- https://arxiv.org/pdf/1510.07674.pdf -->
-		<convertUnit source='earth-radius' target='meter' factor='6.3781E6'/> <!-- https://arxiv.org/pdf/1510.07674.pdf -->
-		<convertUnit source='solar-mass' target='kilogram' factor='1.98847E+30'/> <!-- https://arxiv.org/pdf/1510.07674.pdf -->
-		<convertUnit source='earth-mass' target='kilogram' factor='5.9722E+24'/>  <!-- https://arxiv.org/pdf/1510.07674.pdf -->
-		<convertUnit source='year-person' target='year' factor='1'/>
-		<convertUnit source='part-per-million' target='portion' factor='1/1000000'/>
-		<convertUnit source='millimeter-of-mercury' target='kilogram-per-meter-square-second' factor='10132500/760000'/>
-		<convertUnit source='british-thermal-unit' target='kilogram-square-meter-per-square-second' factor='1055.06'/>
-		<convertUnit source='point' target='meter' factor='ft2m/864'/>
-		<convertUnit source='dalton' target='kilogram-square-meter-per-square-second' factor='1.49241808560E-10'/> <!-- https://physics.nist.gov/cgi-bin/cuu/Value?uj -->
-		<convertUnit source='lux' target='candela-square-meter-per-square-meter' factor='1'/>
+		<convertUnit source='horsepower' baseUnit='kilogram-square-meter-per-cubic-second' factor='ft2m * lb2kg * gravity * 550'/>
+		<convertUnit source='inch-hg' baseUnit='kilogram-per-meter-square-second' factor='3386.389'/>
+		<convertUnit source='knot' baseUnit='meter-per-second' factor='1852/3600'/>
+		<convertUnit source='fahrenheit' baseUnit='kelvin' factor='5/9' offset='2298.35/9'/>
+		<convertUnit source='barrel' baseUnit='cubic-meter' factor='cup2m3 * 672'/>
+		<convertUnit source='bushel' baseUnit='cubic-meter' factor='0.03523907'/>
+		<convertUnit source='cup' baseUnit='cubic-meter' factor='cup2m3'/>
+		<convertUnit source='fluid-ounce' baseUnit='cubic-meter' factor='cup2m3/8'/>
+		<convertUnit source='gallon' baseUnit='cubic-meter' factor='cup2m3*16'/>
+		<convertUnit source='tablespoon' baseUnit='cubic-meter' factor='cup2m3/16'/>
+		<convertUnit source='teaspoon' baseUnit='cubic-meter' factor='cup2m3/48'/>
+		<convertUnit source='karat' baseUnit='portion' factor='1/24'/>
+		<convertUnit source='pint' baseUnit='cubic-meter' factor='cup2m3 * 2'/>
+		<convertUnit source='quart' baseUnit='cubic-meter' factor='cup2m3 * 4'/>
+		<convertUnit source='fluid-ounce-imperial' baseUnit='cubic-meter' factor='0.00002841306'/>
+		<convertUnit source='gallon-imperial' baseUnit='cubic-meter' factor='0.00454609'/>
+		<convertUnit source='dunam' baseUnit='square-meter' factor='1000'/>
+		<convertUnit source='mile-scandinavian' baseUnit='meter' factor='10000'/>
+		<convertUnit source='hectare' baseUnit='square-meter' factor='10000'/>
+		<convertUnit source='joule' baseUnit='kilogram-square-meter-per-square-second' factor='1'/>
+		<convertUnit source='newton' baseUnit='kilogram-meter-per-square-second' factor='1'/>
+		<convertUnit source='carat' baseUnit='kilogram' factor='0.0002'/>
+		<convertUnit source='gram' baseUnit='kilogram' factor='0.001'/>
+		<convertUnit source='metric-ton' baseUnit='kilogram' factor='1000'/>
+		<convertUnit source='watt' baseUnit='kilogram-square-meter-per-cubic-second' factor='1'/>
+		<convertUnit source='bar' baseUnit='kilogram-per-meter-square-second' factor='100000'/>
+		<convertUnit source='pascal' baseUnit='kilogram-per-meter-square-second' factor='1'/>
+		<convertUnit source='celsius' baseUnit='kelvin' factor='1' offset='-273.15'/>
+		<convertUnit source='cup-metric' baseUnit='cubic-meter' factor='0.00025'/>
+		<convertUnit source='liter' baseUnit='cubic-meter' factor='0.001'/>
+		<convertUnit source='pint-metric' baseUnit='cubic-meter' factor='0.0005'/>
+		<convertUnit source='centimeter' baseUnit='meter' factor='1/100'/>
+		<convertUnit source='century' baseUnit='year' factor='100'/>
+		<convertUnit source='decade' baseUnit='year' factor='10'/>
+		<convertUnit source='dot' baseUnit='pixel' factor='100'/>
+		<convertUnit source='month' baseUnit='year' factor='12'/>
+		<convertUnit source='month-person' baseUnit='year' factor='12'/>
+		<convertUnit source='solar-luminosity' baseUnit='kilogram-square-meter-per-cubic-second' factor='3.828E+26'/>
+		<convertUnit source='solar-radius' baseUnit='meter' factor='1.3271244E20/G'/> <!-- https://arxiv.org/pdf/1510.07674.pdf -->
+		<convertUnit source='earth-radius' baseUnit='meter' factor='6.3781E6'/> <!-- https://arxiv.org/pdf/1510.07674.pdf -->
+		<convertUnit source='solar-mass' baseUnit='kilogram' factor='1.98847E+30'/> <!-- https://arxiv.org/pdf/1510.07674.pdf -->
+		<convertUnit source='earth-mass' baseUnit='kilogram' factor='5.9722E+24'/>  <!-- https://arxiv.org/pdf/1510.07674.pdf -->
+		<convertUnit source='year-person' baseUnit='year' factor='1'/>
+		<convertUnit source='part-per-million' baseUnit='portion' factor='1/1000000'/>
+		<convertUnit source='millimeter-of-mercury' baseUnit='kilogram-per-meter-square-second' factor='10132500/760000'/>
+		<convertUnit source='british-thermal-unit' baseUnit='kilogram-square-meter-per-square-second' factor='1055.06'/>
+		<convertUnit source='point' baseUnit='meter' factor='ft2m/864'/>
+		<convertUnit source='dalton' baseUnit='kilogram-square-meter-per-square-second' factor='1.49241808560E-10'/> <!-- https://physics.nist.gov/cgi-bin/cuu/Value?uj -->
+		<convertUnit source='lux' baseUnit='candela-square-meter-per-square-meter' factor='1'/>
 	</convertUnits>
     <metadata>
 	    <alias>

@@ -16,6 +16,8 @@ import java.util.TreeMap;
 import org.unicode.cldr.util.Rational.RationalParser;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
@@ -31,18 +33,23 @@ import com.ibm.icu.util.Output;
 public class UnitConverter implements Freezable<UnitConverter> {
 
     static final Splitter BAR_SPLITTER = Splitter.on('-');
-
+    static final Splitter SPACE_SPLITTER = Splitter.on(' ').trimResults().omitEmptyStrings();
+    
     final RationalParser rationalParser;
 
     private Map<String,String> baseUnitToQuantity = new LinkedHashMap<>();
+    private Map<String,String> baseUnitToStatus = new LinkedHashMap<>();
     private Map<String, TargetInfo> sourceToTargetInfo = new TreeMap<>();
     private Multimap<String, String> quantityToSimpleUnits = LinkedHashMultimap.create();
+    private Multimap<String, String> sourceToSystems = LinkedHashMultimap.create();
     private Set<String> baseUnits;
     private Multimap<String, Continuation> continuations = TreeMultimap.create();
     private MapComparator<String> quantityComparator; 
     private Map<String,String> fixDenormalized;
 
     private boolean frozen = false;
+
+    public TargetInfoComparator targetInfoComparator;
 
     /** Warning: ordering is important; determines the normalized output */
     public static final Set<String> BASE_UNITS = ImmutableSet.of(
@@ -62,26 +69,12 @@ public class UnitConverter implements Freezable<UnitConverter> {
         "portion"
         );
 
-    private static final Set<String> QUANTITIES = ImmutableSet.of(
-        "luminous-intensity",
-        "mass",
-        "length",
-        "time",
-        "year-duration",
-        "electric-current",
-        "temperature",
-        "substance-amount",
-        "angle",
-        "portion",
-        "digital",
-        "graphics"
-        );
-
-    public void addQuantityInfo(String baseUnit, String quantity) {
+    public void addQuantityInfo(String baseUnit, String quantity, String status) {
         if (baseUnitToQuantity.containsKey(baseUnit)) {
             throw new IllegalArgumentException();
         }
         baseUnitToQuantity.put(baseUnit, quantity);
+        baseUnitToStatus.put(baseUnit, quantity);
         quantityToSimpleUnits.put(quantity, baseUnit);
     }
 
@@ -96,6 +89,7 @@ public class UnitConverter implements Freezable<UnitConverter> {
         rationalParser.freeze();
         sourceToTargetInfo = ImmutableMap.copyOf(sourceToTargetInfo);
         quantityToSimpleUnits = ImmutableMultimap.copyOf(quantityToSimpleUnits);
+        sourceToSystems = ImmutableMultimap.copyOf(sourceToSystems);        
         Builder<String> builder = ImmutableSet.<String>builder()
             .addAll(BASE_UNITS);
         for (TargetInfo s : sourceToTargetInfo.values()) {
@@ -106,6 +100,7 @@ public class UnitConverter implements Freezable<UnitConverter> {
             Continuation.addIfNeeded(denormalized, continuations);
         }
         continuations = ImmutableMultimap.copyOf(continuations);
+        targetInfoComparator = new TargetInfoComparator();
         return this;
     }
 
@@ -115,7 +110,7 @@ public class UnitConverter implements Freezable<UnitConverter> {
     }
 
 
-    public static final class UnitInfo {
+    public static final class UnitInfo implements Comparable<UnitInfo> {
         public final Rational factor;
         public final Rational offset;
         public final boolean reciprocal;
@@ -149,21 +144,46 @@ public class UnitConverter implements Freezable<UnitConverter> {
 
         @Override
         public String toString() {
+            return toString("x");
+        }
+        public String toString(String unit) {
             return factor 
-                + (reciprocal ? " / x" : " * x") 
+                + (reciprocal ? " / " : " * ") + unit
                 + (offset.equals(Rational.ZERO) ? "" : 
                     (offset.compareTo(Rational.ZERO) < 0 ? " - " : " - ")
                     + offset.abs());
         }
 
         public String toDecimal() {
+            return toDecimal("x");
+        }
+        public String toDecimal(String unit) {
             return factor.toBigDecimal(MathContext.DECIMAL64) 
-                + (reciprocal ? " / x" : " * x") 
+                + (reciprocal ? " / " : " * ") + unit
                 + (offset.equals(Rational.ZERO) ? "" : 
                     (offset.compareTo(Rational.ZERO) < 0 ? " - " : " - ")
                     + offset.toBigDecimal(MathContext.DECIMAL64).abs());
         }
 
+        @Override
+        public int compareTo(UnitInfo o) {
+            int diff;
+            if (0 != (diff = factor.compareTo(o.factor))) {
+                return diff;
+            }
+            if (0 != (diff = offset.compareTo(o.offset))) {
+                return diff;
+            }
+            return Boolean.compare(reciprocal, o.reciprocal);
+        }
+        @Override
+        public boolean equals(Object obj) {
+            return 0 == compareTo((UnitInfo)obj);
+        }
+        @Override
+        public int hashCode() {
+            return Objects.hash(factor, offset, reciprocal);
+        }
     }
 
     static class Continuation implements Comparable<Continuation> {
@@ -256,41 +276,98 @@ public class UnitConverter implements Freezable<UnitConverter> {
         this.rationalParser = rationalParser;
     }
 
-    public void addRaw(String source, String target, String factor, String offset, String reciprocal) {
+    public void addRaw(String source, String target, String factor, String offset, String reciprocal, String systems) {
         UnitInfo info = new UnitInfo(
             factor == null ? Rational.ONE : rationalParser.parse(factor), 
                 offset == null ? Rational.ZERO : rationalParser.parse(offset), 
                     reciprocal == null ? false : reciprocal.equalsIgnoreCase("true") ? true : false);
+        Map<String, String> args = new LinkedHashMap<>();
+        if (factor != null) {
+            args.put("factor", factor);
+        }
+        if (offset != null) {
+            args.put("offset", offset);
+        }
+        if (reciprocal != null) {
+            args.put("reciprocal", reciprocal);
+        }
 
-        addToSourceToTarget(source, target, info);
+        addToSourceToTarget(source, target, info, args, systems);
         Continuation.addIfNeeded(source, continuations);
     }
 
-    static class TargetInfo {
-        final String target;
-        final UnitInfo unitInfo;
-        public TargetInfo(String target, UnitInfo unitInfo) {
+    public static class TargetInfo{
+        public final String target;
+        public final UnitInfo unitInfo;
+        public final Map<String, String> inputParameters;
+        public TargetInfo(String target, UnitInfo unitInfo, Map<String, String> inputParameters) {
             this.target = target;
             this.unitInfo = unitInfo;
+            this.inputParameters = ImmutableMap.copyOf(inputParameters);
         }
         @Override
         public String toString() {
             return unitInfo + " (" + target + ")";
         }
+        public String formatOriginalSource(String source) {
+            StringBuilder result = new StringBuilder()
+                .append("<convertUnit source='")
+                .append(source)
+                .append("' target='")
+                .append(target)
+                .append("'")
+                ;
+            for (Entry<String, String> entry : inputParameters.entrySet()) {
+                if (entry.getValue() != null) {
+                    result.append(" " + entry.getKey() + "='" + entry.getValue() + "'");
+                }
+            }
+            result.append("/>");
+            if (unitInfo.equals(UnitInfo.IDENTITY)) {
+                result.append("\t<!-- IDENTICAL -->");
+            } else {
+                result.append("\t<!-- ~")
+                .append(unitInfo.toDecimal(target))
+                .append(" -->");
+            }
+            return result.toString();
+        }
     }
-    private void addToSourceToTarget(String source, String target, UnitInfo info) {
+    public class TargetInfoComparator implements Comparator<TargetInfo> {
+        @Override
+        public int compare(TargetInfo o1, TargetInfo o2) {
+            String quality1 = baseUnitToQuantity.get(o1.target);
+            String quality2 = baseUnitToQuantity.get(o2.target);
+            int diff;
+            if (0 != (diff = quantityComparator.compare(quality1, quality2))) {
+                return diff;
+            }
+            if (0 != (diff = o1.unitInfo.compareTo(o2.unitInfo))) {
+                return diff;
+            }
+            return o1.target.compareTo(o2.target);
+        }
+
+    }
+
+    private void addToSourceToTarget(String source, String target, UnitInfo info, 
+        Map<String, String> inputParameters, String systems) {
         if (sourceToTargetInfo.isEmpty()) {
-            baseUnitToQuantity = ImmutableMap.copyOf(baseUnitToQuantity);
+            baseUnitToQuantity = ImmutableBiMap.copyOf(baseUnitToQuantity);
+            baseUnitToStatus = ImmutableMap.copyOf(baseUnitToStatus);
             quantityComparator = new MapComparator<>(baseUnitToQuantity.values()).freeze();
         } else if (sourceToTargetInfo.containsKey(source)) {
             throw new IllegalArgumentException("Duplicate source: " + source + ", " + target);
         }
-        sourceToTargetInfo.put(source, new TargetInfo(target, info));
+        sourceToTargetInfo.put(source, new TargetInfo(target, info, inputParameters));
         String targetQuantity = baseUnitToQuantity.get(target);
         if (targetQuantity == null) {
             throw new IllegalArgumentException();
         }
         quantityToSimpleUnits.put(targetQuantity, source);
+        if (systems != null) {
+            sourceToSystems.putAll(source, SPACE_SPLITTER.split(systems));
+        }
     }
 
     public Set<String> canConvertBetween(String unit) {
@@ -476,15 +553,6 @@ public class UnitConverter implements Freezable<UnitConverter> {
     };
 
     Comparator<String> UNIT_COMPARATOR = new UnitComparator();
-
-//    public static final MapComparator<String> UNIT_COMPARATOR = new MapComparator<>(BASE_UNITS)
-//        .setSortBeforeOthers(true)
-//        .setErrorOnMissing(false)
-//        .freeze();
-
-    public static final MapComparator<String> QUANTITY_COMPARATOR = new MapComparator<>(QUANTITIES)
-        .setErrorOnMissing(true)
-        .freeze();
 
     public static final Set<String> BASE_UNIT_PARTS = ImmutableSet.<String>builder()
         .add("per").add("square").add("cubic").addAll(BASE_UNITS)
@@ -687,8 +755,8 @@ public class UnitConverter implements Freezable<UnitConverter> {
         return unit;
     }
 
-    public Map<String, String> getBaseUnitToQuantity() {
-        return baseUnitToQuantity;
+    public BiMap<String, String> getBaseUnitToQuantity() {
+        return (BiMap<String, String>) baseUnitToQuantity;
     }
 
     public Set<String> getSimpleUnits() {
@@ -703,5 +771,9 @@ public class UnitConverter implements Freezable<UnitConverter> {
             fixDenormalized.put(badCode, replacements.iterator().next());
         }
         fixDenormalized = ImmutableMap.copyOf(fixDenormalized);
+    }
+
+    public Map<String, TargetInfo> getInternalConversionData() {
+        return sourceToTargetInfo; 
     }
 }

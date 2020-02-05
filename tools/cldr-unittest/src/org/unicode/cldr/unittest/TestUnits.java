@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -32,6 +33,7 @@ import org.unicode.cldr.util.SupplementalDataInfo.PluralInfo;
 import org.unicode.cldr.util.SupplementalDataInfo.PluralInfo.Count;
 import org.unicode.cldr.util.SupplementalDataInfo.PluralType;
 import org.unicode.cldr.util.UnitConverter;
+import org.unicode.cldr.util.UnitConverter.TargetInfo;
 import org.unicode.cldr.util.UnitConverter.UnitId;
 import org.unicode.cldr.util.UnitConverter.UnitInfo;
 import org.unicode.cldr.util.Units;
@@ -337,7 +339,7 @@ public class TestUnits extends TestFmwk {
                 classToId.put(s, id);
             }
         }
-        
+
         // check not overlapping
         // now handled by TestParseUnit, but we might revive a modified version of this.
 //        for (int i = 0; i < equivClasses.size(); ++i) {
@@ -392,7 +394,7 @@ public class TestUnits extends TestFmwk {
     }
 
     public void TestUnitId() {
-        
+
         for (String simple : converter.getSimpleUnits()) {
             String canonicalUnit = converter.getBaseUnit(simple);
             UnitId unitId = converter.createUnitId(canonicalUnit);
@@ -420,7 +422,7 @@ public class TestUnits extends TestFmwk {
                 errln("Can't convert baseUnit: " + baseUnit);
             }
         }
-        
+
         for (String baseUnit : CORE_TO_TYPE.keySet()) {
             try {
                 UnitId unitId = converter.createUnitId(baseUnit);
@@ -680,21 +682,21 @@ public class TestUnits extends TestFmwk {
         canConvert.removeAll(typeToCore.values());
         assertEquals("Conversions for invalid units", Collections.EMPTY_SET, canConvert);
     }
-    
+
     public void TestQuantities() {
         // put quantities in order
         Multimap<String,String> quantityToBaseUnits = LinkedHashMultimap.create();
-        
+
         Multimaps.invertFrom(Multimaps.forMap(BASE_UNIT_TO_QUANTITY ), quantityToBaseUnits);
         for ( Entry<String, Collection<String>> entry : quantityToBaseUnits.asMap().entrySet()) {
             assertEquals(entry.toString(), 1, entry.getValue().size());
         }
-        
+
         Map<String, String> baseToQuantity = BASE_UNIT_TO_QUANTITY;
         TreeMultimap<String, String> quantityToConvertible = TreeMultimap.create();
         Set<String> missing = new TreeSet<>(CORE_TO_TYPE.keySet());
         missing.removeAll(NOT_CONVERTABLE);
-        
+
         for (Entry<String, String> entry : baseToQuantity.entrySet()) {
             String baseUnit = entry.getKey();
             String quantity = entry.getValue();
@@ -702,7 +704,7 @@ public class TestUnits extends TestFmwk {
             missing.removeAll(convertible);
             quantityToConvertible.putAll(quantity, convertible);
         }
-        
+
         // handle missing
         Output<String> metricUnit = new Output<>();
         for (String missingUnit : ImmutableSet.copyOf(missing)) {
@@ -720,7 +722,7 @@ public class TestUnits extends TestFmwk {
             }
         }
         assertEquals("all units have quantity", Collections.emptySet(), missing);
-        
+
         if (SHOW_DATA) {
             System.out.println();
             for (Entry<String, String> entry : BASE_UNIT_TO_QUANTITY.entrySet()) {
@@ -740,17 +742,38 @@ public class TestUnits extends TestFmwk {
             }
         }
     }
-    
+
     public void TestOrder() {
         System.out.println();
         for (String s : UnitConverter.BASE_UNITS) {
-           String quantity = BASE_UNIT_TO_QUANTITY.get(s);
-           System.out.println("\"" + quantity + "\",");
+            String quantity = BASE_UNIT_TO_QUANTITY.get(s);
+            System.out.println("\"" + quantity + "\",");
         }
         for (String unit : CORE_TO_TYPE.keySet()) {
             Output<String> baseUnit = new Output<>();
             UnitInfo unitInfo = converter.getUnitInfo(unit, baseUnit);
             String quantity = BASE_UNIT_TO_QUANTITY.get(baseUnit.value);
+        }
+    }
+
+    public void TestConversionLineOrder() {
+        Map<String, TargetInfo> data = converter.getInternalConversionData();
+        Multimap<TargetInfo, String> sorted = TreeMultimap.create(converter.targetInfoComparator, 
+            Comparator.naturalOrder());
+        Multimaps.invertFrom(Multimaps.forMap(data), sorted);
+        // TODO test that sorted is in same order.
+        if (SHOW_DATA) {
+            String lastBase = "";
+            System.out.println();
+            for (Entry<TargetInfo, String> entry : sorted.entries()) {
+                final TargetInfo tInfo = entry.getKey();
+                if (!lastBase.equals(tInfo.target)) {
+                    lastBase = tInfo.target;
+                    System.out.println("<!-- " + converter.getBaseUnitToQuantity().get(lastBase) + " -->");
+                }
+                //  <convertUnit source='week-person' target='second' factor='604800'/>
+                System.out.println(tInfo.formatOriginalSource(entry.getValue()));
+            }
         }
     }
 }

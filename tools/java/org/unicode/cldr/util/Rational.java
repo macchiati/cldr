@@ -47,10 +47,14 @@ public final class Rational implements Comparable<Rational> {
         private static Splitter starSplitter = Splitter.on('*').trimResults();
 
         private Map<String,Rational> constants = new LinkedHashMap<>();
+        private Map<String,String> constantStatus = new LinkedHashMap<>();
         
-        public RationalParser addConstant(String id, String value) {
+        public RationalParser addConstant(String id, String value, String status) {
             if (constants.put(id, parse(value)) != null) {
                 throw new IllegalArgumentException("Can't reset constant " + id + " = " + value);
+            }
+            if (status != null) {
+                constantStatus.put(id, status); 
             }
             return this;
         }
@@ -112,6 +116,7 @@ public final class Rational implements Comparable<Rational> {
         public RationalParser freeze() {
             frozen = true;
             constants = ImmutableMap.copyOf(constants);
+            constantStatus = ImmutableMap.copyOf(constantStatus);
             return this;
         }
 

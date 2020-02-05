@@ -1361,16 +1361,18 @@ public class SupplementalDataInfo {
 
             final String constant = parts.getAttributeValue(-1, "constant");
             final String value = parts.getAttributeValue(-1, "value");
-            rationalParser.addConstant(constant, value);
+            final String status = parts.getAttributeValue(-1, "status");
+            rationalParser.addConstant(constant, value, status);
             return true;
         }
         
         private boolean handleUnitQuantities(XPathParts parts) {
             //      <unitQuantity quantity='wave-number' baseUnit='reciprocal-meter'/>
 
-            final String quantity = parts.getAttributeValue(-1, "quantity");
             final String baseUnit = parts.getAttributeValue(-1, "baseUnit");
-            unitConverter.addQuantityInfo(baseUnit, quantity);
+            final String quantity = parts.getAttributeValue(-1, "quantity");
+            final String status = parts.getAttributeValue(-1, "status");
+            unitConverter.addQuantityInfo(baseUnit, quantity, status);
             return true;
         }
 
@@ -1378,16 +1380,17 @@ public class SupplementalDataInfo {
             // <convertUnit source='acre' target='square-meter' factor='ft2m^2 * 43560'/>
             
             final String source = parts.getAttributeValue(-1, "source");
-            final String target = parts.getAttributeValue(-1, "target");
+            final String target = parts.getAttributeValue(-1, "baseUnit");
 //            if (source.contentEquals(target)) {
 //                throw new IllegalArgumentException("Cannot convert from something to itself " + parts);
 //            }
             String factor = parts.getAttributeValue(-1, "factor");
             String offset = parts.getAttributeValue(-1, "offset");
             String reciprocal = parts.getAttributeValue(-1, "reciprocal");
+            String systems = parts.getAttributeValue(-1, "systems");
             unitConverter.addRaw(
                 source, target, 
-                factor, offset, reciprocal);
+                factor, offset, reciprocal, systems);
             return true;
         }
 
