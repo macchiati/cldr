@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.unicode.cldr.util.CLDRConfig;
 import org.unicode.cldr.util.CLDRPaths;
@@ -26,6 +27,10 @@ import org.unicode.cldr.util.SupplementalDataInfo;
 import org.unicode.cldr.util.XMLFileReader;
 import org.unicode.cldr.util.XPathParts;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
 import com.ibm.icu.dev.test.TestFmwk;
@@ -153,7 +158,7 @@ public class TestDtdData extends TestFmwk {
                     DtdType dtdTypeFromPath = DtdType.fromPath(pathValue.getFirst());
                     if (!dtdTypeFromPath.directories.contains(dir.getName())) {
                         errln("Mismatch in " + file.toString()
-                            + ": " + dtdTypeFromPath + ", " + dtdTypeFromPath.directories);
+                        + ": " + dtdTypeFromPath + ", " + dtdTypeFromPath.directories);
                     }
                     logln("\t" + file.getName() + "\t" + dtdTypeFromPath);
                     break;
@@ -163,8 +168,10 @@ public class TestDtdData extends TestFmwk {
         }
     }
 
+    enum ErrorType {warn, error} 
+    
     public void TestValueAttributesWithChildren() {
-        Multimap<String, String> m = TreeMultimap.create();
+        Multimap<ErrorType, String> m = TreeMultimap.create();
         for (DtdType type : DtdType.values()) {
             if (type == DtdType.ldmlICU) {
                 continue;
@@ -173,15 +180,20 @@ public class TestDtdData extends TestFmwk {
             Element special = dtdData.getElementFromName().get("special");
             checkEmpty(m, type, dtdData.ROOT, special, new HashSet<Element>(),
                 new ArrayList<Element>(Arrays.asList(dtdData.ROOT)));
+
+            checkDuplicateAttributes(m, type, dtdData.ROOT, special, new HashSet<>(),
+                new ArrayList<Element>(Arrays.asList(dtdData.ROOT)));
+
+            checkSingleParent(m, type, dtdData.ROOT, special);
         }
-        Collection<String> items = m.get("error");
+        Collection<String> items = m.get(ErrorType.error);
         if (items != null) {
             for (String item : items) {
                 errln(item);
             }
         }
         if (isVerbose()) {
-            items = m.get("warn");
+            items = m.get(ErrorType.warn);
             if (items != null) {
                 for (String item : items) {
                     warnln(item);
@@ -189,13 +201,90 @@ public class TestDtdData extends TestFmwk {
             }
         }
     }
+    
+    private void checkSingleParent(Multimap<ErrorType, String> m, DtdType type, Element element, Element special) {
+        Multimap<Element, Element> childToParents = LinkedHashMultimap.<Element, Element>create();
+        checkSingleParent(element, special, childToParents);
+        for (Entry<Element, Collection<Element>> entry : childToParents.asMap().entrySet()) {
+            if (entry.getValue().size() != 1) {
+                m.put(ErrorType.warn, type + ": element «" + entry.getKey()
+                    + "» has >1 parent " + entry.getValue());
+            }
+        }
+    }
+
+    private void checkSingleParent(Element element, Element special, Multimap<Element, Element> childToParents) {
+        if (element.isDeprecated() || element.getType() != ElementType.CHILDREN) {
+            return;
+        }
+        // skip deprecateds and special, and recurse
+        element.getChildren().keySet().stream()
+        .filter(child -> !child.isDeprecated() && !child.equals(special) && !child.getName().equals("alias"))
+        .forEach(child -> {childToParents.put(child, element); checkSingleParent(child, special, childToParents);});
+    }
+
+    /**
+     * Avoid duplicating attribute names in same path.
+     */
+    private void checkDuplicateAttributes(Multimap<ErrorType, String> m, DtdType type, Element element, Element special,
+        Set<String> attributesSeenPreviously, List<Element> parents) {
+        if (element.isDeprecated()) {
+            return;
+        }
+        final String elementName = element.getName();
+        Set<String> currentAttributeNames = element.getAttributes().keySet().stream()
+            .filter(x -> checkElementAttribute(elementName, x))
+            .map(Attribute::getName)
+            .collect(Collectors.toSet());
+
+        if (!Collections.disjoint(attributesSeenPreviously, currentAttributeNames)) {
+            for (String attrname : currentAttributeNames) {
+                if (!attributesSeenPreviously.contains(attrname)) {
+                    continue;
+                }
+                m.put(ErrorType.error, type + ": tpath has duplicate value attributes:\t" + showPath(parents) + "[@" + attrname + "]");
+            }
+        }
+
+        if (element.getType() != ElementType.CHILDREN) {
+            return;
+        }
+
+        ImmutableSet<String> newAttributesSeenPreviously = ImmutableSet.<String>builder().addAll(attributesSeenPreviously).addAll(currentAttributeNames).build();
+
+        // skip deprecateds and special, and recurse
+        element.getChildren().keySet().stream()
+        .filter(child -> !child.isDeprecated() && !child.equals(special))
+        .forEach(child -> checkDuplicateAttributes(m, type, child, special, newAttributesSeenPreviously, 
+            ImmutableList.<Element>builder().addAll(parents).add(child).build()));        
+    }
+
+    /** 
+     * Grandfather in certain exception cases
+     */
+    static final Set<String> SKIP_ATTRIBUTE = ImmutableSet.of("draft", "alt", "references", "type");
+
+    static final Multimap<String,String> SKIP_ELEMENT_ATTRIBUTE = ImmutableMultimap.<String,String>builder()
+        .put("vkey","modifier")
+        .put("greatestDifference", "id")
+        .put("languagePopulation", "literacyPercent")
+        .putAll("type", "alias", "deprecated", "description", "name", "preferred", "since")
+        .build();
+
+    private boolean checkElementAttribute(final String elementName, Attribute x) {
+        final String attributeName = x.getName();
+        return !x.isDeprecated() 
+            && !SKIP_ATTRIBUTE.contains(attributeName)
+            && !SKIP_ELEMENT_ATTRIBUTE.containsEntry(elementName, attributeName);
+    }
+
 
     /** make sure that if the final element is empty, there is a value attribute required somewhere in the path
      * @param m 
      * @param type 
      * @param seen 
      */
-    private void checkEmpty(Multimap<String, String> m, DtdType type, Element element, Element special, HashSet<Element> seen,
+    private void checkEmpty(Multimap<ErrorType, String> m, DtdType type, Element element, Element special, HashSet<Element> seen,
         List<Element> parents) {
         if (seen.contains(element)) {
             return;
@@ -224,16 +313,16 @@ public class TestDtdData extends TestFmwk {
         case EMPTY:
             if (valueAttributes.isEmpty()) {
                 if (!distAttributes.isEmpty()) {
-                    m.put("warn", type + "\t||" + showPath(parents) + "||path has neither value NOR value attributes NOR dist. attrs.||");
+                    m.put(ErrorType.warn, type + "\t||" + showPath(parents) + "||path has neither value NOR value attributes NOR dist. attrs.||");
                 } else {
-                    m.put("error", "\t||" + showPath(parents) + "||path has neither value NOR value attributes||");
+                    m.put(ErrorType.error, type + "\t||" + showPath(parents) + "||path has neither value NOR value attributes||");
                 }
             }
             break;
         case ANY:
         case PCDATA:
             if (!valueAttributes.isEmpty()) {
-                m.put("warn", "\t||" + showPath(parents) + "||path has both value AND value attributes||" + valueAttributes + "||");
+                m.put(ErrorType.warn, "\t||" + showPath(parents) + "||path has both value AND value attributes||" + valueAttributes + "||");
             }
             break;
         case CHILDREN:
@@ -264,7 +353,7 @@ public class TestDtdData extends TestFmwk {
                     logKnownIssue("cldrbug:9982", "Lower priority fixes to bad xml");
                     break;
                 default:
-                    m.put("error", "\t||" + showPath(parents) + "||path has both children AND value attributes"
+                    m.put(ErrorType.error, "\t||" + showPath(parents) + "||path has both children AND value attributes"
                         + "||" + valueAttributes
                         + "||" + children + "||");
                     break;
@@ -278,6 +367,7 @@ public class TestDtdData extends TestFmwk {
             break;
         }
     }
+
 
     private String showPath(List<Element> parents) {
         return "!//" + CollectionUtilities.join(parents, "/");
@@ -424,7 +514,7 @@ public class TestDtdData extends TestFmwk {
             "coverageVariable", // needed for supplemental/coverageLevel.xml
             "substitute", // needed for characters.xml
             "unitPreference"
-    )));
+            )));
 
     public static boolean isOrderedOld(String element, DtdType type) {
         return orderedElements.contains(element);
@@ -477,92 +567,92 @@ public class TestDtdData extends TestFmwk {
                 || attribute.equals("dtds")
                 || attribute.equals("idStatus")
                 || elementName.equals("deprecatedItems")
-                    && (attribute.equals("type") || attribute.equals("elements") || attribute.equals("attributes") || attribute.equals("values"))
+                && (attribute.equals("type") || attribute.equals("elements") || attribute.equals("attributes") || attribute.equals("values"))
                 || elementName.equals("character")
-                    && attribute.equals("value")
+                && attribute.equals("value")
                 || elementName.equals("dayPeriodRules")
-                    && attribute.equals("locales")
+                && attribute.equals("locales")
                 || elementName.equals("dayPeriodRule")
-                    && (attribute.equals("type"))
+                && (attribute.equals("type"))
                 || elementName.equals("metazones") && attribute.equals("type")
                 || elementName.equals("subgroup") && attribute.equals("subtype")
                 || elementName.equals("mapZone")
-                    && (attribute.equals("other") || attribute.equals("territory"))
+                && (attribute.equals("other") || attribute.equals("territory"))
                 || elementName.equals("postCodeRegex")
-                    && attribute.equals("territoryId")
+                && attribute.equals("territoryId")
                 || elementName.equals("calendarPreference")
-                    && attribute.equals("territories")
+                && attribute.equals("territories")
                 || elementName.equals("minDays")
-                    && attribute.equals("count")
+                && attribute.equals("count")
                 || elementName.equals("firstDay")
-                    && attribute.equals("day")
+                && attribute.equals("day")
                 || elementName.equals("weekendStart")
-                    && attribute.equals("day")
+                && attribute.equals("day")
                 || elementName.equals("weekendEnd")
-                    && attribute.equals("day")
+                && attribute.equals("day")
                 || elementName.equals("measurementSystem")
-                    && attribute.equals("category")
+                && attribute.equals("category")
                 || elementName.equals("unitPreferences")
-                    && (attribute.equals("category") || attribute.equals("usage") || attribute.equals("scope"))
+                && (attribute.equals("category") || attribute.equals("usage") || attribute.equals("scope"))
                 || elementName.equals("unitPreference")
-                    && (attribute.equals("regions") || attribute.equals("geq"))
+                && (attribute.equals("regions") || attribute.equals("geq"))
                 || elementName.equals("distinguishingItems")
-                    && attribute.equals("attributes")
+                && attribute.equals("attributes")
                 || elementName.equals("codesByTerritory")
-                    && attribute.equals("territory")
+                && attribute.equals("territory")
                 || elementName.equals("currency")
-                    && attribute.equals("iso4217")
+                && attribute.equals("iso4217")
                 || elementName.equals("territoryAlias")
-                    && attribute.equals("type")
+                && attribute.equals("type")
                 || elementName.equals("territoryCodes")
-                    && attribute.equals("type")
+                && attribute.equals("type")
                 || elementName.equals("group")
-                    && (attribute.equals("status")) //  || attribute.equals("grouping")
+                && (attribute.equals("status")) //  || attribute.equals("grouping")
                 || elementName.equals("plurals")
-                    && attribute.equals("type")
+                && attribute.equals("type")
                 || elementName.equals("pluralRules")
-                    && attribute.equals("locales")
+                && attribute.equals("locales")
                 || elementName.equals("pluralRule")
-                    && attribute.equals("count")
+                && attribute.equals("count")
                 || elementName.equals("pluralRanges")
-                    && attribute.equals("locales")
+                && attribute.equals("locales")
                 || elementName.equals("pluralRange")
-                    && (attribute.equals("start") || attribute.equals("end"))
+                && (attribute.equals("start") || attribute.equals("end"))
                 || elementName.equals("hours")
-                    && (attribute.equals("preferred") || attribute.equals("allowed"))
+                && (attribute.equals("preferred") || attribute.equals("allowed"))
                 || elementName.equals("personList") && attribute.equals("type")
                 || elementName.equals("likelySubtag")
-                    && attribute.equals("from")
+                && attribute.equals("from")
                 || elementName.equals("rgPath")
-                    && attribute.equals("path")
+                && attribute.equals("path")
                 || elementName.equals("timezone")
-                    && attribute.equals("type")
+                && attribute.equals("type")
                 || elementName.equals("usesMetazone")
-                    && (attribute.equals("to") || attribute.equals("from")) // attribute.equals("mzone") ||
+                && (attribute.equals("to") || attribute.equals("from")) // attribute.equals("mzone") ||
                 || elementName.equals("numberingSystem")
-                    && attribute.equals("id")
+                && attribute.equals("id")
                 || elementName.equals("group")
-                    && attribute.equals("type")
+                && attribute.equals("type")
                 || elementName.equals("currency")
-                    && attribute.equals("from")
+                && attribute.equals("from")
                 || elementName.equals("currency")
-                    && attribute.equals("to")
+                && attribute.equals("to")
                 || elementName.equals("currency")
-                    && attribute.equals("iso4217")
+                && attribute.equals("iso4217")
                 || (elementName.equals("parentLocale") || elementName.equals("languageGroup"))
-                    && attribute.equals("parent")
+                && attribute.equals("parent")
                 || elementName.equals("currencyCodes")
-                    && attribute.equals("type")
+                && attribute.equals("type")
                 || elementName.equals("approvalRequirement")
-                    && (attribute.equals("locales") || attribute.equals("paths"))
+                && (attribute.equals("locales") || attribute.equals("paths"))
                 || elementName.equals("weekOfPreference")
-                    && attribute.equals("locales")
+                && attribute.equals("locales")
                 || elementName.equals("coverageVariable")
-                    && attribute.equals("key")
+                && attribute.equals("key")
                 || elementName.equals("coverageLevel")
-                    && (attribute.equals("inLanguage") || attribute.equals("inScript") || attribute.equals("inTerritory") || attribute.equals("match"))
+                && (attribute.equals("inLanguage") || attribute.equals("inScript") || attribute.equals("inTerritory") || attribute.equals("match"))
                 || elementName.equals("languageMatch")
-                    && (attribute.equals("desired") || attribute.equals("supported"))
+                && (attribute.equals("desired") || attribute.equals("supported"))
                 || (elementName.equals("transform") && (attribute.equals("source") || attribute.equals("target") || attribute.equals("direction") || attribute
                     .equals("variant")))
                 || (elementName.equals("grammaticalFeatures") && (attribute.equals("locales") || attribute.equals("targets")))
