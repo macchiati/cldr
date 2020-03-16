@@ -93,7 +93,7 @@ public class ChartUnitPreferences extends Chart {
                         .addCell(baseUnit)
                         .addCell(usage)
                         .addCell(sampleRegionStr)
-                        .addCell(pref.geq.toString(FormatStyle.repeating))
+                        .addCell(pref.geq.toString(FormatStyle.html))
                         .addCell(Joiner.on(" & ").join(Splitter.on("-and-").split(pref.unit)))
                         .addCell(pref.skeleton)
                         .addCell(quantity)
