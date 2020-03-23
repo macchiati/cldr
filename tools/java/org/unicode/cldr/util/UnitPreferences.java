@@ -146,7 +146,7 @@ public class UnitPreferences implements Freezable<UnitPreferences> {
     }
 
     /**
-     * Returns the data converted to single regions, and using base units
+     * Returns the data converted to single regions, and using base units: quantity to usage to regions to info (geq, unit, skeleton)
      * @return
      */
     public Map<String, Map<String, Map<String, UnitPreference>>> getFastMap(UnitConverter converter) {

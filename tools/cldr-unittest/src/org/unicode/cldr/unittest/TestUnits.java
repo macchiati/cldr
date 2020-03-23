@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -1363,6 +1364,39 @@ public class TestUnits extends TestFmwk {
 //            }
 //        }
         prefs.getFastMap(converter); // call just to make sure we don't get an exception
+        Multimap<String, String> regionToRegionSetKey = TreeMultimap.create();
+        
+        for (Entry<String, Map<String, Multimap<Set<String>, UnitPreference>>> entry : prefs.getData().entrySet()) {
+            String quantity = entry.getKey();
+            String baseUnit = converter.getBaseUnitFromQuantity(quantity);
+            for (Entry<String, Multimap<Set<String>, UnitPreference>> entry2 : entry.getValue().entrySet()) {
+                String usage = entry2.getKey();
+
+                // collect samples of base units
+                for (Entry<Set<String>, Collection<UnitPreference>> entry3 : entry2.getValue().asMap().entrySet()) {
+                    Set<String> regions = entry3.getKey();
+                    if (!regions.contains("001")) {
+                        String value = Joiner.on('|').join(regions);
+                        for (String region : regions) {
+                            regionToRegionSetKey.put(region, value);
+                        }
+                    }
+                }
+            }
+        }
+        Map<Collection<String>, Integer> setToKey2 = new HashMap<>();
+        Multimap<Integer, String> idToRegion = TreeMultimap.create();
+        for (Entry<String, Collection<String>> entry : regionToRegionSetKey.asMap().entrySet()) {
+            Integer id = setToKey2.get(entry.getValue());
+            if (id == null) {
+                setToKey2.put(entry.getValue(), id = setToKey2.size());
+            }
+            idToRegion.put(id, entry.getKey());
+        }
+        idToRegion.put(setToKey2.size(), "other");
+        for (Entry<Integer, Collection<String>> entry : idToRegion.asMap().entrySet()) {
+            System.out.println(entry);
+        }
 
         if (GENERATE_TESTS) {
             System.out.println(
