@@ -1,7 +1,7 @@
 # ScriptMetadata.txt
 # Copyright © 1991-2016 Unicode, Inc.
-# CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
-# For terms of use, see http://www.unicode.org/copyright.html
+# CLDR data files are interpreted according to the LDML specification (https://www.unicode.org/reports/tr35/)
+# For terms of use, see https://www.unicode.org/copyright.html
 #
 # This file provides general information about scripts that may be useful to implementations processing text.
 # The information is the best currently available, and may change between versions of CLDR.
@@ -21,7 +21,7 @@
 # 2 - Sample Character:
 #		A sample character for use in "Last Resort" style fonts.
 #               For printing the combining mark for Zinh in a chart, U+25CC can be prepended.
-#		See http://unicode.org/policies/lastresortfont_eula.html
+#		See https://www.unicode.org/policies/lastresortfont_eula.html
 # 3 - Origin country:
 #		The approximate area where the script originated, expressed as a BCP47 region code.
 # 4 - Density:
@@ -29,7 +29,7 @@
 # 5 - ID Usage:
 #		The usage for IDs (tables 4-7) according to UAX #31.
 #		For a description of values, see
-#		http://unicode.org/reports/tr31/#Table_Candidate_Characters_for_Exclusion_from_Identifiers
+#		https://www.unicode.org/reports/tr31/#Table_Candidate_Characters_for_Exclusion_from_Identifiers
 # 6 - RTL:
 #		YES if the script is RTL
 #		Derived from whether the script contains RTL letters according to the Bidi_Class property
@@ -53,5 +53,5 @@
 # Such scripts are marked with a "provisional" comment.
 #
 # Note: For the most likely language for each script, see 
-#		http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/likely_subtags.html
+#		https://www.unicode.org/repos/cldr-tmp/trunk/diff/supplemental/likely_subtags.html
 #

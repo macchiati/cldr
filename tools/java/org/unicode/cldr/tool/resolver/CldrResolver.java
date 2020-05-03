@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2004-2011, Unicode, Inc., Google, Inc., and others.
- * For terms of use, see http://www.unicode.org/terms_of_use.html
+ * For terms of use, see https://www.unicode.org/terms_of_use.html
  */
 package org.unicode.cldr.tool.resolver;
 

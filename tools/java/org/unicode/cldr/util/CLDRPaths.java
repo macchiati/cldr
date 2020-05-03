@@ -68,7 +68,8 @@ public class CLDRPaths {
 
     public static final String AUX_DIRECTORY = CldrUtility.getPath(CldrUtility.getProperty("CLDR_TMP_DIR",
         CldrUtility.getPath(SVN_DIRECTORY, "cldr-aux/")));
-    public static final String CHART_DIRECTORY = CldrUtility.getPath(AUX_DIRECTORY + "charts/", ToolConstants.CHART_VERSION);
+    public static final String CHART_DIRECTORY = CldrUtility.getPath(BASE_DIRECTORY + "../cldr-staging/docs/charts/", 
+        ToolConstants.CHART_VI.getVersionString(1, 2));
     public static final String VERIFY_DIR = CLDRPaths.CHART_DIRECTORY + "verify/";
 
     public static final String UCD_DATA_DIRECTORY = CldrUtility.getPath(SVN_DIRECTORY + "unicodetools/unicodetools/data/");

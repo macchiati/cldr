@@ -2,8 +2,10 @@ package org.unicode.cldr.tool;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.unicode.cldr.util.CLDRConfig;
@@ -14,6 +16,8 @@ import org.unicode.cldr.util.PathDescription;
 import org.unicode.cldr.util.PathHeader;
 import org.unicode.cldr.util.PathHeader.PageId;
 import org.unicode.cldr.util.PathHeader.SectionId;
+import org.unicode.cldr.util.PatternPlaceholders;
+import org.unicode.cldr.util.PatternPlaceholders.PlaceholderInfo;
 
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multimap;
@@ -27,22 +31,26 @@ import com.ibm.icu.text.UnicodeSet;
 
 public class ShowPathHeaderDescriptions {
     public static void main(String[] args) {
+        if (true) {
+            showSubstitutions();
+            return;
+        }
         CLDRConfig config = CLDRConfig.getInstance();
         Factory factory = config.getCommonAndSeedAndMainAndAnnotationsFactory();
         CLDRFile english = factory.make("en", true);
         PathHeader.Factory phf = PathHeader.getFactory(english);
 
         String localeToTest = "cs";
-        
+
         CLDRFile localeFile = factory.make(localeToTest, true);
         Multiset<String> sectionPageHeader = LinkedHashMultiset.create();
         Multiset<String> sectionPage = LinkedHashMultiset.create();
         Set<PathHeader> pathHeaders = new TreeSet<>();
         UnicodeSet emoji = new UnicodeSet("[:emoji:]");
-        
+
         for (String path : localeFile.fullIterable()) {
             if (emoji.containsSome(path)) {
-                
+
             }
             PathHeader pathHeader = phf.fromPath(path);
             if (pathHeader.getSectionId() == SectionId.Characters) {
@@ -69,6 +77,86 @@ public class ShowPathHeaderDescriptions {
             System.out.println(++i + "\t" + entry.getElement() + "\t" + entry.getCount());
         }
     }
+
+    public static void showSubstitutions() {
+        CLDRConfig config = CLDRConfig.getInstance();
+        CLDRFile english = config.getEnglish();
+        PathHeader.Factory phf = PathHeader.getFactory(english);
+        PathDescription pathDescriptionFactory = new PathDescription(config.getSupplementalDataInfo(), english, null, null,
+            PathDescription.ErrorHandling.CONTINUE);
+
+
+        Set<Map<String, PlaceholderInfo>> seenAlready = new HashSet<>();
+
+        String path2 = "//ldml/listPatterns/listPattern[@type=\"or\"]/listPatternPart[@type=\"start\"]";
+        showSubs(english, pathDescriptionFactory, seenAlready, path2);
+
+
+        Map<PathHeader, String> sorted = new TreeMap<>();
+        for (String path : english) {
+            sorted.put(phf.fromPath(path), path);
+        }
+        for (Entry<PathHeader, String> phAndPath : sorted.entrySet()) {
+            PathHeader pathHeader = phAndPath.getKey();
+            String path = phAndPath.getValue();
+            showSubs(english, pathDescriptionFactory, seenAlready, path);
+        }
+
+    }
+
+    private static void showSubs(CLDRFile english, PathDescription pathDescriptionFactory, Set<Map<String, PlaceholderInfo>> seenAlready, String path) {
+        PathHeader.Factory phf = PathHeader.getFactory(english);
+        
+            Map<String, PlaceholderInfo> placeholders = PatternPlaceholders
+                .getInstance().get(path);
+            if (placeholders == null) {
+                return;
+            }
+            if (seenAlready.contains(placeholders)) {
+                return;
+            }
+            seenAlready.add(placeholders);
+            final PathHeader pathHeader = phf.fromPath(path);
+            if (pathHeader.getSectionId() == SectionId.Special) {
+                return;
+            }
+
+            String value = english.getStringValue(path);
+            String pdx = pathDescriptionFactory.getRawDescription(path, "VALUE", null);
+            String desc = pathDescriptionFactory.getDescription(path, value, null, null);
+            String placeholderDesc = pathDescriptionFactory.getPlaceholderDescription(path);
+            String output = pathDescriptionFactory.getStarredPathOutput();
+            String display = replaceNumberWithName(value, placeholders);
+            String reverse = replaceNameWithNumber(display, placeholders);
+            System.out.println(
+                pathHeader
+//                + "\npath:\t" + path 
+//            + "\ngetRawDescription:\t" + pdx 
+//            + "\ngetPlaceholderDescription:\t" + placeholderDesc
+//            + "\ngetStarredPathOutput:\t" + output
+//            + "\npatternPlaceholders:\t" + placeholders
+                + "\tvalue:\t" + value
+                + "\tdisplay:\t" + display
+                + "\treverse:\t" + reverse
+//                + "\ngetDescription:\t" + desc 
+                );
+    }
+
+    private static String replaceNumberWithName(String value, Map<String, PlaceholderInfo> placeholders) {
+        for (Entry<String, PlaceholderInfo> entry : placeholders.entrySet()) {
+            value = value.replace(entry.getKey(), "{" + entry.getValue().name + "}");
+        }
+        return value;
+    }
+
+    private static String replaceNameWithNumber(String value, Map<String, PlaceholderInfo> placeholders) {
+        for (Entry<String, PlaceholderInfo> entry : placeholders.entrySet()) {
+            value = value.replace("{" + entry.getValue().name + "}", entry.getKey());
+        }
+        return value;
+    }
+
+
     public static void showDescriptions(String[] args) {
         CLDRConfig config = CLDRConfig.getInstance();
         CLDRFile english = config.getEnglish();
@@ -94,6 +182,7 @@ public class ShowPathHeaderDescriptions {
         for (String path : english) {
             PathHeader pathHeader = phf.fromPath(path);
             String pdx = pathDescriptionFactory.getRawDescription(path, "VALUE", null);
+
             String url;
             if (pdx == null) {
                 url = "NONE";
