@@ -141,7 +141,13 @@ public class Annotations {
                 return;
             }
             String usString = parts.getAttributeValue(-1, "cp");
-            UnicodeSet us1 = usString.startsWith("[") && usString.endsWith("]") ? new UnicodeSet(usString) : new UnicodeSet().add(usString);
+            UnicodeSet us1;
+            try {
+                us1 = usString.startsWith("[") && usString.endsWith("]") ? new UnicodeSet(usString) : new UnicodeSet().add(usString);
+            } catch (IllegalArgumentException e) {
+                int debug = 0;
+                throw e;
+            }
             UnicodeSet us = new UnicodeSet();
             for (String s : us1) {
                 us.add(s.replace(EmojiConstants.EMOJI_VARIANT_STRING, ""));

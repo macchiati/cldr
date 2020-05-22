@@ -196,9 +196,13 @@ public class Emoji {
             {"arrow", "→ ↓ ↑ ← ↔ ↕ ⇆ ⇅"},
             {"alphanum", "© ® ℗ ™ µ"},
             {"geometric", "▼ ▶ ▲ ◀ ● ○ ◯ ◊"},
-            {"math", "× ÷ √ ∞ ∆ ∇ ⁻ ¹ ² ³ ≡ ∈ ⊂ ∩ ∪ °"},
-            {"punctuation", "– — » « • · § † ‡"},
-            {"currency", "€ £ ¥ ₹ ₽"},
+            {"math", "× ÷ √ ∞ ∆ ∇ ⁻ ¹ ² ³ ≡ ∈ ⊂ ∩ ∪ ° + ± − = ≈ ≠ > < ≤ ≥ ¬ | ~"},
+            {"punctuation", "§ † ‡ \\u0020  , 、 ، ; : ؛ ! ¡ ? ¿ ؟ ¶ ※ / \\ & # % ‰ ′ ″ ‴ @ * ♪ ♭ ♯ ` ´ ^ ¨ ‐ ― _ - – — • · . … 。 ‧ ・ ‘ ’ ‚ ' “ ” „ » « ( ) [ ] { } 〔 〕 〈 〉 《 》 「 」 『 』 〖 〗 【 】"},
+            {"currency", "€ £ ¥ ₹ ₽ $ ¢ ฿ ₪ ₺ ₫ ₱ ₩ ₡ ₦ ₮ ৳ ₴ ₸ ₲ ₵ ៛ ₭ ֏ ₥ ₾ ₼ ₿ ؋"},
+//            {"dashes", "‐ ― _ - – — "},
+//            {"dots", "• · . … 。 ‧ ・"},
+//            {"quotation", "‘ ’ ‚ ' “ ” „ » « "},
+//            {"brackets", ") [ ] { } 〔 〕 〈 〉 《 》 「 」 『 』 〖 〗 【 】"},
         };
         // get the maximum suborder for each subcategory
         Map<String, Long> subcategoryToMaxSuborder = new HashMap<>();
@@ -233,6 +237,7 @@ public class Emoji {
                 ++count;
                 _EXTRA_SYMBOL_ORDER.put(s, count);
             }
+
             subcategoryToMaxSuborder.put(subcategory, count);
         }
         if (DEBUG) System.out.println(_EXTRA_SYMBOL_ORDER);
@@ -245,8 +250,9 @@ public class Emoji {
         if (minorCat == null) {
             minorCat = EXTRA_SYMBOL_MINOR_CATEGORIES.get(emoji);
             if (minorCat == null) {
-                throw new InternalCldrException("No minor category (aka subgroup) found for " + emoji 
-                    + ". Update emoji-test.txt to latest, and adjust PathHeader.. functionMap.put(\"minor\", ...");
+                throw new InternalCldrException("No minor category (aka subgroup) found for «" + emoji 
+                    + "» (" + Utility.hex(emoji)
+                    + "). Update emoji-test.txt to latest, and adjust PathHeader.. functionMap.put(\"minor\", ...");
             }
         }
         return minorCat;
@@ -277,11 +283,14 @@ public class Emoji {
         return result;
     }
 
-    public static String getMajorCategory(String emoji) {
+    public static String getMajorCategory(String emoji, UnicodeSet errors) {
         String majorCat = emojiToMajorCategory.get(emoji);
         if (majorCat == null) {
             if (EXTRA_SYMBOL_MINOR_CATEGORIES.containsKey(emoji)) {
                 majorCat = "Symbols";
+            } else if (errors != null){
+                majorCat = "Symbols";
+                errors.add(emoji);
             } else {
                 throw new InternalCldrException("No minor category (aka subgroup) found for " + emoji 
                     + ". Update emoji-test.txt to latest, and adjust PathHeader.. functionMap.put(\"major\", ...");

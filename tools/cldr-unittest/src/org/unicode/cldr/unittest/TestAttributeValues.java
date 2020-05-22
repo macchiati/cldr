@@ -65,7 +65,7 @@ import com.ibm.icu.util.ICUException;
 import com.ibm.icu.util.Output;
 
 public class TestAttributeValues extends TestFmwk {
-    private static final boolean SERIAL = false;
+    private static final boolean SERIAL = true;
 
     private static final Validity VALIDITY = Validity.getInstance();
     private static final File BASE_DIR = new File(CLDRPaths.BASE_DIRECTORY);

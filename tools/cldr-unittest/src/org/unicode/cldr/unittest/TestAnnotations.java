@@ -179,10 +179,11 @@ public class TestAnnotations extends TestFmwkPlus {
         if (DEBUG) System.out.println();
 
         TreeSet<R4<PageId, Long, String, R3<String, String, String>>> sorted = new TreeSet<>();
+        UnicodeSet errors = new UnicodeSet();
         for (Entry<String, Annotations> s : eng.getExplicitValues().entrySet()) {
             String emoji = s.getKey();
             Annotations annotations = s.getValue();
-            final String rawCategory = Emoji.getMajorCategory(emoji);
+            final String rawCategory = Emoji.getMajorCategory(emoji, errors);
             PageId majorCategory = PageId.forString(rawCategory);
             if (majorCategory == PageId.Symbols) {
                 majorCategory = PageId.Symbols2;
@@ -192,6 +193,9 @@ public class TestAnnotations extends TestFmwkPlus {
             R3<String, String, String> row2 = Row.of(emoji, annotations.getShortName(), CollectionUtilities.join(annotations.getKeywords(), " | "));
             R4<PageId, Long, String, R3<String, String, String>> row = Row.of(majorCategory, emojiOrder, minorCategory, row2);
             sorted.add(row);
+        }
+        if (!errors.isEmpty()) {
+            errln("Missing categories for: " + errors);
         }
         for (R4<PageId, Long, String, R3<String, String, String>> row : sorted) {
             PageId majorCategory = row.get0();
@@ -350,7 +354,7 @@ public class TestAnnotations extends TestFmwkPlus {
                 + emoji + " (" + emojiOrdering + ") " + name, errorType, true, true);
             }
 
-            String major = Emoji.getMajorCategory(emoji);
+            String major = Emoji.getMajorCategory(emoji, null);
             String minor = Emoji.getMinorCategory(emoji);
             if (isVerbose()) {
                 System.out.println(major + "\t" + minor + "\t" + emoji);

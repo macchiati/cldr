@@ -1743,7 +1743,7 @@ public class PathHeader implements Comparable<PathHeader> {
             functionMap.put("major", new Transform<String, String>() {
                 @Override
                 public String transform(String source) {
-                    String major = Emoji.getMajorCategory(source);
+                    String major = Emoji.getMajorCategory(source, null);
                     // check that result is reasonable by running through PageId.
                     switch(major) {
                     default:
@@ -1849,7 +1849,7 @@ public class PathHeader implements Comparable<PathHeader> {
                     return input;
                 }
                 int functionEnd = input.indexOf('(', functionStart);
-                int argEnd = input.indexOf(')', functionEnd);
+                int argEnd = input.indexOf(')', functionEnd+2); // we must insert at least one character
                 Transform<String, String> func = functionMap.get(input.substring(functionStart + 1,
                     functionEnd));
                 final String arg = input.substring(functionEnd + 1, argEnd);
