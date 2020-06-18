@@ -44,6 +44,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.unicode.cldr.draft.FileUtilities;
+import org.unicode.cldr.util.CLDRTransforms.ParsedTransformID;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
@@ -447,18 +448,18 @@ public class CldrUtility {
     public static <T> T protectCollection(T source) {
         // TODO - exclude UnmodifiableMap, Set, ...
         if (source instanceof Map) {
-            Map<Object,Object> sourceMap = (Map) source;
-            ImmutableMap.Builder<Object,Object> builder = ImmutableMap.builder();
-            for (Entry<Object,Object> entry : sourceMap.entrySet()) {
+            Map<Object, Object> sourceMap = (Map) source;
+            ImmutableMap.Builder<Object, Object> builder = ImmutableMap.builder();
+            for (Entry<Object, Object> entry : sourceMap.entrySet()) {
                 final Object key = entry.getKey();
                 final Object value = entry.getValue();
                 builder.put(protectCollection(key), protectCollection(value));
             }
             return (T) builder.build();
         } else if (source instanceof Multimap) {
-            Multimap<Object,Object> sourceMap = (Multimap) source;
-            ImmutableMultimap.Builder<Object,Object> builder = ImmutableMultimap.builder();
-            for (Entry<Object,Object> entry : sourceMap.entries()) {
+            Multimap<Object, Object> sourceMap = (Multimap) source;
+            ImmutableMultimap.Builder<Object, Object> builder = ImmutableMultimap.builder();
+            for (Entry<Object, Object> entry : sourceMap.entries()) {
                 builder.put(protectCollection(entry.getKey()), protectCollection(entry.getValue()));
             }
             return (T) builder.build();
@@ -667,8 +668,8 @@ public class CldrUtility {
     private static final Transliterator DEFAULT_REGEX_ESCAPER = Transliterator.createFromRules(
         "foo",
         "([ \\- \\\\ \\[ \\] ]) > '\\' $1 ;"
-            // + " ([:c:]) > &hex($1);"
-            + " ([[:control:][[:z:]&[:ascii:]]]) > &hex($1);",
+        // + " ([:c:]) > &hex($1);"
+        + " ([[:control:][[:z:]&[:ascii:]]]) > &hex($1);",
         Transliterator.FORWARD);
 
     /**
@@ -773,7 +774,7 @@ public class CldrUtility {
             for (UnicodeSet last : lastToFirst.keySet()) {
                 ++alternateCount;
                 alternates.append('|').append(toRegex(lastToFirst.get(last), escaper, onlyBmp))
-                    .append(toRegex(last, escaper, onlyBmp));
+                .append(toRegex(last, escaper, onlyBmp));
             }
         }
         // Return the output. We separate cases in order to get the minimal extra apparatus
@@ -976,9 +977,9 @@ public class CldrUtility {
                     : o2First == null ? 1
                         : comp1 == null ? o1First.compareTo(o2First)
                             : comp1.compare(o1First, o2First);
-                if (diff != 0) {
-                    return diff;
-                }
+                        if (diff != 0) {
+                            return diff;
+                        }
             }
             V o1Second = o1.getSecond();
             V o2Second = o2.getSecond();
@@ -1116,7 +1117,7 @@ public class CldrUtility {
             return rules;
         } catch (IOException e) {
             throw (IllegalArgumentException) new IllegalArgumentException("Can't open " + dir + ", " + filename)
-                .initCause(e);
+            .initCause(e);
         }
     }
 
@@ -1387,7 +1388,8 @@ public class CldrUtility {
         // now do the rest
         return linePrefix + "Copyright \u00A9 1991-" + Calendar.getInstance().get(Calendar.YEAR) + " Unicode, Inc." + CldrUtility.LINE_SEPARATOR
             + linePrefix + "For terms of use, see http://www.unicode.org/copyright.html" + CldrUtility.LINE_SEPARATOR
-            + linePrefix + "Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries." + CldrUtility.LINE_SEPARATOR
+            + linePrefix + "Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries."
+            + CldrUtility.LINE_SEPARATOR
             + linePrefix + "CLDR data files are interpreted according to the LDML specification " + "(http://unicode.org/reports/tr35/)";
     }
 
@@ -1459,7 +1461,7 @@ public class CldrUtility {
                     }
                 } catch (Exception e) {
                     throw (RuntimeException) new IllegalArgumentException("Problem with line: " + line)
-                        .initCause(e);
+                    .initCause(e);
                 }
             }
         }
@@ -1469,7 +1471,7 @@ public class CldrUtility {
     public static <T> T ifNull(T x, T y) {
         return x == null
             ? y
-            : x;
+                : x;
     }
 
     public static <T> T ifSame(T source, T replaceIfSame, T replacement) {
@@ -1551,5 +1553,28 @@ public class CldrUtility {
             return result.toString();
         }
         return item.toString();
+    }
+
+    private static Transliterator SHOW_BLANKS;
+    
+    public static String showBlanks(String value) {
+        if (SHOW_BLANKS == null) {
+            setShowBlanks();
+        }
+        return SHOW_BLANKS.transform(value);
+    }
+
+    public static UnicodeSet getShownBlanks() {
+        if (SHOW_BLANKS == null) {
+            setShowBlanks();
+        }
+        return SHOW_BLANKS.getSourceSet();
+    }
+
+
+    /** Only called when SHOW_BLANKS is false */
+    private static void setShowBlanks() {
+        String rules = CLDRTransforms.getIcuRulesFromXmlFile(CLDRPaths.COMMON_DIRECTORY + "transforms/", "Any-ShowBlanks.xml", new ParsedTransformID());
+        SHOW_BLANKS = Transliterator.createFromRules("any-showblanks", rules, Transliterator.FORWARD);
     }
 }
