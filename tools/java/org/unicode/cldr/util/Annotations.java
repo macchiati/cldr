@@ -306,7 +306,10 @@ public class Annotations {
             }
 
             code = code.replace(EmojiConstants.EMOJI_VARIANT_STRING, "");
-            Annotations stock = baseData.get(code);
+            if (code.isEmpty()) {
+        	return null;
+            }
+            Annotations stock = code.isEmpty() ? null : baseData.get(code);
             if (stock != null && stock.tts != null) {
                 return stock.tts;
             }

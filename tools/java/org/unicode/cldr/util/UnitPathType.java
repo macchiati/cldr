@@ -143,11 +143,22 @@ public enum UnitPathType {
         if (partsUsed != null) {
             CLDRFile.Status status = new CLDRFile.Status();
             String foundLocale = resolvedFile.getSourceLocaleID(path, status );
-            partsUsed.put(pathType,
-                (result != null ? "«" + result + "»": "∅")
-                + (foundLocale.equals(resolvedFile.getLocaleID()) ? "" : "\n\t\tactualLocale: " + foundLocale)
-                + (status.pathWhereFound.equals(path) ? "" : "\n\t\trequestPath: " + path + "\n\t\tactualPath:  " + status.pathWhereFound)
-                );
+            String resultStr;
+            if (result == null) {
+                resultStr = "∅";
+            } else {
+                resultStr = "«" + result + "»";
+                final String details = (foundLocale.equals(resolvedFile.getLocaleID()) ? "" : "actualLocale: " + foundLocale);
+                final String details2 = (status.pathWhereFound.equals(path) ? "" : "requestPath: " + path
+                        + "\n\t\t\tactualPath:  " + status.pathWhereFound);
+                if (!details.isEmpty()) {
+                    resultStr += "\n\t\t\t" + details;
+                }
+                if (!details.isEmpty()) {
+                    resultStr += "\n\t\t\t" + details2;
+                }
+            }
+            partsUsed.put(pathType, resultStr);
         }
         return result;
     }

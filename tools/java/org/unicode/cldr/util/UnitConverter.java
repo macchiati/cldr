@@ -37,7 +37,6 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
 import com.ibm.icu.impl.Row.R2;
-import com.ibm.icu.impl.Utility;
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.text.PluralRules;
 import com.ibm.icu.util.Freezable;
@@ -51,18 +50,31 @@ public class UnitConverter implements Freezable<UnitConverter> {
     static final Splitter BAR_SPLITTER = Splitter.on('-');
     static final Splitter SPACE_SPLITTER = Splitter.on(' ').trimResults().omitEmptyStrings();
 
-    public static final Set<String> HACK_SKIP_UNIT_NAMES = ImmutableSet.of("dot-per-centimeter", "dot-per-inch", "liter-per-100-kilometer", "millimeter-ofhg", "inch-ofhg");
-
+    public static final Set<String> HACK_SKIP_UNIT_NAMES = ImmutableSet.of(
+        // "dot-per-centimeter", "dot-per-inch", 
+        "liter-per-100-kilometer", "millimeter-ofhg", "inch-ofhg");
 
     final RationalParser rationalParser;
 
+    /** info directly from units.xml, set by addQuantityInfo
+     * <unitQuantity baseUnit='candela' quantity='luminous-intensity' status='simple'/>
+     */
     private Map<String,String> baseUnitToQuantity = new LinkedHashMap<>();
     private Map<String,String> baseUnitToStatus = new LinkedHashMap<>();
+    
+    /** info directly from units.xml, addRaw, addToSourceToTarget
+     * <convertUnit source='ounce' baseUnit='kilogram' factor='lb_to_kg/16' systems="ussystem uksystem"/>
+     */
     private Map<String, TargetInfo> sourceToTargetInfo = new LinkedHashMap<>();
-    private Multimap<String, String> quantityToSimpleUnits = LinkedHashMultimap.create();
     private Multimap<String, String> sourceToSystems = LinkedHashMultimap.create();
-    private Set<String> baseUnits;
     private Multimap<String, Continuation> continuations = TreeMultimap.create();
+
+    /**
+     * Set in both addQuantityInfo and addToSourceToTarget
+     */
+    private Multimap<String, String> quantityToSimpleUnits = LinkedHashMultimap.create(); // inverse of baseUnitToQuantity
+    
+    private Set<String> baseUnits;
     private Comparator<String> quantityComparator;
 
     private Map<String,String> fixDenormalized;
@@ -118,6 +130,8 @@ public class UnitConverter implements Freezable<UnitConverter> {
         .build();
 
     public static final Pattern PLACEHOLDER = Pattern.compile("[ \\u00A0\\u200E\\u200F\\u202F]*\\{0\\}[ \\u00A0\\u200E\\u200F\\u202F]*");
+    public static final Pattern NORM_SPACES = Pattern.compile("([\\u200E\\u200F]?[ \\u00A0\\u202F][\\u200E\\u200F]?)+");
+
     public static final boolean HACK = true;
 
     @Override
@@ -644,8 +658,8 @@ public class UnitConverter implements Freezable<UnitConverter> {
 
     /**
      * Only handles the canonical units; no kilo-, only normalized, etc.
+     * The creation is done via {@link UnicodeConverter.createUnitId}
      * @author markdavis
-     *
      */
     public class UnitId implements Freezable<UnitId>, Comparable<UnitId> {
         public Map<String, Integer> numUnitsToPowers;
@@ -809,7 +823,9 @@ public class UnitConverter implements Freezable<UnitConverter> {
                         } else {
                             return null;
                         }
-                        placeholderPattern = placeholderMatcher.group();
+                        if (placeholderPattern == null) { // pick the first placeholder pattern
+                            placeholderPattern = placeholderMatcher.group();
+                        }
                     }
 
                     // we have all the pieces, so build it up
@@ -852,7 +868,6 @@ public class UnitConverter implements Freezable<UnitConverter> {
                     numerator = MessageFormat.format(fullPerPattern, numerator);
                 } else {
                     numerator = fullPerPattern;
-                    placeholderPattern = null;
                 }
                 if (result != null) {
                     if (timesPattern == null) {
@@ -1028,6 +1043,8 @@ public class UnitConverter implements Freezable<UnitConverter> {
 
     private ConcurrentHashMap<String, UnitId> UNIT_ID = new ConcurrentHashMap<>();
     // TODO This is safe but should use regular cache
+    
+    /** Public way to create a UnitId */
     public final UnitId createUnitId(String unit) {
         UnitId result = UNIT_ID.get(unit);
         if (result == null) {
@@ -1364,6 +1381,10 @@ public class UnitConverter implements Freezable<UnitConverter> {
 
     public boolean isSimple(String x) {
         return getComplexity(x) == UnitComplexity.simple;
+    }
+
+    public static String fixSpaces(String transName) {
+        return transName == null ? null : NORM_SPACES.matcher(transName).replaceAll(" ");
     }
 
     public static String getLongId(String shortUnitId) {

@@ -6069,9 +6069,9 @@ annotations.
 				<unitPattern count="other">{0} g-force</unitPattern>
 			</unit>
 			<unit type="acceleration-meter-per-square-second">
-				<displayName>meters per second squared</displayName>
-				<unitPattern count="one">{0} meter per second squared</unitPattern>
-				<unitPattern count="other">{0} meters per second squared</unitPattern>
+				<displayName>meters per square second</displayName>
+				<unitPattern count="one">{0} meter per square second</unitPattern>
+				<unitPattern count="other">{0} meters per square second</unitPattern>
 			</unit>
 			<unit type="angle-revolution">
 				<displayName>revolution</displayName>
@@ -6382,7 +6382,7 @@ annotations.
 			</unit>
 			<unit type="energy-kilowatt-hour">
 				<displayName>kilowatt-hours</displayName>
-				<unitPattern count="one">{0} kilowatt hour</unitPattern>
+				<unitPattern count="one">{0} kilowatt-hour</unitPattern>
 				<unitPattern count="other">{0} kilowatt-hours</unitPattern>
 			</unit>
 			<unit type="energy-electronvolt">
@@ -6402,8 +6402,8 @@ annotations.
 			</unit>
 			<unit type="force-pound-force">
 				<displayName>pounds of force</displayName>
-				<unitPattern count="one">{0} pound of force</unitPattern>
-				<unitPattern count="other">{0} pounds of force</unitPattern>
+				<unitPattern count="one">{0} pound-force</unitPattern>
+				<unitPattern count="other">{0} pounds-force</unitPattern>
 			</unit>
 			<unit type="force-newton">
 				<displayName>newtons</displayName>
@@ -6721,8 +6721,8 @@ annotations.
 			</unit>
 			<unit type="pressure-pound-force-per-square-inch">
 				<displayName>pounds per square inch</displayName>
-				<unitPattern count="one">{0} pound per square inch</unitPattern>
-				<unitPattern count="other">{0} pounds per square inch</unitPattern>
+				<unitPattern count="one">{0} pound-force per square inch</unitPattern>
+				<unitPattern count="other">{0} pounds-force per square inch</unitPattern>
 			</unit>
 			<unit type="pressure-inch-ofhg">
 				<displayName>inches of mercury</displayName>
@@ -6806,7 +6806,7 @@ annotations.
 			<unit type="torque-pound-force-foot">
 				<displayName>pound-feet</displayName>
 				<unitPattern count="one">{0} pound-force-foot</unitPattern>
-				<unitPattern count="other">{0} pound-feet</unitPattern>
+				<unitPattern count="other">{0} pound-force-feet</unitPattern>
 			</unit>
 			<unit type="torque-newton-meter">
 				<displayName>newton-meters</displayName>

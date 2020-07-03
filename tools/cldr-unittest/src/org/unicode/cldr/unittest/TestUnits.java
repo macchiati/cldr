@@ -1810,8 +1810,6 @@ public class TestUnits extends TestFmwk {
         return unitLongIds;
     }
 
-    static final Pattern NORM_SPACES = Pattern.compile("[ \u00A0\u200E]");
-
     public void TestGender() {
         Output<String> source = new Output<>();
         Multimap<UnitPathType, String> partsUsed = TreeMultimap.create();
@@ -1900,7 +1898,7 @@ public class TestUnits extends TestFmwk {
             String expectedName = row[4];
             final UnitId unitId = converter.createUnitId(shortUnitId);
             final String actual = unitId.toString(resolvedFile, "long", pluralCategory, caseVariant, partsUsed, false);
-            assertEquals(count + ") " + Arrays.asList(row).toString() + "\n\t" + Joiner.on("\n\t").join(partsUsed.asMap().entrySet()), fixSpaces(expectedName), fixSpaces(actual));
+            assertEquals(count + ") " + Arrays.asList(row).toString() + "\n\t" + Joiner.on("\n\t").join(partsUsed.asMap().entrySet()), UnitConverter.fixSpaces(expectedName), UnitConverter.fixSpaces(actual));
         }
 
     }
@@ -1912,7 +1910,9 @@ public class TestUnits extends TestFmwk {
         Set<String> testSet = CLDRConfig.getInstance().getStandardCodes().getLocaleCoverageLocales(Organization.cldr);
         Counter<String> localeToErrorCount = new Counter<>();
         for (String localeId : testSet) {
-            if (localeId.contains("_")) {
+            if (localeId.contains("_")
+                || !localeId.equals("en")
+                ) {
                 continue; // skip to make test shorter
             }
             CLDRFile resolvedFile = CLDRConfig.getInstance().getCLDRFile(localeId, true);
@@ -1940,6 +1940,7 @@ public class TestUnits extends TestFmwk {
                 for (String width : Arrays.asList("long")) { // , "short", "narrow"
                     for (String pluralCategory : pluralRules.getKeywords()) {
                         for (String caseVariant : caseVariants) {
+                            partsUsed.clear();
                             String composedName;
                             try {
                                 composedName = unitId.toString(resolvedFile, width, pluralCategory, caseVariant, partsUsed, false);
@@ -1949,23 +1950,28 @@ public class TestUnits extends TestFmwk {
                             if (composedName != null && (composedName.contains("′") || composedName.contains("″"))) { // skip special cases
                                 continue;
                             }
-                            partsUsed.clear();
-                            String transName = UnitPathType.unit.getTrans(resolvedFile, width, shortUnitId, pluralCategory, caseVariant, null, isVerbose() ? partsUsed : null);
+                            String transName = UnitPathType.unit.getTrans(resolvedFile, width, shortUnitId, pluralCategory, caseVariant, null, null);
 
                             // HACK to fix different spaces around placeholder
-                            if (!Objects.equals(fixSpaces(transName), fixSpaces(composedName))) {
+                            if (!Objects.equals(UnitConverter.fixSpaces(transName), UnitConverter.fixSpaces(composedName))) {
+                                final String partsUsedStr = partsUsed == null || partsUsed.isEmpty() ? ""
+                                    : "\n\t\t" + Joiner.on("\n\t\t").join(partsUsed.asMap().entrySet());
                                 logln("\t" + localeId
                                     + "\t" + shortUnitId
                                     + "\t" + width
                                     + "\t" + pluralCategory
                                     + "\t" + caseVariant
                                     + "\texpected ≠ fallback\t«" + transName + "»\t≠\t«" + composedName+ "»"
-                                    + partsUsed);
+                                    + partsUsedStr);
                                 localeToErrorCount.add(localeId, 1);
                             }
                         }
                     }
                 }
+            }
+            if (localeToErrorCount.get(localeId) != 0) {
+                logln("composed name ≠ translated name: " + localeId + "\t" + localeToErrorCount.get(localeId));
+                int debug = 0;
             }
         }
         if (!localeToErrorCount.isEmpty()) {
@@ -1978,10 +1984,6 @@ public class TestUnits extends TestFmwk {
         if (!skippedUnits.isEmpty()) {
             warnln("Skipping unsupported unit: " + skippedUnits);
         }
-    }
-
-    public String fixSpaces(String transName) {
-        return transName == null ? null : NORM_SPACES.matcher(transName).replaceAll(" ");
     }
 
     public void TestCheckUnits() {
@@ -2007,5 +2009,11 @@ public class TestUnits extends TestFmwk {
                 }
             }
         }
+    }
+
+    public void TestUnitComparator() {
+        UnitId u1 = converter.createUnitId("acre");
+        UnitId u2 = converter.createUnitId("foot");
+        u1.compareTo(u2);
     }
 }

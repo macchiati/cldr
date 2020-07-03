@@ -105,12 +105,17 @@ public class CheckUnits extends CheckCLDR {
                     String explicitPattern = UnitPathType.unit.getTrans(cldrFile, width, shortUnitId, count, caseVariant, null, null);
                     if (explicitPattern != null) {
                         String composedPattern = unitId.toString(cldrFile, width, count, caseVariant, null, false);
-                        if (composedPattern != null && !explicitPattern.equals(composedPattern)) {
-                            unitId.toString(cldrFile, width, count, caseVariant, null, false); // for debugging
-                            result.add(new CheckStatus().setCause(this).setMainType(CheckStatus.warningType)
+                        if (composedPattern != null) {
+                        explicitPattern = UnitConverter.fixSpaces(explicitPattern);
+                        composedPattern = UnitConverter.fixSpaces(composedPattern);
+                        if (!explicitPattern.equals(composedPattern)) {
+                            // unitId.toString(cldrFile, width, count, caseVariant, null, false); // for debugging
+                            result.add(new CheckStatus().setCause(this)
+                                .setMainType(CheckStatus.warningType)
                                 .setSubtype(Subtype.mismatchedUnitComponent)
                                 .setMessage("Mismatched component: «{0}» produces «{1}», but the explicit translation is «{2}». See http://cldr.unicode.org/translation/units-1/units#TOC-Compound-Units", value, composedPattern, explicitPattern));
                         }
+                    }
                     }
                 }
                 break;
