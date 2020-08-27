@@ -143,6 +143,17 @@ public class GenerateLanguageContainment {
         .put("grk", "el")
         .put("grk", "grc")
         .put("grk", "gmy")
+//        .put("cpe", "kri")
+//        .put("kri", "pcm")
+//        .put("inc", "trw")
+//        .put("bal", "bgn")
+//        .put("ku", "sdh")
+//        .put("tai", "blt")
+//        //.put("arc", "syr")
+//        .put("bnt", "bss")
+//        .put("alv", "kaj")
+//        .put("alv", "kcg")
+//        .put("alv", "ken")
         .build();
 
     static final Multimap<String, String> REMOVE_PARENT_CHILDREN = ImmutableMultimap.<String, String> builder()

@@ -3,7 +3,6 @@ package org.unicode.cldr.util;
 import static org.unicode.cldr.util.PathUtilities.getNormalizedPathString;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -4459,6 +4458,10 @@ public class SupplementalDataInfo {
         return attributeValidityInfo;
     }
 
+    /**
+     * Returns a full hierarchy of language containment extracted from wikidata. It is different from LanguageGroup, which is a subset used in CLDR UI/Charts.
+     * @return
+     */
     public Multimap<String, String> getLanguageGroups() {
         return languageGroups;
     }

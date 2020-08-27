@@ -12,6 +12,12 @@ import org.unicode.cldr.util.ChainedMap.M3;
 import com.google.common.base.Joiner;
 import com.ibm.icu.util.ULocale;
 
+/**
+ * This is a high-level language group used in CLDR.
+ * One of the main functions is to group related languages together in CLDR UI/Charts, so it is a subset of the getSupplementalDataInfo.getLanguageGroups.
+ * The goal is a small number of groups, with a reasonably sized set of children in each group.
+ * When a common ancestor has too few children, we go up a level so that more are in the group.
+ */
 public enum LanguageGroup {
     root("und"), germanic("gem"), celtic("cel"), romance("roa"), slavic("sla"), baltic("bat"),
     indic("inc"), iranian("ira"), other_indo("ine_001"), caucasian("cau"), dravidian("dra"),
