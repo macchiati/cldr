@@ -69,7 +69,7 @@ public class GenerateLanguageContainment {
                 ? code : v.get0().get(0);
             result = result.contains("_")
                 ? code
-                : result;
+                    : result;
             return result;
         },
         null, NAME);
@@ -350,7 +350,7 @@ public class GenerateLanguageContainment {
                     if (code.equals("zh")) {
                         code = "zhx"; // rewrite collections usage
                     } else {
-                        log("Skipping inheritance from\t" + chain + "\t" + code + "\tfrom\t" + items);
+                        log("Skipping leaf inheriting from leaf\t" + showQids(chain) + "\t" + showQid(code));
                         continue;
                     }
                 }
@@ -359,7 +359,7 @@ public class GenerateLanguageContainment {
 
                 boolean changed = chain.add(code);
                 if (!changed) {
-                    log("Cycle in\t" + chain + "\tfrom\t" + items);
+                    log("Skipping cycle in\t" + chain + "\tfrom\t" + showQids(item));
                     continue main;
                 }
             }
@@ -419,6 +419,27 @@ public class GenerateLanguageContainment {
 //            chain.add(1,"und");
 //        }
 //        return chain;
+    }
+
+    private static String showQids(Collection<String> items) {
+        StringBuilder buffer = new StringBuilder();
+
+        for (String qid : items) {
+            String nameAndCode = showQid(qid);
+            if (nameAndCode == null) {
+                continue;
+            }
+            if (buffer.length() != 0) {
+                buffer.append(", ");
+            }
+            buffer.append(nameAndCode);
+        }
+        return buffer.toString();
+    }
+
+    private static String showQid(String qid) {
+        String code3 = entityToCode.get(qid);
+        return code3 == null ? null : ENGLISH.getName(code3) + " ⦅" + code3 + "⦆";
     }
 
     private static void log(String string) {
