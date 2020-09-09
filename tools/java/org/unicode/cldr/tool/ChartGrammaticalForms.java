@@ -200,7 +200,7 @@ public class ChartGrammaticalForms extends Chart {
 
         MapComparator<String> caseOrder = new MapComparator<>(new String[] {
             "nominative", "vocative", "accusative", "oblique",
-            "genitive", "dative", "locative", "instrumental"});
+            "genitive", "locative", "instrumental", "dative"});
         Set<String> sortedCases = new TreeSet<>(caseOrder);
 
         MapComparator<String> genderOrder = new MapComparator<>(new String[] {
@@ -277,184 +277,13 @@ public class ChartGrammaticalForms extends Chart {
             Map<String, TablePrinterWithHeader> info = new LinkedHashMap<>();
 
 
-            if (sortedCases.size() > 1) {
-                // set up the table and add the headers
-                TablePrinter caseTablePrinter = new TablePrinter()
-                    .addColumn("Unit", "class='source' width='1%'", CldrUtility.getDoubleLinkMsg(), "class='source'", true)
-                    .setSortPriority(2)
-                    .setRepeatHeader(true)
-                    .addColumn("Quantity", "class='source' width='1%'", null, "class='source'", true)
-                    .setSortPriority(0)
-                    .addColumn("Size", "class='source' width='1%'", null, "class='source'", true)
-                    .setSortPriority(1)
-                    .setHidden(true)
-                    .addColumn("Gender", "class='source' width='1%'", null, "class='source'", true)
-                    .addColumn("Case", "class='source' width='1%'", null, "class='source'", true)
-                    ;
-                double width = ((int) ((99.0 / (adjustedPlurals.size()*2 + 1)) * 1000)) / 1000.0;
-                String widthStringTarget = "class='target' width='" + width + "%'";
-                final PluralRules pluralRules = plurals.getPluralRules();
-
-                addTwoColumns(caseTablePrinter, widthStringTarget, adjustedPlurals, pluralRules, true);
-
-                // now get the items
-                // also gather info on the "best power units"
-
-                for (String longUnit : GrammarInfo.SPECIAL_TRANSLATION_UNITS) {
-                    final String shortUnit = UnitConverter.getShortId(longUnit);
-                    String unitCell = getBestBaseUnit(uc, shortUnit, sizeInBaseUnits);
-                    String quantity = shortUnit.contentEquals("generic") ? "temperature" : uc.getQuantityFromUnit(shortUnit, false);
-
-                    String gender = UnitPathType.gender.getTrans(cldrFile, "long", shortUnit, null, null, null, null);
-                    Set<String> systems = uc.getSystems(shortUnit);
-
-                    for (String case1 : sortedCases) { //
-                        // start a row, then add the cells in the row.
-                        caseTablePrinter
-                        .addRow()
-                        .addCell(unitCell)
-                        .addCell(quantity)
-                        .addCell(sizeInBaseUnits.value)
-                        .addCell(gender)
-                        .addCell(case1);
-
-                        for (Count plural : adjustedPlurals) {
-                            Double sample = getBestSample(pluralRules, plural);
-
-                            // <caseMinimalPairs case="nominative">{0} kostet €3,50.</caseMinimalPairs>
-
-                            String unitPattern = cldrFile.getStringValueWithBailey("//ldml/units/unitLength[@type=\"long\"]/unit[@type=\"" + longUnit + "\"]/unitPattern"
-                                + GrammarInfo.getGrammaticalInfoAttributes(grammarInfo, UnitPathType.unit, plural.toString(), null, case1));
-
-                            caseTablePrinter.addCell(unitPattern);
-
-                            String numberPlusUnit = MessageFormat.format(unitPattern, decFormat.format(sample));
-
-                            String caseMinimalPair = cldrFile.getStringValue("//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"" + case1 + "\"]");
-                            String withContext = caseMinimalPair == null ? numberPlusUnit : MessageFormat.format(caseMinimalPair, numberPlusUnit);
-
-                            caseTablePrinter.addCell(withContext);
-                        }
-                        // finish the row
-                        caseTablePrinter.finishRow();
-                    }
-                }
-                info.put("Unit Case Info", new TablePrinterWithHeader(
-                    "<p>This table has rows contains unit forms appropriate for different grammatical cases and plural forms. "
-                        + "Each plural form has a sample value such as <i>(1.2)</i> or <i>2</i>. "
-                        + "That value is used with the localized unit pattern to form a formatted measure, such as “2,0 Stunden”. "
-                        + "That formatted measure is in turn substituted into a "
-                        + "<b><a target='doc-minimal-pairs' href='http://cldr.unicode.org/translation/grammatical-inflection#TOC-Miscellaneous-Minimal-Pairs'>case minimal pair pattern</a></b>. "
-                        + "The <b>Gender</b> column is informative; it just supplies the supplied gender for the unit.</p>\n"
-                        + "<ul><li>For clarity, conversion values are supplied for non-metric units. "
-                        + "For more information, see <a target='unit_conversions' href='../supplemental/unit_conversions.html'>Unit Conversions</a>.</li>"
-                        + "</ul>\n"
-                        , caseTablePrinter));
+            if (sortedCases.size() > 1 || sortedGenders.size() > 1) {
+                unitPowerComponents(sortedCases, sortedGenders, unitToBestUnit, placeholderMatcher, unitPatternOut, locale, cldrFile, plurals, adjustedPlurals,
+                    decFormat, info);
             }
 
-            if (sortedCases.size() > 1 || sortedGenders.size() > 1) {
-
-                // get best units for gender.
-                Multimap<String, BestUnitForGender> bestUnitForGender = TreeMultimap.create();
-
-                for (String longUnit : GrammarInfo.SPECIAL_TRANSLATION_UNITS) {
-                    final String shortUnit = UnitConverter.getShortId(longUnit);
-                    String gender = UnitPathType.gender.getTrans(cldrFile, "long", shortUnit, null, null, null, null);
-                    final BestUnitForGender bestUnit = unitToBestUnit.get(shortUnit);
-                    if (bestUnit != null) {
-                        bestUnitForGender.put(gender, bestUnit);
-                    }
-                }
-
-                for (Entry<String, Collection<BestUnitForGender>> entry : bestUnitForGender.asMap().entrySet()) {
-                    List<String> items = entry.getValue()
-                        .stream()
-                        .map(x -> x.shortUnit)
-                        .collect(Collectors.toList());
-                    System.out.println(locale + "\t" + entry.getKey() + "\t" + items);
-                }
-
-
-                TablePrinter caseTablePrinter = new TablePrinter()
-                    .addColumn("Unit", "class='source' width='1%'", CldrUtility.getDoubleLinkMsg(), "class='source'", true)
-                    .setSortPriority(2)
-                    .setRepeatHeader(true)
-                    .addColumn("Case", "class='source' width='1%'", null, "class='source'", true)
-                    .addColumn("Gender", "class='source' width='1%'", null, "class='source'", true)
-                    ;
-                double width = ((int) ((99.0 / (adjustedPlurals.size()*2 + 1)) * 1000)) / 1000.0;
-                String widthStringTarget = "class='target' width='" + width + "%'";
-                final PluralRules pluralRules = plurals.getPluralRules();
-
-                addTwoColumns(caseTablePrinter, widthStringTarget, adjustedPlurals, pluralRules, false);
-
-                // now get the items
-                for (String power : Arrays.asList("power2", "power3")) {
-                    String unitCell = power;
-
-                    for (String gender : sortedGenders) {
-                        Collection<BestUnitForGender> bestUnits = bestUnitForGender.get(gender);
-                        String bestUnit = null;
-                        if (!bestUnits.isEmpty()) {
-                            bestUnit = bestUnits.iterator().next().shortUnit;
-                        }
-
-                        for (String case1 : sortedCases) { //
-                            // start a row, then add the cells in the row.
-                            caseTablePrinter
-                            .addRow()
-                            .addCell(unitCell)
-                            .addCell(case1)
-                            .addCell(gender + (bestUnit == null ? "" : "\n(" + bestUnit + ")"))
-                            ;
-
-                            for (Count plural : adjustedPlurals) {
-                                String localizedPowerPattern = UnitPathType.power.getTrans(cldrFile, "long", power, plural.toString(), case1, gender, null);
-                                caseTablePrinter.addCell(localizedPowerPattern);
-
-                                if (bestUnit == null) {
-                                    caseTablePrinter.addCell("n/a");
-                                } else {
-                                    Double samplePlural = getBestSample(pluralRules, plural);
-                                    String localizedUnitPattern = UnitPathType.unit.getTrans(cldrFile, "long", bestUnit, plural.toString(), case1, gender, null);
-                                    placeholderPosition = UnitConverter.extractUnit(placeholderMatcher, localizedUnitPattern, unitPatternOut);
-                                    if (placeholderPosition != PlaceholderLocation.middle) {
-                                        localizedUnitPattern = unitPatternOut.value;
-                                        String placeholderPattern = placeholderMatcher.group();
-
-                                        String combined;
-                                        try {
-                                            combined = UnitConverter.combineLowercasing(new ULocale(locale), "long", localizedPowerPattern, localizedUnitPattern);
-                                        } catch (Exception e) {
-                                           throw new IllegalArgumentException(locale + ") Can't combine "
-                                               + "localizedPowerPattern=«" + localizedPowerPattern
-                                               + "» with localizedUnitPattern=«"+ localizedUnitPattern + "»"
-                                               );
-                                        }
-                                        String combinedWithPlaceholder = UnitConverter.addPlaceholder(combined, placeholderPattern, placeholderPosition);
-
-                                        String sample = MessageFormat.format(combinedWithPlaceholder, decFormat.format(samplePlural));
-
-                                        String caseMinimalPair = cldrFile.getStringValue("//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"" + case1 + "\"]");
-                                        String withContext = caseMinimalPair == null ? sample : MessageFormat.format(caseMinimalPair, sample);
-
-                                        caseTablePrinter.addCell(withContext);
-                                    }
-                                }
-                            }
-                            // finish the row
-                            caseTablePrinter.finishRow();
-                        }
-                    }
-                }
-                info.put("Unit Power Components", new TablePrinterWithHeader(
-                    "<p>This table shows the square (power2) and cubic (power3) patterns, which may vary by case, gender, and plural forms. "
-                        + "Each gender is illustrated with a unit where possible, such as <i>(second)</i> or <i>(meter)</i>. "
-                        + "Each plural category is illustrated with a unit where possible, such as <i>(1)</i> or <i>(1.2)</i>. "
-                        + "The patterns are first supplied, and then combined with the samples and "
-                        + "<b><a target='doc-minimal-pairs' href='http://cldr.unicode.org/translation/grammatical-inflection#TOC-Miscellaneous-Minimal-Pairs'>case minimal pair patterns</a></b> "
-                        + "in the next <b>Formatted Sample</b> column."
-                        + "</p>", caseTablePrinter));
+            if (sortedCases.size() > 1) {
+                unitGrammarChart(sortedCases, sizeInBaseUnits, grammarInfo, cldrFile, plurals, adjustedPlurals, decFormat, info);
             }
 
 
@@ -465,13 +294,197 @@ public class ChartGrammaticalForms extends Chart {
         }
     }
 
+    public void unitGrammarChart(Set<String> sortedCases, Output<Double> sizeInBaseUnits, GrammarInfo grammarInfo, CLDRFile cldrFile, PluralInfo plurals,
+        Collection<Count> adjustedPlurals, DecimalFormat decFormat, Map<String, TablePrinterWithHeader> info) {
+        // set up the table and add the headers
+        TablePrinter caseTablePrinter = new TablePrinter()
+            .addColumn("Unit", "class='source' width='1%'", CldrUtility.getDoubleLinkMsg(), "class='source'", true)
+            .setSortPriority(2)
+            .setRepeatHeader(true)
+            .addColumn("Quantity", "class='source' width='1%'", null, "class='source'", true)
+            .setSortPriority(0)
+            .addColumn("Size", "class='source' width='1%'", null, "class='source'", true)
+            .setSortPriority(1)
+            .setHidden(true)
+            .addColumn("Gender", "class='source' width='1%'", null, "class='source'", true)
+            .addColumn("Case", "class='source' width='1%'", null, "class='source'", true)
+            ;
+        double width = ((int) ((99.0 / (adjustedPlurals.size()*2 + 1)) * 1000)) / 1000.0;
+        String widthStringTarget = "class='target' width='" + width + "%'";
+        final PluralRules pluralRules = plurals.getPluralRules();
+
+        addTwoColumns(caseTablePrinter, widthStringTarget, adjustedPlurals, pluralRules, true);
+
+        // now get the items
+        // also gather info on the "best power units"
+
+        for (String longUnit : GrammarInfo.SPECIAL_TRANSLATION_UNITS) {
+            final String shortUnit = UnitConverter.getShortId(longUnit);
+            String unitCell = getBestBaseUnit(uc, shortUnit, sizeInBaseUnits);
+            String quantity = shortUnit.contentEquals("generic") ? "temperature" : uc.getQuantityFromUnit(shortUnit, false);
+
+            String gender = UnitPathType.gender.getTrans(cldrFile, "long", shortUnit, null, null, null, null);
+            Set<String> systems = uc.getSystems(shortUnit);
+
+            for (String case1 : sortedCases) { //
+                // start a row, then add the cells in the row.
+                caseTablePrinter
+                .addRow()
+                .addCell(unitCell)
+                .addCell(quantity)
+                .addCell(sizeInBaseUnits.value)
+                .addCell(gender)
+                .addCell(case1);
+
+                for (Count plural : adjustedPlurals) {
+                    Double sample = getBestSample(pluralRules, plural);
+
+                    // <caseMinimalPairs case="nominative">{0} kostet €3,50.</caseMinimalPairs>
+
+                    String unitPattern = cldrFile.getStringValueWithBailey("//ldml/units/unitLength[@type=\"long\"]/unit[@type=\"" + longUnit + "\"]/unitPattern"
+                        + GrammarInfo.getGrammaticalInfoAttributes(grammarInfo, UnitPathType.unit, plural.toString(), null, case1));
+
+                    caseTablePrinter.addCell(unitPattern);
+
+                    String numberPlusUnit = MessageFormat.format(unitPattern, decFormat.format(sample));
+
+                    String caseMinimalPair = cldrFile.getStringValue("//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"" + case1 + "\"]");
+                    String withContext = caseMinimalPair == null ? numberPlusUnit : MessageFormat.format(caseMinimalPair, numberPlusUnit);
+
+                    caseTablePrinter.addCell(withContext);
+                }
+                // finish the row
+                caseTablePrinter.finishRow();
+            }
+        }
+        info.put("Unit Case Info", new TablePrinterWithHeader(
+            "<p>This table has rows contains unit forms appropriate for different grammatical cases and plural forms. "
+                + "Each plural form has a sample value such as <i>(1.2)</i> or <i>2</i>. "
+                + "That value is used with the localized unit pattern to form a formatted measure, such as “2,0 Stunden”. "
+                + "That formatted measure is in turn substituted into a "
+                + "<b><a target='doc-minimal-pairs' href='http://cldr.unicode.org/translation/grammatical-inflection#TOC-Miscellaneous-Minimal-Pairs'>case minimal pair pattern</a></b>. "
+                + "The <b>Gender</b> column is informative; it just supplies the supplied gender for the unit.</p>\n"
+                + "<ul><li>For clarity, conversion values are supplied for non-metric units. "
+                + "For more information, see <a target='unit_conversions' href='../supplemental/unit_conversions.html'>Unit Conversions</a>.</li>"
+                + "</ul>\n"
+                , caseTablePrinter));
+    }
+
+    public void unitPowerComponents(Set<String> sortedCases, Set<String> sortedGenders, Map<String, BestUnitForGender> unitToBestUnit, Matcher placeholderMatcher,
+        Output<String> unitPatternOut, String locale, CLDRFile cldrFile, PluralInfo plurals, Collection<Count> adjustedPlurals, DecimalFormat decFormat,
+        Map<String, TablePrinterWithHeader> info) {
+        PlaceholderLocation placeholderPosition;
+        // get best units for gender.
+        Multimap<String, BestUnitForGender> bestUnitForGender = TreeMultimap.create();
+
+        for (String longUnit : GrammarInfo.SPECIAL_TRANSLATION_UNITS) {
+            final String shortUnit = UnitConverter.getShortId(longUnit);
+            String gender = UnitPathType.gender.getTrans(cldrFile, "long", shortUnit, null, null, null, null);
+            final BestUnitForGender bestUnit = unitToBestUnit.get(shortUnit);
+            if (bestUnit != null) {
+                bestUnitForGender.put(gender, bestUnit);
+            }
+        }
+
+        for (Entry<String, Collection<BestUnitForGender>> entry : bestUnitForGender.asMap().entrySet()) {
+            List<String> items = entry.getValue()
+                .stream()
+                .map(x -> x.shortUnit)
+                .collect(Collectors.toList());
+            System.out.println(locale + "\t" + entry.getKey() + "\t" + items);
+        }
+
+
+        TablePrinter caseTablePrinter = new TablePrinter()
+            .addColumn("Unit", "class='source' width='1%'", CldrUtility.getDoubleLinkMsg(), "class='source'", true)
+            .setSortPriority(2)
+            .setRepeatHeader(true)
+            .addColumn("Case", "class='source' width='1%'", null, "class='source'", true)
+            .addColumn("Gender", "class='source' width='1%'", null, "class='source'", true)
+            ;
+        double width = ((int) ((99.0 / (adjustedPlurals.size()*2 + 1)) * 1000)) / 1000.0;
+        String widthStringTarget = "class='target' width='" + width + "%'";
+        final PluralRules pluralRules = plurals.getPluralRules();
+
+        addTwoColumns(caseTablePrinter, widthStringTarget, adjustedPlurals, pluralRules, true);
+
+        // now get the items
+        for (String power : Arrays.asList("power2", "power3")) {
+            String unitCell = power;
+
+            for (String gender : sortedGenders) {
+                Collection<BestUnitForGender> bestUnits = bestUnitForGender.get(gender);
+                String bestUnit = null;
+                if (!bestUnits.isEmpty()) {
+                    bestUnit = bestUnits.iterator().next().shortUnit;
+                }
+
+                for (String case1 : sortedCases) { //
+                    // start a row, then add the cells in the row.
+                    caseTablePrinter
+                    .addRow()
+                    .addCell(unitCell)
+                    .addCell(case1)
+                    .addCell(gender + (bestUnit == null ? "" : "\n(" + bestUnit + ")"))
+                    ;
+
+                    for (Count plural : adjustedPlurals) {
+                        String localizedPowerPattern = UnitPathType.power.getTrans(cldrFile, "long", power, plural.toString(), case1, gender, null);
+                        caseTablePrinter.addCell(localizedPowerPattern);
+
+                        if (bestUnit == null) {
+                            caseTablePrinter.addCell("n/a");
+                        } else {
+                            Double samplePlural = getBestSample(pluralRules, plural);
+                            String localizedUnitPattern = UnitPathType.unit.getTrans(cldrFile, "long", bestUnit, plural.toString(), case1, gender, null);
+                            placeholderPosition = UnitConverter.extractUnit(placeholderMatcher, localizedUnitPattern, unitPatternOut);
+                            if (placeholderPosition != PlaceholderLocation.middle) {
+                                localizedUnitPattern = unitPatternOut.value;
+                                String placeholderPattern = placeholderMatcher.group();
+
+                                String combined;
+                                try {
+                                    combined = UnitConverter.combineLowercasing(new ULocale(locale), "long", localizedPowerPattern, localizedUnitPattern);
+                                } catch (Exception e) {
+                                   throw new IllegalArgumentException(locale + ") Can't combine "
+                                       + "localizedPowerPattern=«" + localizedPowerPattern
+                                       + "» with localizedUnitPattern=«"+ localizedUnitPattern + "»"
+                                       );
+                                }
+                                String combinedWithPlaceholder = UnitConverter.addPlaceholder(combined, placeholderPattern, placeholderPosition);
+
+                                String sample = MessageFormat.format(combinedWithPlaceholder, decFormat.format(samplePlural));
+
+                                String caseMinimalPair = cldrFile.getStringValue("//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"" + case1 + "\"]");
+                                String withContext = caseMinimalPair == null ? sample : MessageFormat.format(caseMinimalPair, sample);
+
+                                caseTablePrinter.addCell(withContext);
+                            }
+                        }
+                    }
+                    // finish the row
+                    caseTablePrinter.finishRow();
+                }
+            }
+        }
+        info.put("Unit Power Components", new TablePrinterWithHeader(
+            "<p>This table shows the square (power2) and cubic (power3) patterns, which may vary by case, gender, and plural forms. "
+                + "Each gender is illustrated with a unit where possible, such as <i>(second)</i> or <i>(meter)</i>. "
+                + "Each plural category is illustrated with a unit where possible, such as <i>(1)</i> or <i>(1.2)</i>. "
+                + "The patterns are first supplied, and then combined with the samples and "
+                + "<b><a target='doc-minimal-pairs' href='http://cldr.unicode.org/translation/grammatical-inflection#TOC-Miscellaneous-Minimal-Pairs'>case minimal pair patterns</a></b> "
+                + "in the next <b>Formatted Sample</b> column."
+                + "</p>", caseTablePrinter));
+    }
+
     public void addTwoColumns(TablePrinter caseTablePrinter, String widthStringTarget, Collection<Count> adjustedPlurals, final PluralRules pluralRules, boolean spanRows) {
         for (Count plural : adjustedPlurals) {
             Double sample = getBestSample(pluralRules, plural);
             final String pluralHeader = plural.toString() + " (" + sample + ")";
             caseTablePrinter.addColumn("Form for: " + pluralHeader, widthStringTarget, null, "class='target'", true)
             .setSpanRows(spanRows);
-            caseTablePrinter.addColumn("Formatted Sample: " + pluralHeader, widthStringTarget, null, "class='target'", true);
+            caseTablePrinter.addColumn("Formatted Sample: " + pluralHeader, widthStringTarget, null, "class='target'", true)
+            .setSpanRows(spanRows);
         }
     }
 

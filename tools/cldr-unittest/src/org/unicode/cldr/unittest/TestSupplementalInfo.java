@@ -33,6 +33,7 @@ import org.unicode.cldr.util.CLDRFile;
 import org.unicode.cldr.util.CLDRFile.WinningChoice;
 import org.unicode.cldr.util.CLDRLocale;
 import org.unicode.cldr.util.CldrUtility;
+import org.unicode.cldr.util.Counter;
 import org.unicode.cldr.util.GrammarInfo;
 import org.unicode.cldr.util.GrammarInfo.GrammaticalFeature;
 import org.unicode.cldr.util.GrammarInfo.GrammaticalScope;
@@ -69,7 +70,9 @@ import org.unicode.cldr.util.Validity;
 import org.unicode.cldr.util.Validity.Status;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
 import com.ibm.icu.impl.Relation;
@@ -80,6 +83,10 @@ import com.ibm.icu.impl.Utility;
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.lang.UCharacterEnums;
 import com.ibm.icu.lang.UScript;
+import com.ibm.icu.number.FormattedNumber;
+import com.ibm.icu.number.LocalizedNumberFormatter;
+import com.ibm.icu.number.Notation;
+import com.ibm.icu.number.NumberFormatter;
 import com.ibm.icu.text.PluralRules;
 import com.ibm.icu.text.PluralRules.FixedDecimal;
 import com.ibm.icu.text.PluralRules.FixedDecimalRange;
@@ -1918,6 +1925,87 @@ public class TestSupplementalInfo extends TestFmwkPlus {
             System.out.println();
             for (Entry<String, Collection<String>> entry : allValues.asMap().entrySet()) {
                 System.out.println(entry.getKey() + "\t" + Joiner.on(", ").join(entry.getValue()));
+            }
+        }
+    }
+
+    static final LocalizedNumberFormatter simple = NumberFormatter.with().notation(Notation.simple()).locale(undLocale);
+    static final LocalizedNumberFormatter scientific = NumberFormatter.with().notation(Notation.scientific()).locale(undLocale);
+
+    public void TestFrenchERules() {
+        final ULocale undLocale = ULocale.forLanguageTag("und");
+        Set<String> localesWithE = ImmutableSet.of("fr");
+        for (String locale : localesWithE) {
+            PluralRules frenchPlurals = SUPPLEMENTAL.getPlurals(locale).getPluralRules();
+            Object[][]tests = {
+                {0, "one"},
+                {1, "one"},
+                {2, "other"},
+                {100000, "other"},
+                {999999, "other"},
+                {1e6, "many"},
+                {2300000, "other"}, // 2 300 000 vues
+                {2.3e6, "many"}, // 2,3 millions de vues
+
+                {1_284_043, "other"}, //  1,284,043 other 1 284 043 vues
+                {1_200_000, "other"}, //  1 200 000 other 1 200 000 vues
+                {1.2e6, "many"}, // 1,2 million many 1,2 million de vues, 1,2M de vues
+                {1_000_000, "many"}, // 1 000 000 many 1 000 000 de vues
+                {1E6, "many"}, // 1 million 1 000 000 1 million de vues, 1 M de vues
+                {1000, "other"}, //  1,284,043 other mille vues
+                {234.5E6, "many"}, //  234,5 millions many 234.5M de vues
+            };
+            for (Object[] row : tests) {
+                final Object r0 = row[0];
+                String expected = (String) row[1];
+                checkENumber(frenchPlurals, r0, expected);
+            }
+        }
+    }
+
+    public void checkENumber(PluralRules frenchPlurals, final Object r0, String expected) {
+        double number;
+        LocalizedNumberFormatter localizedNumberFormatter;
+        if (r0 instanceof Integer) {
+            localizedNumberFormatter = simple;
+             number = (Integer) r0;
+        } else {
+            localizedNumberFormatter = scientific;
+            number = (Double) r0;
+        }
+        FormattedNumber source = localizedNumberFormatter.format(number);
+        String actual = frenchPlurals.select(source);
+        assertEquals(source.toString(), expected, actual);
+    }
+
+    public void TestPluralRuleEdgeCases() {
+        //TODO check default is 'other'
+        Multimap<PluralRules, String> rulesToLocales = HashMultimap.create();
+        for (String locale : SUPPLEMENTAL.getPluralLocales()) {
+            PluralRules rules = SUPPLEMENTAL.getPlurals(locale).getPluralRules();
+            rulesToLocales.put(rules, locale);
+        }
+        final int limit = 999;
+        for (Entry<PluralRules, Collection<String>> ruleAndLocales : rulesToLocales.asMap().entrySet()) {
+            Counter<String> histogram = new Counter<>();
+            PluralRules rules = ruleAndLocales.getKey();
+            Set<String> locales = ImmutableSortedSet.copyOf(ruleAndLocales.getValue());
+            for (String cat : rules.getKeywords()) {
+                histogram.add(cat, 0);
+            }
+            for (int i = 0; i <= limit; ++i) {
+                String category = rules.select(i);
+                histogram.add(category, 1);
+            }
+            Multimap<Long, String> grouped = TreeMultimap.create();
+            for (R2<Long, String> ranked : histogram.getEntrySetSortedByCount(false, null)) {
+                grouped.put(ranked.get0(), ranked.get1());
+            }
+            Collection<String> topSet = grouped.asMap().entrySet().iterator().next().getValue();
+            if (!topSet.contains("other")) {
+                warnln("Rules for locales\t" + locales + "\tdon't have 'other' as most common among integers 0.." + limit + ":\t" + grouped.asMap().entrySet());
+            } else if (isVerbose()) {
+                logln("OK Rules for locales\t" + locales + "\tDO have 'other' as most common among integers 0.." + limit + ":\t" + grouped.asMap().entrySet());
             }
         }
     }

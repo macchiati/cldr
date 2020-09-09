@@ -12,6 +12,9 @@ public class GenerateAllCharts {
         FileCopier.copy(GenerateAllCharts.class, "main-index.html", CLDRPaths.CHART_DIRECTORY, "index.html");
         FormattedFileWriter.copyIncludeHtmls(CLDRPaths.CHART_DIRECTORY);
 
+        if (ToolConstants.CHART_VERSION.compareTo("37") >= 0) {
+            new ChartGrammaticalForms().writeChart(null);
+        }
         ShowLanguages.main(args);
 
         new ChartAnnotations().writeChart(null);
