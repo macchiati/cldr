@@ -358,7 +358,7 @@ public class ShowLocaleCoverage {
     static final List<ReleaseInfo> versionToYear;
     static {
         Object[][] mapping = {
-            { VersionInfo.getInstance(37), 2020 },
+            { VersionInfo.getInstance(38), 2020 },
             { VersionInfo.getInstance(36), 2019 },
             { VersionInfo.getInstance(34), 2018 },
             { VersionInfo.getInstance(32), 2017 },
