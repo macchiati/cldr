@@ -1,0 +1,731 @@
+Adlam	;	*	;	moderate	;	All others
+Adlam	;	ff	;	modern	;	Fulah
+Adobe	;	ar	;	basic
+Adobe	;	az	;	basic
+Adobe	;	be	;	moderate
+Adobe	;	bg	;	basic
+Adobe	;	bo	;	basic
+Adobe	;	bs	;	basic
+Adobe	;	ca	;	basic
+Adobe	;	cs	;	basic
+Adobe	;	da	;	moderate
+Adobe	;	de	;	comprehensive
+Adobe	;	el	;	basic
+Adobe	;	en	;	comprehensive
+Adobe	;	es	;	basic
+Adobe	;	et	;	basic
+Adobe	;	fa	;	basic
+Adobe	;	fi	;	basic
+Adobe	;	fr	;	comprehensive
+Adobe	;	he	;	moderate
+Adobe	;	hi	;	basic
+Adobe	;	hr	;	basic
+Adobe	;	hu	;	basic
+Adobe	;	hy	;	basic
+Adobe	;	id	;	basic
+Adobe	;	ii	;	basic
+Adobe	;	is	;	basic
+Adobe	;	it	;	moderate
+Adobe	;	ja	;	comprehensive
+Adobe	;	kk	;	basic
+Adobe	;	km	;	basic
+Adobe	;	ko	;	moderate
+Adobe	;	lo	;	basic
+Adobe	;	lt	;	basic
+Adobe	;	lv	;	basic
+Adobe	;	mk	;	basic
+Adobe	;	mn_Mong	;	basic
+Adobe	;	ms	;	basic
+Adobe	;	nl	;	moderate
+Adobe	;	nn	;	moderate
+Adobe	;	no	;	moderate
+Adobe	;	pl	;	basic
+Adobe	;	pt	;	moderate
+Adobe	;	ro	;	basic
+Adobe	;	ru	;	moderate
+Adobe	;	sk	;	basic
+Adobe	;	sl	;	basic
+Adobe	;	sq	;	basic
+Adobe	;	sr	;	basic
+Adobe	;	sr	;	basic
+Adobe	;	sv	;	moderate
+Adobe	;	th	;	basic
+Adobe	;	tr	;	basic
+Adobe	;	ug	;	basic
+Adobe	;	uk	;	basic
+Adobe	;	vi	;	basic
+Adobe	;	zh	;	moderate
+Adobe	;	zh	;	moderate
+Afghan_CSA	;	*	;	moderate	;	All others
+Afghan_CSA	;	ps	;	modern	;	Pashto
+Afghan_MCIT	;	*	;	moderate	;	All others
+Afghan_MCIT	;	ps	;	modern	;	Pashto
+Afrigen	;	*	;	moderate	;	All others
+Afrigen	;	ee	;	modern	;	Ewe
+Apple	;	ar	;	modern
+Apple	;	as	;	basic
+Apple	;	az	;	basic
+Apple	;	be	;	basic
+Apple	;	bg	;	modern
+Apple	;	bn	;	modern
+Apple	;	bs	;	basic
+Apple	;	ca	;	modern
+Apple	;	cs	;	modern
+Apple	;	cy	;	basic
+Apple	;	da	;	modern
+Apple	;	de	;	modern
+Apple	;	doi	;	basic	;	Dogri
+Apple	;	el	;	modern
+Apple	;	en	;	comprehensive
+Apple	;	en_AU	;	modern
+Apple	;	en_GB	;	modern
+Apple	;	es	;	modern
+Apple	;	es_419	;	modern
+Apple	;	es_MX	;	modern
+Apple	;	et	;	modern
+Apple	;	fa	;	modern
+Apple	;	fi	;	modern
+Apple	;	fil	;	modern
+Apple	;	fo	;	modern
+Apple	;	fr	;	modern
+Apple	;	fr_CA	;	modern
+Apple	;	gu	;	modern
+Apple	;	he	;	modern
+Apple	;	hi	;	modern
+Apple	;	hr	;	modern
+Apple	;	hu	;	modern
+Apple	;	hy	;	basic
+Apple	;	id	;	modern
+Apple	;	ii	;	basic
+Apple	;	is	;	modern
+Apple	;	it	;	modern
+Apple	;	ja	;	modern
+Apple	;	kk	;	basic
+Apple	;	km	;	basic
+Apple	;	kn	;	modern
+Apple	;	ko	;	modern
+Apple	;	lo	;	basic
+Apple	;	lt	;	modern
+Apple	;	lv	;	modern
+Apple	;	mk	;	modern
+Apple	;	ml	;	modern
+Apple	;	mn	;	basic
+Apple	;	mr	;	modern
+Apple	;	ms	;	modern
+Apple	;	mt	;	basic
+Apple	;	nl	;	modern
+Apple	;	nn	;	modern
+Apple	;	no	;	modern
+Apple	;	or	;	basic
+Apple	;	pa	;	modern
+Apple	;	pl	;	modern
+Apple	;	pt	;	modern
+Apple	;	pt_PT	;	modern
+Apple	;	ro	;	modern
+Apple	;	ru	;	modern
+Apple	;	sa	;	basic	;	Sanskrit
+Apple	;	sk	;	modern
+Apple	;	sl	;	modern
+Apple	;	sq	;	basic
+Apple	;	sr	;	modern
+Apple	;	sr_Latn	;	modern
+Apple	;	sv	;	modern
+Apple	;	ta	;	modern
+Apple	;	te	;	modern
+Apple	;	th	;	modern
+Apple	;	to	;	modern
+Apple	;	tr	;	modern
+Apple	;	ug	;	basic
+Apple	;	uk	;	modern
+Apple	;	ur	;	modern
+Apple	;	vi	;	modern
+Apple	;	yi	;	basic
+Apple	;	zh	;	modern
+Apple	;	zh_Hant	;	modern
+Apple	;	zh_Hant_HK	;	modern
+Bangladesh	;	*	;	moderate	;	All others
+Bangladesh	;	bn	;	modern	;	Bengali
+Bangor_Univ	;	*	;	moderate	;	All others
+Bangor_Univ	;	cy	;	modern	;	Welsh
+Bhutan	;	*	;	moderate	;	All others
+Bhutan	;	dz	;	modern	;	Dzongkha
+Breton	;	*	;	moderate	;	All others
+Breton	;	br	;	modern	;	Breton
+Cherokee	;	*	;	moderate	;	All others
+Cherokee	;	chr	;	modern	;	Cherokee
+Cldr	;	af	;	modern	;	T3	Afrikaans
+Cldr	;	am	;	modern	;	T4	Amharic
+Cldr	;	ar	;	modern	;	T1	Arabic
+Cldr	;	ar_DZ	;	modern	;	TR Arabic (Algeria)
+Cldr	;	as	;	modern	;	Assamese
+Cldr	;	az	;	modern	;	T3.1	Azerbaijani
+Cldr	;	be	;	modern	;	T5	Belarusian
+Cldr	;	bg	;	modern	;	T2	Bulgarian
+Cldr	;	bn	;	modern	;	T3	Bengali
+Cldr	;	bs	;	modern	;	T5	Bosnian		
+Cldr	;	ca	;	modern	;	T2	Catalan
+Cldr	;	ceb	;	moderate	;	Cebuano
+Cldr	;	cs	;	modern	;	T2	Czech
+Cldr	;	cy	;	modern	;	T5	Welsh
+Cldr	;	da	;	modern	;	T2	Danish
+Cldr	;	de	;	modern	;	T1	German
+Cldr	;	de_CH	;	modern	;	TR High German (Switzerland)
+Cldr	;	doi	;	basic	;	Dogri
+Cldr	;	el	;	modern	;	T2	Greek
+Cldr	;	en	;	modern	;	T0	American English
+Cldr	;	en_AU	;	modern
+Cldr	;	en_AU	;	modern	;	TR English (Australia)
+Cldr	;	en_CA	;	modern	;	TR English (Canada)
+Cldr	;	en_GB	;	modern	;	T1	British English
+Cldr	;	en_IN	;	modern	;	TR English (English)
+Cldr	;	es	;	modern	;	T1	European Spanish
+Cldr	;	es_419	;	modern	;	T1.1	Latin American Spanish
+Cldr	;	es_MX	;	modern
+Cldr	;	es_MX	;	modern	;	TR Spanish (Mexico)
+Cldr	;	es_US	;	modern	;	TR Spanish (United States)
+Cldr	;	et	;	modern	;	T3	Estonian
+Cldr	;	eu	;	modern	;	T5	Basque
+Cldr	;	fa	;	modern	;	T2.1	Persian
+Cldr	;	fi	;	modern	;	T2	Finnish
+Cldr	;	fil	;	modern	;	T2	Filipino
+Cldr	;	fr	;	modern	;	T1	French
+Cldr	;	fr_CA	;	modern
+Cldr	;	fr_CA	;	modern	;	TR French (Canada)
+Cldr	;	ga	;	modern	;	T5	Irish
+Cldr	;	gl	;	modern	;	T5	Galician
+Cldr	;	gu	;	modern	;	T4	Gujarati
+Cldr	;	ha	;	moderate	;	Hausa
+Cldr	;	he	;	modern	;	T2	Hebrew
+Cldr	;	hi	;	modern	;	T2	Hindi
+Cldr	;	hr	;	modern	;	T2	Croatian
+Cldr	;	hu	;	modern	;	T2	Hungarian
+Cldr	;	hy	;	modern	;	T3.1	Armenian
+Cldr	;	id	;	modern	;	T2	Indonesian
+Cldr	;	ig	;	moderate	;	Igbo
+Cldr	;	is	;	modern	;	T3	Icelandic
+Cldr	;	it	;	modern	;	T1	Italian
+Cldr	;	ja	;	modern	;	T1	Japanese
+Cldr	;	jv	;	modern	;	Javanese
+Cldr	;	ka	;	modern	;	T3.1	Georgian
+Cldr	;	kk	;	modern	;	T3.1	Kazakh
+Cldr	;	km	;	modern	;	T3.1	Khmer
+Cldr	;	kn	;	modern	;	T4	Kannada
+Cldr	;	ko	;	modern	;	T1	Korean
+Cldr	;	kok	;	basic	;	Konkani
+Cldr	;	ky	;	modern	;	T4	Kirghiz																
+Cldr	;	lo	;	modern	;	T3.1	Lao
+Cldr	;	lt	;	modern	;	T2	Lithuanian
+Cldr	;	lv	;	modern	;	T2	Latvian
+Cldr	;	mai	;	basic	;	Maithili (Devanagari script)
+Cldr	;	mk	;	modern	;	T3.1	Macedonian
+Cldr	;	ml	;	modern	;	T4	Malayalam
+Cldr	;	mn	;	modern	;	T3.1	Mongolian
+Cldr	;	mni	;	basic	;	Manipuri (Bengali script)
+Cldr	;	mr	;	modern	;	T3	Marathi
+Cldr	;	ms	;	modern	;	T3	Malay
+Cldr	;	my	;	modern	;	T3.1	Burmese (Myanmar)
+Cldr	;	ne	;	modern	;	T3.1	Nepali
+Cldr	;	nl	;	modern	;	T1	Dutch
+Cldr	;	nn	;	modern	;	Nynorsk
+Cldr	;	no	;	modern	;	T2	Norwegian (Bokmål)
+Cldr	;	or	;	modern	;	Odia
+Cldr	;	pa	;	modern	;	T4	Punjabi
+Cldr	;	pcm	;	basic	;	Nigerian Pidgin
+Cldr	;	pl	;	modern	;	T1	Polish
+Cldr	;	ps	;	modern	;	Pashto
+Cldr	;	pt	;	modern	;	T1	Brazilian Portuguese
+Cldr	;	pt_PT	;	modern	;	T2	European Portuguese
+Cldr	;	ro	;	modern	;	T2	Romanian
+Cldr	;	ru	;	modern	;	T1	Russian
+Cldr	;	sa	;	basic	;	Sanskrit
+Cldr	;	sat	;	basic	;	Santali (Olck script)
+Cldr	;	sd	;	modern	;	Sindhi
+Cldr	;	sd_Deva	;	basic	;	Sindhi (Devanagari script)
+Cldr	;	si	;	modern	;	T3.1	Sinhala
+Cldr	;	sk	;	modern	;	T2	Slovak
+Cldr	;	sl	;	modern	;	T2	Slovenian
+Cldr	;	so	;	modern	;	Somali
+Cldr	;	sq	;	modern	;	T3.1	Albanian
+Cldr	;	sr	;	modern	;	T2	Serbian
+Cldr	;	sr_Latn	;	modern	;	Tx	Serbian (auto-generated)		
+Cldr	;	su	;	basic	;	Sundanese (script TBD)
+Cldr	;	sv	;	modern	;	T2	Swedish
+Cldr	;	sw	;	modern	;	T3	Swahili 
+Cldr	;	ta	;	modern	;	T3	Tamil
+Cldr	;	te	;	modern	;	T4	Telugu
+Cldr	;	th	;	modern	;	T1	Thai
+Cldr	;	tk	;	modern	;	Turkmen
+Cldr	;	tr	;	modern	;	T1	Turkish
+Cldr	;	uk	;	modern	;	T2	Ukrainian
+Cldr	;	ur	;	modern	;	T4	Urdu
+Cldr	;	uz	;	modern	;	T4	Uzbek	(Latin)		
+Cldr	;	vi	;	modern	;	T2	Vietnamese
+Cldr	;	yo	;	moderate	;	Yoruba
+Cldr	;	yue	;	modern	;	T5	Cantonese
+Cldr	;	zh	;	modern	;	T1	Simplified Chinese
+Cldr	;	zh_Hant	;	modern	;	T1	Traditional Chinese
+Cldr	;	zh_Hant_HK	;	modern
+Cldr	;	zu	;	modern	;	T5	Zulu
+Facebook	;	ar	;	modern
+Facebook	;	da	;	modern
+Facebook	;	es	;	modern
+Facebook	;	es_419	;	modern
+Facebook	;	gn	;	modern
+Facebook	;	hr	;	modern
+Facebook	;	hu	;	modern
+Facebook	;	it	;	modern
+Facebook	;	pt_PT	;	modern
+Gaeilge	;	*	;	moderate	;	All others
+Gaeilge	;	ga	;	modern	;	Irish
+georgia_isi	;	*	;	moderate	;	All others
+georgia_isi	;	ka	;	modern	;	Georgian
+georgia_isi	;	os	;	modern	;	Ossetic
+Gnome	;	*	;	moderate	;	All others
+Gnome	;	ar	;	modern	;	Arabic
+Gnome	;	lt	;	modern	;	Lithuanian
+Google	;	af	;	modern	;	T3	Afrikaans
+Google	;	am	;	modern	;	T4	Amharic
+Google	;	ar	;	modern	;	T1	Arabic
+Google	;	ar_DZ	;	modern	;	TR Arabic (Algeria)
+Google	;	as	;	modern	;	T5	Assamese
+Google	;	az	;	modern	;	T3.1	Azerbaijani
+Google	;	be	;	modern	;	T5	Belarusian
+Google	;	bg	;	modern	;	T2	Bulgarian
+Google	;	bn	;	modern	;	T3	Bengali
+Google	;	bs	;	modern	;	T5	Bosnian
+Google	;	ca	;	modern	;	T2	Catalan
+Google	;	ceb	;	moderate	;	Cebuano
+Google	;	chr	;	basic	;	Cherokee
+Google	;	cs	;	modern	;	T2	Czech
+Google	;	cy	;	modern	;	T5	Welsh
+Google	;	da	;	modern	;	T2	Danish
+Google	;	de	;	modern	;	T1	German
+Google	;	de_CH	;	modern	;	TR High German (Switzerland) // generated
+Google	;	doi	;	basic	;	Dogri
+Google	;	el	;	modern	;	T2	Greek
+Google	;	en	;	modern	;	T0	American English
+Google	;	en_AU	;	modern	;	TR English (Australia)
+Google	;	en_CA	;	modern	;	TR English (Canada)
+Google	;	en_GB	;	modern	;	T1	British English
+Google	;	en_IN	;	modern	;	TR English (English)
+Google	;	es	;	modern	;	T1	European Spanish
+Google	;	es_419	;	modern	;	T1.1	Latin American Spanish
+Google	;	es_MX	;	modern	;	TR Spanish (Mexico)
+Google	;	es_US	;	modern	;	TR Spanish (United States)
+Google	;	et	;	modern	;	T3	Estonian
+Google	;	eu	;	modern	;	T5	Basque
+Google	;	fa	;	modern	;	T2.1	Persian
+Google	;	fi	;	modern	;	T2	Finnish
+Google	;	fil	;	modern	;	T2	Filipino
+Google	;	fr	;	modern	;	T1	French
+Google	;	fr_CA	;	modern	;	TR French (Canada)
+Google	;	ga	;	modern	;	T5	Irish
+Google	;	gl	;	modern	;	T5	Galician
+Google	;	gu	;	modern	;	T4	Gujarati
+Google	;	ha	;	moderate	;	Hausa
+Google	;	he	;	modern	;	T2	Hebrew
+Google	;	hi	;	modern	;	T2	Hindi
+Google	;	hr	;	modern	;	T2	Croatian
+Google	;	hu	;	modern	;	T2	Hungarian
+Google	;	hy	;	modern	;	T3.1	Armenian
+Google	;	id	;	modern	;	T2	Indonesian
+Google	;	ig	;	moderate	;	Igbo
+Google	;	is	;	modern	;	T3	Icelandic
+Google	;	it	;	modern	;	T1	Italian
+Google	;	ja	;	modern	;	T1	Japanese
+Google	;	jv	;	modern	;	Javanese
+Google	;	ka	;	modern	;	T3.1	Georgian
+Google	;	kk	;	modern	;	T3.1	Kazakh
+Google	;	km	;	modern	;	T3.1	Khmer
+Google	;	kn	;	modern	;	T4	Kannada
+Google	;	ko	;	modern	;	T1	Korean
+Google	;	kok	;	basic	;	Konkani
+Google	;	ky	;	modern	;	T4.1	Kirghiz																
+Google	;	lo	;	modern	;	T3.1	Lao
+Google	;	lt	;	modern	;	T2	Lithuanian
+Google	;	lv	;	modern	;	T2	Latvian
+Google	;	mai	;	basic	;	Maithili (Devanagari script)
+Google	;	mk	;	modern	;	T3.1	Macedonian
+Google	;	ml	;	modern	;	T4	Malayalam
+Google	;	mn	;	modern	;	T3.1	Mongolian
+Google	;	mni	;	basic	;	Manipuri (Bengali script)
+Google	;	mr	;	modern	;	T3	Marathi
+Google	;	ms	;	modern	;	T3	Malay
+Google	;	my	;	modern	;	T3.1	Burmese (Myanmar)
+Google	;	ne	;	modern	;	T3.1	Nepali
+Google	;	nl	;	modern	;	T1	Dutch
+Google	;	nn	;	Moderate	;	Nynorsk
+Google	;	no	;	modern	;	T2	Norwegian (Bokmål)
+Google	;	or	;	modern	;	T5	Odia
+Google	;	pa	;	modern	;	T4.1	Punjabi
+Google	;	pl	;	modern	;	T1	Polish
+Google	;	ps	;	modern	;	T5	Pashto
+Google	;	pt	;	modern	;	T1	Brazilian Portuguese
+Google	;	pt_PT	;	modern	;	T2	European Portuguese
+Google	;	ro	;	modern	;	T2	Romanian
+Google	;	ru	;	modern	;	T1	Russian
+Google	;	sa	;	basic	;	Sanskrit
+Google	;	sat	;	basic	;	Santali (Olck script)
+Google	;	sd	;	modern	;	T5	Sindhi
+Google	;	sd_Deva	;	basic	;	Sindhi (Devanagari script)
+Google	;	si	;	modern	;	T3.1	Sinhala
+Google	;	sk	;	modern	;	T2	Slovak
+Google	;	sl	;	modern	;	T2	Slovenian
+Google	;	so	;	modern	;	Somali
+Google	;	sq	;	modern	;	T3.1	Albanian
+Google	;	sr	;	modern	;	T2	Serbian
+Google	;	sr_Latn	;	modern	;	Tx	Serbian (auto-generated)														
+Google	;	su	;	basic	;	Sundanese (script TBD)
+Google	;	sv	;	modern	;	T2	Swedish
+Google	;	sw	;	modern	;	T3	Swahili 
+Google	;	ta	;	modern	;	T3	Tamil
+Google	;	te	;	modern	;	T4	Telugu
+Google	;	th	;	modern	;	T1	Thai
+Google	;	tk	;	modern	;	T5	Turkmen
+Google	;	tr	;	modern	;	T1	Turkish
+Google	;	uk	;	modern	;	T2	Ukrainian
+Google	;	ur	;	modern	;	T4	Urdu
+Google	;	uz	;	modern	;	T4.1	Uzbek	(Latin)															
+Google	;	vi	;	modern	;	T2	Vietnamese
+Google	;	yo	;	moderate	;	Yoruba
+Google	;	yue	;	modern	;	T5	Cantonese
+Google	;	zh	;	modern	;	T1	Simplified Chinese
+Google	;	zh_Hant	;	modern	;	T1	Traditional Chinese
+Google	;	zu	;	modern	;	T5	Zulu										
+Guest	;	*	;	moderate	;	All others
+IBM	;	ar	;	moderate
+IBM	;	as	;	basic
+IBM	;	az	;	basic
+IBM	;	be	;	basic
+IBM	;	bg	;	basic
+IBM	;	bn	;	moderate
+IBM	;	ca	;	moderate
+IBM	;	cs	;	moderate
+IBM	;	cy	;	basic
+IBM	;	da	;	modern
+IBM	;	de	;	modern
+IBM	;	el	;	moderate
+IBM	;	en	;	comprehensive
+IBM	;	es	;	modern
+IBM	;	et	;	basic
+IBM	;	fi	;	modern
+IBM	;	fr	;	modern
+IBM	;	gu	;	moderate
+IBM	;	he	;	moderate
+IBM	;	hi	;	modern
+IBM	;	hr	;	moderate
+IBM	;	hu	;	moderate
+IBM	;	hy	;	basic
+IBM	;	id	;	moderate
+IBM	;	is	;	basic
+IBM	;	it	;	modern
+IBM	;	ja	;	modern
+IBM	;	ka	;	basic
+IBM	;	kk	;	basic
+IBM	;	kn	;	moderate
+IBM	;	ko	;	modern
+IBM	;	kok	;	basic
+IBM	;	lt	;	basic
+IBM	;	lv	;	basic
+IBM	;	mk	;	basic
+IBM	;	ml	;	moderate
+IBM	;	mr	;	moderate
+IBM	;	ms	;	moderate
+IBM	;	mt	;	basic
+IBM	;	ne	;	basic
+IBM	;	nl	;	modern
+IBM	;	no	;	modern
+IBM	;	or	;	moderate
+IBM	;	pa	;	moderate
+IBM	;	pl	;	modern
+IBM	;	pt	;	modern
+IBM	;	ro	;	moderate
+IBM	;	ru	;	modern
+IBM	;	si	;	basic
+IBM	;	sk	;	moderate
+IBM	;	sl	;	moderate
+IBM	;	sq	;	basic
+IBM	;	sr	;	basic
+IBM	;	sv	;	modern
+IBM	;	sw	;	basic
+IBM	;	ta	;	moderate
+IBM	;	te	;	moderate
+IBM	;	th	;	moderate
+IBM	;	tr	;	moderate
+IBM	;	uk	;	basic
+IBM	;	ur	;	moderate
+IBM	;	vi	;	basic
+IBM	;	zh	;	modern
+IBM	;	zh_Hant	;	modern
+India	;	*	;	moderate	;	All others
+India	;	bn	;	modern	;	Bengali
+India	;	hi	;	modern	;	Hindi
+India	;	kok	;	modern	;	Konkani
+India	;	ks	;	modern	;	Kashmiri
+India	;	mr	;	modern	;	Marathi
+India	;	pa	;	modern	;	Punjabi
+India	;	sa	;	modern	;	Sanskrit
+India	;	ta	;	modern	;	Tamil
+Iran_HCI	;	*	;	moderate	;	All others
+Iran_HCI	;	fa	;	modern	;	Persian
+Kendra	;	*	;	moderate	;	All others
+Kendra	;	ne	;	modern	;	Nepali
+Kotoistus	;	et	;	modern	;	Estonian
+Kotoistus	;	fi	;	modern	;	Finnish
+Kotoistus	;	se	;	modern	;	Northern Sami
+Kotoistus	;	sv	;	moderate	;	Swedish
+kunsill_malti	;	*	;	moderate	;	All others
+kunsill_malti	;	mt	;	modern	;	Malta
+Lakota_LC	;	*	;	moderate	;	All others
+Lakota_LC	;	lkt	;	modern	;	Lakota
+Lao_DPT	;	*	;	moderate	;	All others
+Lao_DPT	;	lo	;	modern	;	Lao
+longnow	;	*	;	moderate	;	All others
+longnow	;	eo	;	modern	;	Esperanto
+longnow	;	fr	;	modern	;	French
+longnow	;	tr	;	modern	;	Turkish
+Microsoft	;	af	;	modern
+Microsoft	;	am	;	modern
+Microsoft	;	ar	;	modern
+Microsoft	;	as	;	modern
+Microsoft	;	az	;	modern
+Microsoft	;	be	;	modern
+Microsoft	;	bg	;	modern
+Microsoft	;	bn	;	modern
+Microsoft	;	bs	;	modern
+Microsoft	;	ca	;	modern
+Microsoft	;	chr	;	basic
+Microsoft	;	ckb	;	basic
+Microsoft	;	cs	;	modern
+Microsoft	;	cy	;	modern
+Microsoft	;	da	;	modern
+Microsoft	;	de	;	modern
+Microsoft	;	doi	;	basic	;	Dogri
+Microsoft	;	el	;	modern
+Microsoft	;	en	;	modern
+Microsoft	;	es	;	modern
+Microsoft	;	et	;	modern
+Microsoft	;	eu	;	modern
+Microsoft	;	fa	;	modern
+Microsoft	;	fi	;	modern
+Microsoft	;	fil	;	modern
+Microsoft	;	fr	;	modern
+Microsoft	;	ga	;	modern
+Microsoft	;	gd	;	modern
+Microsoft	;	gl	;	modern
+Microsoft	;	gu	;	modern
+Microsoft	;	ha	;	basic
+Microsoft	;	he	;	modern
+Microsoft	;	hi	;	modern
+Microsoft	;	hr	;	modern
+Microsoft	;	hu	;	modern
+Microsoft	;	hy	;	modern
+Microsoft	;	id	;	modern
+Microsoft	;	is	;	modern
+Microsoft	;	it	;	modern
+Microsoft	;	ja	;	modern
+Microsoft	;	ka	;	modern
+Microsoft	;	kk	;	modern
+Microsoft	;	km	;	modern
+Microsoft	;	kn	;	modern
+Microsoft	;	ko	;	modern
+Microsoft	;	kok	;	modern
+Microsoft	;	ky	;	modern
+Microsoft	;	lo	;	modern
+Microsoft	;	lt	;	modern
+Microsoft	;	lv	;	modern
+Microsoft	;	mi	;	basic
+Microsoft	;	mk	;	modern
+Microsoft	;	ml	;	modern
+Microsoft	;	mn	;	modern
+Microsoft	;	mr	;	modern
+Microsoft	;	ms	;	modern
+Microsoft	;	my	;	modern
+Microsoft	;	ne	;	modern
+Microsoft	;	nl	;	modern
+Microsoft	;	nn	;	Moderate	;	Nynorsk
+Microsoft	;	no	;	modern
+Microsoft	;	or	;	modern
+Microsoft	;	pa	;	modern
+Microsoft	;	pl	;	modern
+Microsoft	;	ps	;	modern
+Microsoft	;	pt	;	modern
+Microsoft	;	pt_PT	;	modern
+Microsoft	;	qu	;	modern
+Microsoft	;	ro	;	modern
+Microsoft	;	ru	;	modern
+Microsoft	;	sa	;	basic	;	Sanskrit
+Microsoft	;	sd	;	modern
+Microsoft	;	se	;	modern
+Microsoft	;	si	;	modern
+Microsoft	;	sk	;	modern
+Microsoft	;	sl	;	modern
+Microsoft	;	sq	;	modern
+Microsoft	;	sr	;	modern
+Microsoft	;	sv	;	modern
+Microsoft	;	sw	;	modern
+Microsoft	;	ta	;	modern
+Microsoft	;	te	;	modern
+Microsoft	;	tg	;	basic
+Microsoft	;	th	;	modern
+Microsoft	;	ti	;	Modern
+Microsoft	;	tn	;	modern
+Microsoft	;	tr	;	modern
+Microsoft	;	tt	;	basic
+Microsoft	;	ug	;	basic
+Microsoft	;	uk	;	modern
+Microsoft	;	ur	;	modern
+Microsoft	;	uz	;	modern
+Microsoft	;	uz_Cyrl	;	modern
+Microsoft	;	vi	;	modern
+Microsoft	;	wo	;	basic
+Microsoft	;	xh	;	modern
+Microsoft	;	yo	;	basic
+Microsoft	;	zh	;	modern
+Microsoft	;	zh_Hant	;	modern
+Microsoft	;	zh_Hant_HK	;	modern
+Microsoft	;	zu	;	modern
+Mozilla	;	en	;	modern
+Netflix	;	ar	;	modern
+Netflix	;	de	;	modern
+Netflix	;	es	;	modern
+Netflix	;	es_419	;	modern
+Netflix	;	fr	;	modern
+Netflix	;	it	;	modern
+Netflix	;	ja	;	modern
+Netflix	;	nl	;	modern
+Netflix	;	pt	;	modern
+Netflix	;	sr	;	modern
+Netflix	;	sv	;	modern
+OpenInstitute	;	*	;	moderate	;	All others
+OpenInstitute	;	km	;	modern	;	Khmer
+openoffice_org	;	af	;	basic
+openoffice_org	;	ar	;	basic
+openoffice_org	;	az	;	basic
+openoffice_org	;	be	;	basic
+openoffice_org	;	bg	;	basic
+openoffice_org	;	bs	;	basic
+openoffice_org	;	ca	;	basic
+openoffice_org	;	cs	;	basic
+openoffice_org	;	cy	;	basic
+openoffice_org	;	da	;	basic
+openoffice_org	;	de	;	basic
+openoffice_org	;	el	;	basic
+openoffice_org	;	en	;	basic
+openoffice_org	;	es	;	basic
+openoffice_org	;	et	;	basic
+openoffice_org	;	fi	;	basic
+openoffice_org	;	fr	;	basic
+openoffice_org	;	ga	;	basic
+openoffice_org	;	he	;	basic
+openoffice_org	;	hi	;	basic
+openoffice_org	;	hr	;	basic
+openoffice_org	;	hu	;	basic
+openoffice_org	;	id	;	basic
+openoffice_org	;	is	;	basic
+openoffice_org	;	it	;	basic
+openoffice_org	;	ja	;	basic
+openoffice_org	;	km	;	basic
+openoffice_org	;	ko	;	basic
+openoffice_org	;	lt	;	basic
+openoffice_org	;	lv	;	basic
+openoffice_org	;	mk	;	basic
+openoffice_org	;	ml	;	basic
+openoffice_org	;	mt	;	basic
+openoffice_org	;	nl	;	basic
+openoffice_org	;	nn	;	basic
+openoffice_org	;	no	;	basic
+openoffice_org	;	nr	;	basic
+openoffice_org	;	nso	;	basic
+openoffice_org	;	pl	;	basic
+openoffice_org	;	pt	;	basic
+openoffice_org	;	ro	;	basic
+openoffice_org	;	ru	;	basic
+openoffice_org	;	sk	;	basic
+openoffice_org	;	sl	;	basic
+openoffice_org	;	sq	;	basic
+openoffice_org	;	sr	;	basic
+openoffice_org	;	ss	;	basic
+openoffice_org	;	st	;	basic
+openoffice_org	;	sv	;	basic
+openoffice_org	;	ta	;	basic
+openoffice_org	;	te	;	basic
+openoffice_org	;	th	;	basic
+openoffice_org	;	tn	;	basic
+openoffice_org	;	tr	;	basic
+openoffice_org	;	ts	;	basic
+openoffice_org	;	uk	;	basic
+openoffice_org	;	ve	;	basic
+openoffice_org	;	vi	;	basic
+openoffice_org	;	xh	;	basic
+openoffice_org	;	zh	;	basic
+openoffice_org	;	zh_Hant	;	basic
+openoffice_org	;	zu	;	basic
+Oracle	;	af	;	basic
+Oracle	;	ar	;	modern
+Oracle	;	az	;	basic
+Oracle	;	be	;	basic
+Oracle	;	bg	;	basic
+Oracle	;	bs	;	basic
+Oracle	;	ca	;	basic
+Oracle	;	cs	;	modern
+Oracle	;	cy	;	basic
+Oracle	;	da	;	basic
+Oracle	;	de	;	modern
+Oracle	;	el	;	basic
+Oracle	;	en	;	comprehensive
+Oracle	;	es	;	modern
+Oracle	;	et	;	basic
+Oracle	;	fi	;	basic
+Oracle	;	fr	;	modern
+Oracle	;	ga	;	basic
+Oracle	;	he	;	basic
+Oracle	;	hi	;	basic
+Oracle	;	hr	;	basic
+Oracle	;	hu	;	basic
+Oracle	;	id	;	basic
+Oracle	;	is	;	basic
+Oracle	;	it	;	modern
+Oracle	;	ja	;	modern
+Oracle	;	km	;	basic
+Oracle	;	ko	;	modern
+Oracle	;	lt	;	basic
+Oracle	;	lv	;	basic
+Oracle	;	mk	;	basic
+Oracle	;	ml	;	basic
+Oracle	;	mt	;	basic
+Oracle	;	nl	;	modern
+Oracle	;	nn	;	basic
+Oracle	;	no	;	basic
+Oracle	;	pl	;	modern
+Oracle	;	pt	;	modern
+Oracle	;	ro	;	basic
+Oracle	;	ru	;	modern
+Oracle	;	sk	;	basic
+Oracle	;	sl	;	basic
+Oracle	;	sq	;	basic
+Oracle	;	sr	;	basic
+Oracle	;	sv	;	modern
+Oracle	;	ta	;	basic
+Oracle	;	te	;	basic
+Oracle	;	th	;	basic
+Oracle	;	tr	;	basic
+Oracle	;	uk	;	basic
+Oracle	;	vi	;	basic
+Oracle	;	zh	;	modern
+Oracle	;	zh_Hant	;	modern
+Pakistan	;	*	;	modern	;	All others
+Pakistan	;	ur	;	modern	;	Urdu
+Rodakych	;	*	;	moderate	;	All Others
+Rodakych	;	pcm	;	modern	;	Nigerian Pidgin
+Rumantscha	;	*	;	moderate	;	All others
+Rumantscha	;	rm	;	modern	;	Romansch
+Sardware	;	sc	;	modern
+SIL	;	*	;	moderate	;	All others
+SIL	;	bss	;	moderate	;	SIL	;	jgo	;	moderate	;	SIL	;	ken	;	moderate	;	SIL	;	kk	;	moderate	;	SIL	;	mgo	;	moderate	;	SIL	;	nnh	;	modern	;	Srilanka	;	*	;	moderate	;	All others
+Srilanka	;	si	;	modern	;	All others
+Surveytool	;	*	;	comprehensive	;	(Administrative)
+welsh_lc	;	*	;	moderate	;	All others
+welsh_lc	;	cy	;	modern	;	Welsh
+Wikimedia	;	*	;	modern	;	All others
+Yahoo	;	*	;	modern	;	All others
