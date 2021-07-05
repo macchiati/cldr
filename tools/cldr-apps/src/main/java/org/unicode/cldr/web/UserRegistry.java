@@ -361,7 +361,11 @@ public class UserRegistry {
          */
         public LocaleSet getInterestLocales() {
             if (interestLocalesSet == null) {
-                interestLocalesSet = LocaleNormalizer.setFromStringQuietly(intlocs, null);
+                if (userIsManagerOrStronger(this)) {
+                    interestLocalesSet = LocaleNormalizer.setFromStringQuietly(intlocs, null);
+                } else {
+                    interestLocalesSet = LocaleNormalizer.setFromStringQuietly(locales, null);
+                }
             }
             return interestLocalesSet;
         }
@@ -1056,14 +1060,26 @@ public class UserRegistry {
         if (user == null) {
             return "";
         }
-
+        logger.finer("uil: remove for user " + id);
         removeIntLoc.setInt(1, id);
         removeIntLoc.executeUpdate();
 
         LocaleSet intLocSet = user.getInterestLocales();
-        if (intLocSet != null && !intLocSet.isAllLocales()) {
+        logger.finer("uil: intlocs " + id + " = " + intLocSet.toString());
+        if (intLocSet != null && !intLocSet.isAllLocales() && !intLocSet.isEmpty()) {
+            /*
+             * Simplify locales. For example simplify "pt_PT" to "pt" with loc.getLanguage().
+             * Avoid adding duplicates to the table. For example, if the same user has both
+             * "pt" and "pt_PT", only add one row, for "pt".
+             */
+            Set<String> languageSet = new TreeSet<>();
             for (CLDRLocale loc : intLocSet.getSet()) {
-                updateIntLoc.setString(2, loc.getLanguage());
+                languageSet.add(loc.getLanguage());
+            }
+            for (String lang : languageSet) {
+                logger.finer("uil: intlocs " + id + " + " + lang);
+                updateIntLoc.setInt(1, id);
+                updateIntLoc.setString(2, lang);
                 updateIntLoc.executeUpdate();
             }
         }
