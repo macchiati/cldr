@@ -108,8 +108,6 @@ public class TestExampleGenerator extends TestFmwk {
         "//ldml/dates/fields/field[@type=\"([^\"]*+)\"]/displayName[@alt=\"([^\"]*+)\"]",
         "//ldml/dates/calendars/calendar[@type=\"([^\"]*+)\"]/cyclicNameSets/cyclicNameSet[@type=\"([^\"]*+)\"]/cyclicNameContext[@type=\"([^\"]*+)\"]/cyclicNameWidth[@type=\"([^\"]*+)\"]/cyclicName[@type=\"([^\"]*+)\"]",
 
-        "//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"([^\"]*+)\"]",
-        "//ldml/numbers/minimalPairs/ordinalMinimalPairs[@ordinal=\"([^\"]*+)\"]",
         "//ldml/characters/parseLenients[@scope=\"([^\"]*+)\"][@level=\"([^\"]*+)\"]/parseLenient[@sample=\"([^\"]*+)\"]"
         );
     // Only add to above if the example should NEVER appear.
@@ -173,6 +171,7 @@ public class TestExampleGenerator extends TestFmwk {
         "//ldml/typographicNames/featureName[@type=\"([^\"]*+)\"]",
 
         "//ldml/localeDisplayNames/subdivisions/subdivision[@type=\"([^\"]*+)\"]",
+        "//ldml/numbers/minimalPairs/ordinalMinimalPairs[@ordinal=\"([^\"]*+)\"]",
 
         "//ldml/dates/timeZoneNames/zone[@type=\"([^\"]*+)\"]/long/standard" // Error: (TestExampleGenerator.java:245) No background:   <Coordinated Universal Time>    〖Coordinated Universal Time〗
         );
@@ -377,7 +376,7 @@ public class TestExampleGenerator extends TestFmwk {
                             String example = exampleGenerator.getExampleHtml(path, value);
                             if (assertNotNull(locale + "/" + path, example)) {
                                 String simplified = ExampleGenerator.simplify(example, false);
-                                warnln(locale + ", " + width + ", " + pathType.toString() + " ==>" + simplified);
+                                logln(locale + ", " + width + ", " + pathType.toString() + " ==>" + simplified);
                             } else {
                                 // for debugging
                                 example = exampleGenerator.getExampleHtml(path, value);
@@ -868,15 +867,15 @@ public class TestExampleGenerator extends TestFmwk {
         final CLDRFile cldrFile = info.getCLDRFile("de", true);
         ExampleGenerator exampleGenerator = getExampleGenerator("de");
         String[][] tests = {
-            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"one\"]", "〖❬1❭ Tag〗"},
-            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"other\"]", "〖❬1,5❭ Tage〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"one\"]", "〖❬1❭ Tag〗〖⛔️ ❬1,5❭ Tag〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"other\"]", "〖❬1,5❭ Tage〗〖⛔️ ❬1❭ Tage〗"},
             {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"accusative\"]", "〖… für ❬1 Tag❭ …〗"},
             {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"dative\"]", "〖… mit ❬1 Tag❭ …〗"},
             {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"genitive\"]", "〖Anstatt ❬1 Tages❭ …〗"},
             {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"nominative\"]", "〖❬1 Tag❭ kostet (kosten) € 3,50.〗"},
-            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"feminine\"]", "〖Die ❬Stunde❭ ist …〗"},
-            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"masculine\"]", "〖Der ❬Meter pro Quadratsekunde❭ ist …〗"},
-            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"neuter\"]", "〖Das ❬ Volt❭ ist …〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"feminine\"]", "〖Die ❬Stunde❭ ist …〗〖⛔️ Die ❬Hektar❭ ist …〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"masculine\"]", "〖Der ❬Hektar❭ ist …〗〖⛔️ Der ❬Stunde❭ ist …〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"neuter\"]", "〖Das ❬Gramm❭ ist …〗〖⛔️ Das ❬Stunde❭ ist …〗"},
         };
         for (String[] row : tests) {
             String path = row[0];

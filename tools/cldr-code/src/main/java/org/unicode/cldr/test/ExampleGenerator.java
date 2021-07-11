@@ -163,6 +163,7 @@ public class ExampleGenerator {
     public static final Pattern PARAMETER_SKIP0 = PatternCache.get("(\\{[1-9][0-9]*\\})");
     public static final Pattern ALL_DIGITS = PatternCache.get("(\\p{Nd}+(.\\p{Nd}+)?)");
 
+
     private static Calendar generatingCalendar = Calendar.getInstance(ULocale.US);
 
     private static Date getDate(int year, int month, int date, int hour, int minute, int second) {
@@ -647,10 +648,10 @@ public class ExampleGenerator {
 
     private String handleMinimalPairs(XPathParts parts, String minimalPattern) {
         List<String> examples = new ArrayList<>();
-        Count count = pluralInfo.getPluralRules().getKeywords().contains("one") ? Count.one : Count.other;
+        final Set<String> pluralKeywords = pluralInfo.getPluralRules().getKeywords();
+        Count count = pluralKeywords.contains("one") ? Count.one : Count.other;
 
         String unitPattern = null;
-        boolean embedUnit = true;
         String grammarAttributes;
         String shortUnitId;
 
@@ -658,8 +659,9 @@ public class ExampleGenerator {
 
         case "pluralMinimalPairs":   //ldml/numbers/minimalPairs/pluralMinimalPairs[@count="one"]
             count = Count.valueOf(parts.getAttributeValue(-1, "count"));
-            unitPattern = minimalPattern;
-            embedUnit = false;
+            addCountMinimalPattern(minimalPattern, count, examples);
+            Count badCount = Count.valueOf(getOtherUnit(pluralKeywords, count.toString()));
+            addCountMinimalPattern("⛔️ " + minimalPattern, badCount, examples);
             break;
 
         case "caseMinimalPairs":   //ldml/numbers/minimalPairs/caseMinimalPairs[@case="accusative"]
@@ -670,30 +672,62 @@ public class ExampleGenerator {
 
             // eg //ldml/units/unitLength[@type="long"]/unit[@type="duration-day"]/unitPattern[@count="one"][@case="accusative"]
             unitPattern = cldrFile.getStringValue("//ldml/units/unitLength[@type=\"long\"]/unit[@type=\"duration-day\"]/unitPattern" + grammarAttributes);
+            addMinimalPattern(minimalPattern, unitPattern, count, examples);
             break;
 
         case "genderMinimalPairs": //ldml/numbers/minimalPairs/genderMinimalPairs[@gender="feminine"]
             String gender = parts.getAttributeValue(-1, "gender");
             //ldml/units/unitLength[@type="long"]/unit[@type="duration-day"]/unitPattern[@count="one"]
-            shortUnitId = getBestUnitWithGender(gender);
             //unitPattern = cldrFile.getStringValue("//ldml/units/unitLength[@type=\"long\"]/unit[@type=\"" + shortUnitId + "\"]/displayName");
-            // we do the following to get a singular form, since we can't depend on the displayName to be singular
-            unitPattern = cldrFile.getStringValue("//ldml/units/unitLength[@type=\"long\"]/unit[@type=\"" + shortUnitId + "\"]/unitPattern[@count=\"" + count + "\"]");
-            unitPattern = unitPattern.replace("{0}", "").trim();
             //ldml/units/unitLength[@type="long"]/unit[@type="duration-day"]/gender
+            String unitValue = getPlainUnitValue(count, gender);
+            examples.add(format(minimalPattern, backgroundStartSymbol + unitValue + backgroundEndSymbol));
+
+            Collection<String> unitGenders = grammarInfo.get(GrammaticalTarget.nominal, GrammaticalFeature.grammaticalGender, GrammaticalScope.units);
+            String otherGender = getOtherUnit(unitGenders, gender);
+            unitValue = getPlainUnitValue(count, otherGender);
+            examples.add(format("⛔️ " + minimalPattern, backgroundStartSymbol + unitValue + backgroundEndSymbol));
+
             break;
         default: return null;
         }
+        return formatExampleList(examples);
+    }
+
+    /** Get the unit form for the count, without the placeholder.
+     * We do the following to get a particular form, since we can't depend on plurality of the displayName
+     */
+    public String getPlainUnitValue(Count count, String otherGender) {
+        String otherShortUnitId = getBestUnitWithGender(otherGender);
+        String otherUnitPattern = cldrFile.getStringValue("//ldml/units/unitLength[@type=\"long\"]/unit[@type=\"" + otherShortUnitId + "\"]/unitPattern[@count=\"" + count + "\"]");
+        return otherUnitPattern.replace("{0}", "").trim();
+    }
+
+    /** Get a different unit from the collection
+     */
+    public String getOtherUnit(final Collection<String> allValues, String rightValue) {
+        Set<String> otherKeywords = new LinkedHashSet<>(allValues);
+        otherKeywords.remove(rightValue);
+        return otherKeywords.iterator().next();
+    }
+
+    /**
+     * Add a minimal pattern, inserting a unit pattern.
+     */
+    public void addMinimalPattern(String minimalPattern, String unitPattern, Count count, List<String> examples) {
         FixedDecimal amount = getBest(count);
         DecimalFormat numberFormat = icuServiceBuilder.getNumberFormat(1);
-        if (embedUnit) {
-            String formattedUnit = format(unitPattern, numberFormat.format(amount));
-            examples.add(format(minimalPattern, backgroundStartSymbol + formattedUnit + backgroundEndSymbol));
-        } else {
-            String formattedUnit = format(unitPattern, backgroundStartSymbol + numberFormat.format(amount) + backgroundEndSymbol);
-            examples.add(formattedUnit);
-        }
-        return formatExampleList(examples);
+        String formattedUnit = format(unitPattern, numberFormat.format(amount));
+        examples.add(format(minimalPattern, backgroundStartSymbol + formattedUnit + backgroundEndSymbol));
+    }
+
+    /**
+     * Add a minimal pattern for a count
+     */
+    public void addCountMinimalPattern(String minimalPattern, Count count, List<String> examples) {
+        FixedDecimal amount = getBest(count);
+        DecimalFormat numberFormat = icuServiceBuilder.getNumberFormat(1);
+        examples.add(format(minimalPattern, backgroundStartSymbol + numberFormat.format(amount) + backgroundEndSymbol));
     }
 
     /**
@@ -701,7 +735,6 @@ public class ExampleGenerator {
      */
     private String getBestUnitWithGender(String gender) {
         if (genderCache == null) {
-            Collection<String> unitGenders = grammarInfo.get(GrammaticalTarget.nominal, GrammaticalFeature.grammaticalGender, GrammaticalScope.units);
             Map<String,String> result = Maps.newHashMap();
             for (String longUnitId : UNITS) {
                 String possibleGender = cldrFile.getStringValue("//ldml/units/unitLength[@type=\"long\"]/unit[@type=\"" + longUnitId + "\"]/gender");
@@ -710,12 +743,11 @@ public class ExampleGenerator {
                     if (formerLongUnitId == null) {
                         result.put(possibleGender, longUnitId);
                     } else {
-                        // replace if as good or better. Metric is better. If both metric, choose alphabetical
-                        Set<UnitSystem> systems = UNIT_CONVERTER.getSystemsEnum(UNIT_CONVERTER.getShortId(longUnitId));
-                        Set<UnitSystem> formerSystems = UNIT_CONVERTER.getSystemsEnum(UNIT_CONVERTER.getShortId(formerLongUnitId));
-                        if (!formerSystems.contains(UnitSystem.metric) && systems.contains(UnitSystem.metric)) {
-                            result.put(possibleGender, longUnitId);
-                        } else if (formerLongUnitId.compareTo(longUnitId) > 0) {
+                        BetterReason reason = isBetterUnitGender(longUnitId, formerLongUnitId);
+                        if (reason != BetterReason.notBetter) {
+                            if (DEBUG_EXAMPLE_GENERATOR) {
+                                System.out.print("\n" + possibleGender + "➡️ " + formerLongUnitId + " => " + longUnitId + " - " + reason);
+                            }
                             result.put(possibleGender, longUnitId);
                         }
                     }
@@ -725,6 +757,25 @@ public class ExampleGenerator {
             genderCache = ImmutableMap.copyOf(result);
         }
         return genderCache.get(gender);
+    }
+
+    private enum BetterReason {metric, shorter, alphabeticallyBefore, notBetter}
+
+    private BetterReason isBetterUnitGender(String longUnitId, String formerLongUnitId) {
+        // replace if as good or better. Metric is better. If both metric, choose alphabetical
+        Set<UnitSystem> systems = UNIT_CONVERTER.getSystemsEnum(UNIT_CONVERTER.getShortId(longUnitId));
+        Set<UnitSystem> formerSystems = UNIT_CONVERTER.getSystemsEnum(UNIT_CONVERTER.getShortId(formerLongUnitId));
+
+        if (!formerSystems.contains(UnitSystem.metric) && systems.contains(UnitSystem.metric)) {
+            return BetterReason.metric;
+        } else if (systems.contains(UnitSystem.metric)) {
+            if (formerLongUnitId.length() > longUnitId.length()) { // pick shorter
+                return BetterReason.shorter;
+            } else if (formerLongUnitId.length() == longUnitId.length() && formerLongUnitId.compareTo(longUnitId) > 0) { // pick alphabetica
+                return BetterReason.alphabeticallyBefore;
+            }
+        }
+        return BetterReason.notBetter;
     }
 
     private UnitLength getUnitLength(XPathParts parts) {
