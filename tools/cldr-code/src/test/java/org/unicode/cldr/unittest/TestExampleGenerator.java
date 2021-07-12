@@ -864,20 +864,45 @@ public class TestExampleGenerator extends TestFmwk {
     }
 
     public void TestMinimalPairExamples() {
-        final CLDRFile cldrFile = info.getCLDRFile("de", true);
-        ExampleGenerator exampleGenerator = getExampleGenerator("de");
         String[][] tests = {
+            {"fr"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"one\"]", "〖❬1,5❭ jour〗〖⛔️ ❬1 000 000,1❭ jour〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"many\"]", "〖❬1 000 000,1❭ de jours〗〖⛔️ ❬1,5❭ de jours〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"other\"]", "〖❬3,5❭ jours〗〖⛔️ ❬1,5❭ jours〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"feminine\"]", "〖La ❬seconde❭ est〗〖⛔️ La ❬gramme❭ est〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"masculine\"]", "〖Le ❬gramme❭ est〗〖⛔️ Le ❬seconde❭ est〗"},
+            {"de"},
             {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"one\"]", "〖❬1❭ Tag〗〖⛔️ ❬1,5❭ Tag〗"},
             {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"other\"]", "〖❬1,5❭ Tage〗〖⛔️ ❬1❭ Tage〗"},
-            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"accusative\"]", "〖… für ❬1 Tag❭ …〗"},
-            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"dative\"]", "〖… mit ❬1 Tag❭ …〗"},
-            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"genitive\"]", "〖Anstatt ❬1 Tages❭ …〗"},
-            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"nominative\"]", "〖❬1 Tag❭ kostet (kosten) € 3,50.〗"},
-            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"feminine\"]", "〖Die ❬Stunde❭ ist …〗〖⛔️ Die ❬Hektar❭ ist …〗"},
-            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"masculine\"]", "〖Der ❬Hektar❭ ist …〗〖⛔️ Der ❬Stunde❭ ist …〗"},
-            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"neuter\"]", "〖Das ❬Gramm❭ ist …〗〖⛔️ Das ❬Stunde❭ ist …〗"},
+            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"accusative\"]", "〖… für ❬1 Gramm❭ …〗〖⛔️ … für ❬1 Gramms❭ …〗"},
+            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"dative\"]", "〖… mit ❬1 Gramm❭ …〗〖⛔️ … mit ❬1 Gramms❭ …〗"},
+            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"genitive\"]", "〖Anstatt ❬1 Gramms❭ …〗〖⛔️ Anstatt ❬1 Gramm❭ …〗"},
+            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"nominative\"]", "〖❬1 Gramm❭ kostet (kosten) € 3,50.〗〖⛔️ ❬1 Gramms❭ kostet (kosten) € 3,50.〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"feminine\"]", "〖Die ❬Sekunde❭ ist …〗〖⛔️ Die ❬Meter❭ ist …〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"masculine\"]", "〖Der ❬Meter❭ ist …〗〖⛔️ Der ❬Sekunde❭ ist …〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"neuter\"]", "〖Das ❬Gramm❭ ist …〗〖⛔️ Das ❬Sekunde❭ ist …〗"},
+            {"pl"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"one\"]", "〖❬1❭ miesiąc〗〖⛔️ ❬4❭ miesiąc〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"few\"]", "〖❬4❭ miesiące〗〖⛔️ ❬1❭ miesiące〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"many\"]", "〖❬0❭ miesięcy〗〖⛔️ ❬1❭ miesięcy〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"other\"]", "〖❬1,5❭ miesiąca〗〖⛔️ ❬1❭ miesiąca〗"},
+            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"accusative\"]", "〖Widzę ❬1 sekundę❭〗〖⛔️ Widzę ❬1 sekunda❭〗"},
+            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"genitive\"]", "〖Nie widzę ❬1 sekundy❭〗〖⛔️ Nie widzę ❬1 sekunda❭〗"},
+            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"nominative\"]", "〖❬1 sekunda❭ jest/są tutaj〗〖⛔️ ❬1 sekundy❭ jest/są tutaj〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"feminine\"]", "〖ta ❬sekunda❭〗〖⛔️ ta ❬gram❭〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"inanimate\"]", "〖ten ❬gram❭〗〖⛔️ ten ❬sekunda❭〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"neuter\"]", "〖to ❬G❭〗〖⛔️ to ❬sekunda❭〗"},
         };
+        CLDRFile cldrFile = null;
+        ExampleGenerator exampleGenerator = null;
+
         for (String[] row : tests) {
+            if (row.length == 1) { // single value row is new locale
+                String locale = row[0];
+                cldrFile = info.getCLDRFile(locale, true);
+                exampleGenerator = getExampleGenerator(locale);
+                continue;
+            }
             String path = row[0];
             String expected = row[1];
             String value = cldrFile.getStringValue(path);
@@ -885,25 +910,31 @@ public class TestExampleGenerator extends TestFmwk {
             String actual = ExampleGenerator.simplify(actualRaw, false);
             assertEquals(row[0] + ", " + row[1], expected, actual);
         }
-        if (isVerbose()) { // generate examples
-            PluralInfo pluralInfo = SDI.getPlurals(PluralType.cardinal, cldrFile.getLocaleID());
-            ArrayList<String> paths = new ArrayList<>();
+        logln("To generate a new version of these test cases from the data, use -v");
+        if (true || isVerbose()) { // generate examples
+            for (String locale : Arrays.asList("fr", "de", "pl")) {
+                cldrFile = info.getCLDRFile(locale, true);
+                exampleGenerator = getExampleGenerator(locale);
+                PluralInfo pluralInfo = SDI.getPlurals(PluralType.cardinal, cldrFile.getLocaleID());
+                ArrayList<String> paths = new ArrayList<>();
 
-            for (Count plural : pluralInfo.getCounts()) {
-                paths.add("//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"" + plural +  "\"]");
-            }
-            GrammarInfo grammarInfo = SDI.getGrammarInfo("de");
-            for (String grammaticalValues : grammarInfo.get(GrammaticalTarget.nominal, GrammaticalFeature.grammaticalCase, GrammaticalScope.units)) {
-                paths.add("//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"" + grammaticalValues +  "\"]");
-            }
-            for (String grammaticalValues : grammarInfo.get(GrammaticalTarget.nominal, GrammaticalFeature.grammaticalGender, GrammaticalScope.units)) {
-                paths.add("//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"" + grammaticalValues +  "\"]");
-            }
-            for (String path : paths) {
-                String value = cldrFile.getStringValue(path);
-                String actualRaw = exampleGenerator.getExampleHtml(path, value);
-                String actual = ExampleGenerator.simplify(actualRaw, false);
-                System.out.println("{\"" + path.replace("\"", "\\\"") + "\", \"" + actual + "\"},");
+                for (Count plural : pluralInfo.getCounts()) {
+                    paths.add("//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"" + plural +  "\"]");
+                }
+                GrammarInfo grammarInfo = SDI.getGrammarInfo(locale);
+                for (String grammaticalValues : grammarInfo.get(GrammaticalTarget.nominal, GrammaticalFeature.grammaticalCase, GrammaticalScope.units)) {
+                    paths.add("//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"" + grammaticalValues +  "\"]");
+                }
+                for (String grammaticalValues : grammarInfo.get(GrammaticalTarget.nominal, GrammaticalFeature.grammaticalGender, GrammaticalScope.units)) {
+                    paths.add("//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"" + grammaticalValues +  "\"]");
+                }
+                System.out.println("\n{\"" + locale + "\"},");
+                for (String path : paths) {
+                    String value = cldrFile.getStringValue(path);
+                    String actualRaw = exampleGenerator.getExampleHtml(path, value);
+                    String actual = ExampleGenerator.simplify(actualRaw, false);
+                    System.out.println("{\"" + path.replace("\"", "\\\"") + "\", \"" + actual + "\"},");
+                }
             }
         }
     }
