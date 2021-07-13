@@ -18,6 +18,7 @@ import org.unicode.cldr.util.GrammarInfo;
 import org.unicode.cldr.util.GrammarInfo.GrammaticalFeature;
 import org.unicode.cldr.util.GrammarInfo.GrammaticalScope;
 import org.unicode.cldr.util.GrammarInfo.GrammaticalTarget;
+import org.unicode.cldr.util.PathHeader;
 import org.unicode.cldr.util.PathStarrer;
 import org.unicode.cldr.util.SupplementalDataInfo;
 import org.unicode.cldr.util.SupplementalDataInfo.PluralInfo;
@@ -866,32 +867,32 @@ public class TestExampleGenerator extends TestFmwk {
     public void TestMinimalPairExamples() {
         String[][] tests = {
             {"fr"},
-            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"one\"]", "〖❬1,5❭ jour〗〖⛔️ ❬1 000 000,1❭ jour〗"},
-            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"many\"]", "〖❬1 000 000,1❭ de jours〗〖⛔️ ❬1,5❭ de jours〗"},
-            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"other\"]", "〖❬3,5❭ jours〗〖⛔️ ❬1,5❭ jours〗"},
-            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"feminine\"]", "〖La ❬seconde❭ est〗〖⛔️ La ❬gramme❭ est〗"},
-            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"masculine\"]", "〖Le ❬gramme❭ est〗〖⛔️ Le ❬seconde❭ est〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"one\"]", "〖✅️ ❬1❭ jour〗〖⛔️ ❬1 000 000❭ jour〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"many\"]", "〖✅️ ❬1 000 000❭ de jours〗〖⛔️ ❬1❭ de jours〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"other\"]", "〖✅️ ❬17❭ jours〗〖⛔️ ❬1❭ jours〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"feminine\"]", "〖✅️ La ❬seconde❭ est〗〖⛔️ La ❬gramme❭ est〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"masculine\"]", "〖✅️ Le ❬gramme❭ est〗〖⛔️ Le ❬seconde❭ est〗"},
             {"de"},
-            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"one\"]", "〖❬1❭ Tag〗〖⛔️ ❬1,5❭ Tag〗"},
-            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"other\"]", "〖❬1,5❭ Tage〗〖⛔️ ❬1❭ Tage〗"},
-            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"accusative\"]", "〖… für ❬1 Gramm❭ …〗〖⛔️ … für ❬1 Gramms❭ …〗"},
-            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"dative\"]", "〖… mit ❬1 Gramm❭ …〗〖⛔️ … mit ❬1 Gramms❭ …〗"},
-            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"genitive\"]", "〖Anstatt ❬1 Gramms❭ …〗〖⛔️ Anstatt ❬1 Gramm❭ …〗"},
-            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"nominative\"]", "〖❬1 Gramm❭ kostet (kosten) € 3,50.〗〖⛔️ ❬1 Gramms❭ kostet (kosten) € 3,50.〗"},
-            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"feminine\"]", "〖Die ❬Sekunde❭ ist …〗〖⛔️ Die ❬Meter❭ ist …〗"},
-            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"masculine\"]", "〖Der ❬Meter❭ ist …〗〖⛔️ Der ❬Sekunde❭ ist …〗"},
-            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"neuter\"]", "〖Das ❬Gramm❭ ist …〗〖⛔️ Das ❬Sekunde❭ ist …〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"one\"]", "〖✅️ ❬1❭ Tag〗〖⛔️ ❬16❭ Tag〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"other\"]", "〖✅️ ❬16❭ Tage〗〖⛔️ ❬1❭ Tage〗"},
+            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"accusative\"]", "〖✅️ … für ❬1 Gramm❭ …〗〖⛔️ … für ❬1 Gramms❭ …〗"},
+            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"dative\"]", "〖✅️ … mit ❬1 Gramm❭ …〗〖⛔️ … mit ❬1 Gramms❭ …〗"},
+            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"genitive\"]", "〖✅️ Anstatt ❬1 Gramms❭ …〗〖⛔️ Anstatt ❬1 Gramm❭ …〗"},
+            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"nominative\"]", "〖✅️ ❬1 Gramm❭ kostet (kosten) € 3,50.〗〖⛔️ ❬1 Gramms❭ kostet (kosten) € 3,50.〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"feminine\"]", "〖✅️ Die ❬Sekunde❭ ist …〗〖⛔️ Die ❬Meter❭ ist …〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"masculine\"]", "〖✅️ Der ❬Meter❭ ist …〗〖⛔️ Der ❬Sekunde❭ ist …〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"neuter\"]", "〖✅️ Das ❬Gramm❭ ist …〗〖⛔️ Das ❬Sekunde❭ ist …〗"},
             {"pl"},
-            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"one\"]", "〖❬1❭ miesiąc〗〖⛔️ ❬4❭ miesiąc〗"},
-            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"few\"]", "〖❬4❭ miesiące〗〖⛔️ ❬1❭ miesiące〗"},
-            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"many\"]", "〖❬0❭ miesięcy〗〖⛔️ ❬1❭ miesięcy〗"},
-            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"other\"]", "〖❬1,5❭ miesiąca〗〖⛔️ ❬1❭ miesiąca〗"},
-            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"accusative\"]", "〖Widzę ❬1 sekundę❭〗〖⛔️ Widzę ❬1 sekunda❭〗"},
-            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"genitive\"]", "〖Nie widzę ❬1 sekundy❭〗〖⛔️ Nie widzę ❬1 sekunda❭〗"},
-            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"nominative\"]", "〖❬1 sekunda❭ jest/są tutaj〗〖⛔️ ❬1 sekundy❭ jest/są tutaj〗"},
-            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"feminine\"]", "〖ta ❬sekunda❭〗〖⛔️ ta ❬gram❭〗"},
-            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"inanimate\"]", "〖ten ❬gram❭〗〖⛔️ ten ❬sekunda❭〗"},
-            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"neuter\"]", "〖to ❬G❭〗〖⛔️ to ❬sekunda❭〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"one\"]", "〖✅️ ❬1❭ miesiąc〗〖⛔️ ❬4❭ miesiąc〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"few\"]", "〖✅️ ❬4❭ miesiące〗〖⛔️ ❬1❭ miesiące〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"many\"]", "〖✅️ ❬19❭ miesięcy〗〖⛔️ ❬1❭ miesięcy〗"},
+            {"//ldml/numbers/minimalPairs/pluralMinimalPairs[@count=\"other\"]", "〖✅️ ❬1,5❭ miesiąca〗〖⛔️ ❬1❭ miesiąca〗"},
+            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"accusative\"]", "〖✅️ Widzę ❬1 sekundę❭〗〖⛔️ Widzę ❬1 sekunda❭〗"},
+            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"genitive\"]", "〖✅️ Nie widzę ❬1 sekundy❭〗〖⛔️ Nie widzę ❬1 sekunda❭〗"},
+            {"//ldml/numbers/minimalPairs/caseMinimalPairs[@case=\"nominative\"]", "〖✅️ ❬1 sekunda❭ jest/są tutaj〗〖⛔️ ❬1 sekundy❭ jest/są tutaj〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"feminine\"]", "〖✅️ ta ❬sekunda❭〗〖⛔️ ta ❬gram❭〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"inanimate\"]", "〖✅️ ten ❬gram❭〗〖⛔️ ten ❬sekunda❭〗"},
+            {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"neuter\"]", "〖✅️ to ❬G❭〗〖⛔️ to ❬sekunda❭〗"},
         };
         CLDRFile cldrFile = null;
         ExampleGenerator exampleGenerator = null;
@@ -911,7 +912,7 @@ public class TestExampleGenerator extends TestFmwk {
             assertEquals(row[0] + ", " + row[1], expected, actual);
         }
         logln("To generate a new version of these test cases from the data, use -v");
-        if (true || isVerbose()) { // generate examples
+        if (isVerbose()) { // generate examples, both in a form suitable for the test code and one for pasting into a spreadsheet.
             for (String locale : Arrays.asList("fr", "de", "pl")) {
                 cldrFile = info.getCLDRFile(locale, true);
                 exampleGenerator = getExampleGenerator(locale);
@@ -935,6 +936,23 @@ public class TestExampleGenerator extends TestFmwk {
                     String actual = ExampleGenerator.simplify(actualRaw, false);
                     System.out.println("{\"" + path.replace("\"", "\\\"") + "\", \"" + actual + "\"},");
                 }
+
+                System.out.println(CLDRConfig.getInstance().getEnglish().getName(locale) + " — " + locale);
+                System.out.println("Header/Code\tPattern\tExamples");
+                PathHeader.Factory factory = PathHeader.getFactory();
+                for (String path : paths) {
+
+                    String value = cldrFile.getStringValue(path);
+                    String actualRaw = exampleGenerator.getExampleHtml(path, value);
+                    String actual = ExampleGenerator.simplify(actualRaw, false);
+                    PathHeader ph = factory.fromPath(path);
+                    System.out.println(
+                        ph.getHeaderCode()
+                        + "\t" + value
+                        + "\t" + actual.replace("〗〖", "\n\t\t").replace("〗", "").replace("〖", "")
+                        );
+                }
+
             }
         }
     }

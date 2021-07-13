@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -659,7 +660,7 @@ public class ExampleGenerator {
 
         case "pluralMinimalPairs":   //ldml/numbers/minimalPairs/pluralMinimalPairs[@count="one"]
             count = Count.valueOf(parts.getAttributeValue(-1, "count"));
-            addCountMinimalPattern(minimalPattern, count, examples);
+            addCountMinimalPattern("✅️ " + minimalPattern, count, examples);
             Count badCount = Count.valueOf(getOtherUnit(pluralKeywords, count.toString()));
             addCountMinimalPattern("⛔️ " + minimalPattern, badCount, examples);
             break;
@@ -667,8 +668,8 @@ public class ExampleGenerator {
         case "caseMinimalPairs":   //ldml/numbers/minimalPairs/caseMinimalPairs[@case="accusative"]
             String gCase = parts.getAttributeValue(-1, "case");
             CasePatterns patterns = getBestUnitForCases(count);
-            addMinimalPattern(minimalPattern, patterns.getMatchingUnitPattern(gCase), count, examples);
-            addMinimalPattern("⛔️ " + minimalPattern, patterns.getNonMatchingUnitPattern(gCase), count, examples);
+            addCaseMinimalPattern("✅️ " + minimalPattern, patterns.getMatchingUnitPattern(gCase), count, examples);
+            addCaseMinimalPattern("⛔️ " + minimalPattern, patterns.getNonMatchingUnitPattern(gCase), count, examples);
             break;
 
         case "genderMinimalPairs": //ldml/numbers/minimalPairs/genderMinimalPairs[@gender="feminine"]
@@ -678,7 +679,7 @@ public class ExampleGenerator {
             //ldml/units/unitLength[@type="long"]/unit[@type="duration-day"]/gender
             String unitValue = getPlainUnitValue(count, gender);
             if (unitValue != null) {
-                examples.add(format(minimalPattern, backgroundStartSymbol + unitValue + backgroundEndSymbol));
+                examples.add(format("✅️ " + minimalPattern, backgroundStartSymbol + unitValue + backgroundEndSymbol));
             }
 
             Collection<String> unitGenders = grammarInfo.get(GrammaticalTarget.nominal, GrammaticalFeature.grammaticalGender, GrammaticalScope.units);
@@ -716,9 +717,9 @@ public class ExampleGenerator {
     /**
      * Add a minimal pattern, inserting a formatted unit.
      */
-    public void addMinimalPattern(String minimalPattern, String unitPattern, Count count, List<String> examples) {
+    public void addCaseMinimalPattern(String minimalPattern, String unitPattern, Count count, List<String> examples) {
         if (unitPattern != null) {
-            FixedDecimal amount = getBest(count);
+            FixedDecimal amount = getBest(count, SampleType.INTEGER);
             DecimalFormat numberFormat = icuServiceBuilder.getNumberFormat(1);
             String formattedUnit = format(unitPattern, numberFormat.format(amount));
             examples.add(format(minimalPattern, backgroundStartSymbol + formattedUnit + backgroundEndSymbol));
@@ -729,7 +730,7 @@ public class ExampleGenerator {
      * Add a minimal pattern for a count
      */
     public void addCountMinimalPattern(String minimalPattern, Count count, List<String> examples) {
-        FixedDecimal amount = getBest(count);
+        FixedDecimal amount = getBest(count, SampleType.INTEGER);
         DecimalFormat numberFormat = icuServiceBuilder.getNumberFormat(1);
         examples.add(format(minimalPattern, backgroundStartSymbol + numberFormat.format(amount) + backgroundEndSymbol));
     }
@@ -913,7 +914,7 @@ public class ExampleGenerator {
          * also used to mark internal methods (which are OK for us to use in CLDR).
          */
         @SuppressWarnings("deprecation")
-        FixedDecimal amount = getBest(Count.valueOf(count));
+        FixedDecimal amount = getBest(Count.valueOf(count), SampleType.DECIMAL);
         DecimalFormat numberFormat = null;
         if (amount != null) {
             numberFormat = icuServiceBuilder.getNumberFormat(1);
@@ -985,7 +986,7 @@ public class ExampleGenerator {
          */
 
         // we want to get a number that works for the count passed in.
-        FixedDecimal amount = getBest(count);
+        FixedDecimal amount = getBest(count, SampleType.DECIMAL);
         if (amount == null) {
             return "n/a";
         }
@@ -1038,7 +1039,7 @@ public class ExampleGenerator {
 
         // we want to get a number that works for the count passed in.
         @SuppressWarnings("deprecation")
-        FixedDecimal amount = getBest(count);
+        FixedDecimal amount = getBest(count, SampleType.DECIMAL);
         if (amount == null) {
             return "n/a";
         }
@@ -1081,17 +1082,23 @@ public class ExampleGenerator {
             + "/" + patternType;
     }
 
+    static final FixedDecimal FIXED_DECIMAL0 = new FixedDecimal(0);
     @SuppressWarnings("deprecation")
-    private FixedDecimal getBest(Count count) {
-        FixedDecimalSamples samples = pluralInfo.getPluralRules().getDecimalSamples(count.name(), SampleType.DECIMAL);
+    private FixedDecimal getBest(Count count, SampleType preferredSampleType) {
+        FixedDecimalSamples samples = pluralInfo.getPluralRules().getDecimalSamples(count.name(), preferredSampleType);
         if (samples == null) {
-            samples = pluralInfo.getPluralRules().getDecimalSamples(count.name(), SampleType.INTEGER);
+            SampleType otherSampleType = preferredSampleType == SampleType.DECIMAL ? SampleType.INTEGER : SampleType.DECIMAL;
+            samples = pluralInfo.getPluralRules().getDecimalSamples(count.name(), otherSampleType);
         }
         if (samples == null) {
             return null;
         }
         Set<FixedDecimalRange> samples2 = samples.getSamples();
-        FixedDecimalRange range = samples2.iterator().next();
+        Iterator<FixedDecimalRange> it = samples2.iterator();
+        FixedDecimalRange range = it.next();
+        if (range.end.equals(FIXED_DECIMAL0) && it.hasNext()) {
+            range = it.next();
+        }
         return range.end;
     }
 
