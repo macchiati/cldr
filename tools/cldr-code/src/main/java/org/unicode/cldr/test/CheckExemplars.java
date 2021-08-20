@@ -49,6 +49,8 @@ public class CheckExemplars extends FactoryCheckCLDR {
         }
         AlwaysOK.freeze();
     }
+    public static final UnicodeSet AlwaysOKCommon = new UnicodeSet("[[:script=common:][:script=inherited:]]").retainAll(AlwaysOK).freeze();
+
     // TODO Fix some of these characters
     private static final UnicodeSet SPECIAL_ALLOW = new UnicodeSet(
         "[\u061C\\u200E\\u200F\\u200c\\u200d"

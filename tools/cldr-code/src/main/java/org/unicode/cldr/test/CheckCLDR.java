@@ -719,7 +719,8 @@ abstract public class CheckCLDR {
             invalidPlaceHolder, asciiQuotesNotAllowed, badMinimumGroupingDigits, inconsistentPeriods,
             inheritanceMarkerNotAllowed, invalidDurationUnitPattern, invalidDelimiter, illegalCharactersInPattern,
             badParseLenient, tooManyValues, invalidSymbol, invalidGenderCode,
-            mismatchedUnitComponent, longPowerWithSubscripts, gapsInPlaceholderNumbers, duplicatePlaceholders, largerDifferences
+            mismatchedUnitComponent, longPowerWithSubscripts, gapsInPlaceholderNumbers, duplicatePlaceholders, largerDifferences,
+            multipleScripts, mismatchedScriptsInLogicalGroup
             ;
 
             @Override

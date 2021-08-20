@@ -146,6 +146,8 @@ public class CheckForExemplars extends FactoryCheckCLDR {
     private SupplementalDataInfo sdi;
     private Relation scriptToCurrencies;
 
+    private BitSet exemplarScripts;
+
     public CheckForExemplars(Factory factory) {
         super(factory);
         // patternPlaceholders = RegexLookup.of(new PlaceholderTransform())
@@ -183,6 +185,7 @@ public class CheckForExemplars extends FactoryCheckCLDR {
         }
 
         errorDefaultOption = options.get(Options.Option.exemplarErrors) != null;
+        errorDefaultOption = true;
 
         String locale = cldrFile.getLocaleID();
         col = Collator.getInstance(new ULocale(locale));
@@ -230,7 +233,8 @@ public class CheckForExemplars extends FactoryCheckCLDR {
             exemplars.add(STAND_IN);
         }
 
-        exemplars.addAll(CheckExemplars.AlwaysOK).freeze();
+        exemplars.addAll(CheckExemplars.AlwaysOKCommon).freeze();
+        exemplarScripts=getScripts(exemplars);
         exemplarsPlusAscii = new UnicodeSet(exemplars).addAll(ASCII).freeze();
 
         skip = false;
@@ -672,16 +676,15 @@ public class CheckForExemplars extends FactoryCheckCLDR {
         Subtype subtypeAscii,
         String qualifier, List<CheckStatus> result) {
         String fixedMissing = prettyPrint.format(missing);
-        BitSet scripts = new BitSet();
-        for (String s : missing) {
-            final int script = UScript.getScript(s.codePointAt(0));
-            if (script == UScript.INHERITED || script == UScript.COMMON) {
-                continue;
-            }
-            scripts.set(script);
-        }
+        BitSet scripts = getScripts(missing);
         StringBuilder scriptString = new StringBuilder();
-        if (!scripts.isEmpty()) {
+        if (scripts.size() > 1) {
+            // if there is an unknown script, make warnings into errors
+//            if (warningVsError != CheckStatus.Type.Error
+//                && !exemplarScripts.equals(scripts)
+//                && !containsAll(exemplarScripts, scripts)) {
+//                warningVsError = CheckStatus.Type.Error;
+//            }
             scriptString.append("{");
             for (int i = scripts.nextSetBit(0); i >= 0; i = scripts.nextSetBit(i + 1)) {
                 if (scriptString.length() > 1) {
@@ -701,6 +704,33 @@ public class CheckForExemplars extends FactoryCheckCLDR {
             .setMainType(warningVsError)
             .setSubtype(ASCII.containsAll(missing) ? subtypeAscii : subtype)
             .setMessage(message, new Object[] { fixedMissing, scriptString, qualifier }));
+    }
+
+    private boolean containsAll(BitSet exemplarScripts2, BitSet scripts) {
+        for (int i = scripts.nextSetBit(0); i >= 0; i = scripts.nextSetBit(i+1)) {
+            if (!exemplarScripts2.get(i)) {
+                return false;
+            }
+            if (i == Integer.MAX_VALUE) {
+                break; // or (i+1) would overflow
+            }
+        }
+        return true;
+    }
+
+    private BitSet getScripts(UnicodeSet missing) {
+        BitSet scripts = new BitSet();
+        for (String s : missing) {
+            final int script = UScript.getScript(s.codePointAt(0));
+            if (script == UScript.INHERITED || script == UScript.COMMON) {
+                continue;
+            }
+            if (scripts.get(script)) {
+                continue;
+            }
+            scripts.set(script);
+        }
+        return scripts;
     }
 
     static final Normalizer2 NFC = Normalizer2.getInstance(null, "nfc", Normalizer2.Mode.COMPOSE);

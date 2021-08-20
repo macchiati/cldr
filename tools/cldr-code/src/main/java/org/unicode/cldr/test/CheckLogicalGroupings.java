@@ -26,6 +26,7 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Multiset.Entry;
 import com.google.common.collect.TreeMultiset;
 import com.ibm.icu.dev.util.UnicodeMap;
+import com.ibm.icu.lang.UScript;
 import com.ibm.icu.text.Transliterator;
 import com.ibm.icu.text.UnicodeSet;
 import com.ibm.icu.util.Output;
@@ -113,15 +114,36 @@ public class CheckLogicalGroupings extends FactoryCheckCLDR {
         case COUNT:
         case COUNT_CASE_GENDER:
             // only check the first path
+            Output<Subtype> subtypeFound = path.contains("/availableFormats") ? null : new Output<>();
             TreeSet<String> sorted = new TreeSet<>(paths);
-            if (path.equals(sorted.iterator().next())) {
+            if (path.equals(sorted.iterator().next())) { // only check first one
                 Multiset<String> values = TreeMultiset.create();
-                int maxDistance = getMaxDistance(path, value, sorted, values);
+                int maxDistance;
+                if (subtypeFound == null) {
+                    maxDistance = getMaxDistance(path, value, sorted, values, null);
+                } else {
+                    maxDistance = getMaxDistance(path, value, sorted, values, subtypeFound);
+                    if (maxDistance < 0) {
+                        switch(subtypeFound.value) {
+                        case mismatchedScriptsInLogicalGroup:
+                            result.add(new CheckStatus().setCause(this).setMainType(CheckStatus.errorType)
+                                .setSubtype(subtypeFound.value)
+                                .setMessage("Conflict in scripts within logical group {0}; {1}", showInvisibles(values), pathType.value));
+                            break;
+                        case multipleScripts:
+                            result.add(new CheckStatus().setCause(this).setMainType(CheckStatus.errorType)
+                                .setSubtype(subtypeFound.value)
+                                .setMessage("Multiple scripts in value", showInvisibles(values), pathType.value));
+                            break;
+                        }
+                    }
+                    break;
+                }
                 if (maxDistance >= LIMIT_DISTANCE) {
-                    maxDistance = getMaxDistance(path, value, paths, values);
+                    maxDistance = getMaxDistance(path, value, paths, values, null);
                     result.add(new CheckStatus().setCause(this).setMainType(CheckStatus.warningType)
                         .setSubtype(Subtype.largerDifferences) // typically warningType or errorType
-                        .setMessage("{0} different characters within {1}; {2}", maxDistance, showInvisibles(values), pathType.value));
+                        .setMessage("{0} different characters within logical group {1}; {2}", maxDistance, showInvisibles(values), pathType.value));
                 }
             }
             break;
@@ -275,14 +297,47 @@ public class CheckLogicalGroupings extends FactoryCheckCLDR {
         return b.append('}').toString();
     }
 
-    private int getMaxDistance(String path, String value, Set<String> paths, Multiset<String> values) {
+    public static Subtype checkScripts(Set<Fingerprint> fingerprintsIn) {
+        int lastScript = UScript.INVALID_CODE;
+        for (Fingerprint item : fingerprintsIn) {
+            int script = item.getScripts();
+            if (script < 0) {
+                return Subtype.multipleScripts;
+            } else if (lastScript == UScript.INVALID_CODE) {
+                lastScript = script;
+            } else if (lastScript != script) {
+                return Subtype.mismatchedScriptsInLogicalGroup;
+            }
+        }
+        return Subtype.none;
+    }
+
+
+    /** Return the script problem if there is one, otherwise */
+    private int getMaxDistance(String path, String value, Set<String> paths, Multiset<String> values, Output<Subtype> subtypeFound) {
         values.clear();
         final CLDRFile cldrFileToCheck = getCldrFileToCheck();
         Set<Fingerprint> fingerprints = new HashSet<>();
+        int lastScript = UScript.COMMON;
         for (String path1 : paths) {
             final String pathValue = cleanSpaces(path.contentEquals(path1) ? value : cldrFileToCheck.getWinningValue(path1));
             values.add(pathValue);
-            fingerprints.add(Fingerprint.make(pathValue));
+            Fingerprint fingerPrint = Fingerprint.make(pathValue);
+            if (subtypeFound != null) { // check scr
+                int script = fingerPrint.getScripts();
+                if (script < 0) {
+                    subtypeFound.value = Subtype.multipleScripts;
+                    return -1;
+                } else if (script == UScript.COMMON) {
+                    // no action
+                } else if (lastScript == UScript.COMMON) {
+                    lastScript = script;
+                } else if (lastScript != script) {
+                    subtypeFound.value = Subtype.mismatchedScriptsInLogicalGroup;
+                    return -1;
+                }
+            }
+            fingerprints.add(fingerPrint);
         }
         return Fingerprint.maxDistanceBetween(fingerprints);
     }
@@ -307,6 +362,29 @@ public class CheckLogicalGroupings extends FactoryCheckCLDR {
                 result.add(cp);
             }
             codePointCounts = ImmutableMultiset.copyOf(result);
+        }
+
+        /**
+         * returns -2 if there are multiple scripts, UScript.INVALID_CODE if there are no scripts (or just COMMON), otherwise the explicit script
+         * @return
+         */
+        public int getScripts() {
+            int resultScript = UScript.COMMON;
+            for (Integer item : codePointCounts.elementSet()) {
+                int script = UScript.getScript(item);
+                if (script == UScript.GREEK && item == 'μ') { // special case
+                    continue;
+                }
+                if (script == UScript.COMMON || script == UScript.INHERITED) {
+                    continue;
+                }
+                if (resultScript == UScript.COMMON) {
+                    resultScript = script;
+                } else if (script != resultScript){
+                    return -2; // more than one script in field
+                }
+            }
+            return resultScript;
         }
 
         public static int maxDistanceBetween(Set<Fingerprint> fingerprintsIn) {
