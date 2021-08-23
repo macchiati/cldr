@@ -27,6 +27,7 @@ import org.unicode.cldr.util.PatternCache;
 import org.unicode.cldr.util.PatternPlaceholders;
 import org.unicode.cldr.util.PatternPlaceholders.PlaceholderInfo;
 import org.unicode.cldr.util.PatternPlaceholders.PlaceholderStatus;
+import org.unicode.cldr.util.RegexLookup;
 import org.unicode.cldr.util.SupplementalDataInfo;
 import org.unicode.cldr.util.SupplementalDataInfo.BasicLanguageData;
 import org.unicode.cldr.util.SupplementalDataInfo.BasicLanguageData.Type;
@@ -36,10 +37,14 @@ import org.unicode.cldr.util.XMLSource;
 import org.unicode.cldr.util.XPathParts;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multiset.Entry;
 import com.google.common.collect.TreeMultiset;
+import com.ibm.icu.dev.util.UnicodeMap;
 import com.ibm.icu.impl.Relation;
+import com.ibm.icu.lang.UProperty;
 import com.ibm.icu.lang.UScript;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.DateTimePatternGenerator;
@@ -47,14 +52,35 @@ import com.ibm.icu.text.Normalizer2;
 import com.ibm.icu.text.PluralRules;
 import com.ibm.icu.text.Transform;
 import com.ibm.icu.text.UnicodeSet;
+import com.ibm.icu.text.UnicodeSet.EntryRange;
 import com.ibm.icu.util.ULocale;
 
+/**
+ * These are the main categories of characters we are concerned with:
+ * <ul><li>ALLOWED: Characters in the locale's exemplars, main and aux (or COMMON/INHERITED).
+ * </li><li>WARNING: Other characters in the locale's script (eg [:latn:]
+ * </li><li>ASCII: ASCII characters (if the locale's script is not Latin)
+ * </li><li>ERROR: Other characters
+ * </li></ul>
+ *
+ * For the ASCII, those may be set to one of the other outcomes based on the path.
+ * <ul><li>Relating to the Code. Examples: 🆓_-name ➡︎ дугме FREE; XPF-name-one ➡︎ CFP франак
+ * </li><li>In parentheses for clarification: XBC-name-few ➡︎ европске јединице рачуна (XBC)
+ * </li><li>Commonly used terms in non-Latin scripts: am ➡ AM
+ * </li><li>And so on
+ * </li></ul>
+ * NOTE: if an ASCII confusable occurs in a word that is otherwise a single non-ASCII script (eg oлaкшaњe contains ASCII a, e, & o) we might consider using DAIP
+ * @author markdavis
+ *
+ */
 public class CheckForExemplars extends FactoryCheckCLDR {
     private static final UnicodeSet RTL_CONTROLS = new UnicodeSet("[\\u061C\\u200E\\u200F\\u202A-\\u202D\\u2066-\\u2069]");
 
     private static final UnicodeSet RTL = new UnicodeSet("[[:bc=AL:][:bc=R:]]");
 
     private static final String STAND_IN = "#";
+
+    public static final int PARAM_INDEX_FOR_EXEMPLARS = 2;
 
     // private final UnicodeSet commonAndInherited = new UnicodeSet(CheckExemplars.Allowed).complement();
     // "[[:script=common:][:script=inherited:][:alphabetic=false:]]");
@@ -95,6 +121,8 @@ public class CheckForExemplars extends FactoryCheckCLDR {
     static final UnicodeSet DISALLOWED_IN_RANGE = new UnicodeSet("[:L:]").freeze();
 
     private UnicodeSet exemplars;
+    private UnicodeSet exemplarScriptCharacters;
+
     private UnicodeSet exemplarsPlusAscii;
     //private static final UnicodeSet DISALLOWED_IN_scriptRegionExemplars = new UnicodeSet("[()（）;,；，]").freeze();
     //private static final UnicodeSet DISALLOWED_IN_scriptRegionExemplarsWithParens = new UnicodeSet("[;,；，]").freeze();
@@ -110,6 +138,31 @@ public class CheckForExemplars extends FactoryCheckCLDR {
     private Status otherPathStatus = new Status();
     private Matcher patternMatcher = ExampleGenerator.PARAMETER.matcher("");
     private boolean errorDefaultOption;
+
+    private static final Splitter PIPE_SPLITTER = Splitter.on('|').trimResults();
+    static final class SetStringTransform implements Transform<String, Set<String>> {
+        @Override
+        public Set<String> transform(String source) {
+            return ImmutableSet.copyOf(PIPE_SPLITTER.splitToList(source));
+        }
+    }
+    static final RegexLookup<Set<String>> REMOVAL_LOOKUP = RegexLookup
+        .of(new SetStringTransform())
+        .setPatternTransform(RegexLookup.RegexFinderTransformPath) // quotes [, adds ^ at start
+        .loadFromFile(
+            CLDRFile.class,
+            "data/CheckForExemplarExceptions.txt");
+
+    public static String clean (String path, String value) {
+        Set<String> changes = REMOVAL_LOOKUP.get(path);
+        if (changes != null) {
+            for (String change : changes) {
+                value = value.replace(change, "");
+            }
+            value = value.trim();
+        }
+        return value;
+    }
 
     // for extracting date pattern text
     private DateTimePatternGenerator.FormatParser formatParser = new DateTimePatternGenerator.FormatParser();
@@ -207,6 +260,8 @@ public class CheckForExemplars extends FactoryCheckCLDR {
         } else {
             exemplars = new UnicodeSet(exemplars); // modifiable copy
         }
+        int uScript = getFirstExplicitScript(exemplars);
+        exemplarScriptCharacters = new UnicodeSet().applyIntPropertyValue(UProperty.SCRIPT, uScript).freeze();
 
         boolean isRTL = RTL.containsSome(exemplars);
         if (isRTL) {
@@ -246,6 +301,25 @@ public class CheckForExemplars extends FactoryCheckCLDR {
         return this;
     }
 
+    /**
+     * Return the first explict script among the code points. This does not include the strings in the UnicodeSet.
+     * If we ever generalize this we would add them.
+     * @param unicodeSet
+     * @return
+     */
+    public static int getFirstExplicitScript(UnicodeSet unicodeSet) {
+        for (EntryRange range : unicodeSet.ranges()) {
+            for (int cp = range.codepoint ; cp < range.codepointEnd; ++cp) {
+                int uScript0 = UScript.getScript(cp);
+                if (uScript0 == UScript.COMMON || uScript0 == UScript.INHERITED || uScript0 == UScript.UNKNOWN) {
+                    continue;
+                }
+                return uScript0;
+            }
+        }
+        return UScript.COMMON;
+    }
+
     private UnicodeSet getNumberSystemExemplars() {
         String numberSystem = getCldrFileToCheck().getStringValue("//ldml/numbers/defaultNumberingSystem");
         String digits = sdi.getDigits(numberSystem);
@@ -270,6 +344,10 @@ public class CheckForExemplars extends FactoryCheckCLDR {
     @Override
     public CheckCLDR handleCheck(String path, String fullPath, String value,
         Options options, List<CheckStatus> result) {
+        if (path.startsWith("//ldml/numbers/currencies/currency[@type=\"RON\"]")
+            || path.startsWith("//ldml/annotations/annotation[@cp=\"🈂\"]")) {
+            int debug = 0;
+        }
         if (fullPath == null) return this; // skip paths that we don't have
         if (value == null) return this; // skip values that we don't have ?
         if (skip) return this;
@@ -280,10 +358,10 @@ public class CheckForExemplars extends FactoryCheckCLDR {
         }
         String sourceLocale = getResolvedCldrFileToCheck().getSourceLocaleID(path, otherPathStatus);
 
-        // if we are an alias to another path, then skip
-        // if (!path.equals(otherPathStatus.pathWhereFound)) {
-        // return this;
-        // }
+        // with certain paths, skip checking aliases
+         if (path.startsWith("//ldml/numbers/currencyFormats") && !path.equals(otherPathStatus.pathWhereFound)) {
+             return this;
+         }
 
         // now check locale source
         if (XMLSource.CODE_FALLBACK_ID.equals(sourceLocale)) {
@@ -324,8 +402,8 @@ public class CheckForExemplars extends FactoryCheckCLDR {
                 UnicodeSet disallowed = new UnicodeSet().addAll(value).retainAll(NUMBERS);
                 addMissingMessage(disallowed, CheckStatus.errorType,
                     Subtype.patternCannotContainDigits,
-                    Subtype.patternCannotContainDigits,
-                    "cannot occur in date or time patterns", result);
+                    "cannot occur in date or time patterns",
+                    result);
             }
             if (path.endsWith("/hourFormat")) {
                 UnicodeSet disallowed = new UnicodeSet().addAll(value)
@@ -333,13 +411,15 @@ public class CheckForExemplars extends FactoryCheckCLDR {
                 if (!disallowed.isEmpty()) {
                     addMissingMessage(disallowed, CheckStatus.errorType,
                         Subtype.patternContainsInvalidCharacters,
-                        Subtype.patternContainsInvalidCharacters,
-                        "cannot occur in the hour format", result);
+                        "cannot occur in the hour format",
+                        result);
                 }
             }
         }
 
         if (path.startsWith("//ldml/posix/messages")) return this;
+
+        value = clean(path, value);
 
         UnicodeSet disallowed;
 
@@ -351,8 +431,7 @@ public class CheckForExemplars extends FactoryCheckCLDR {
                     // && asciiNotAllowed(getCldrFileToCheck().getLocaleID(), currency)) {
                     addMissingMessage(disallowed, errorOption,
                         Subtype.charactersNotInMainOrAuxiliaryExemplars,
-                        Subtype.asciiCharactersNotInMainOrAuxiliaryExemplars, "are not in the exemplar characters",
-                        result);
+                        "are not in the exemplar characters", result);
                 }
             }
         } else if (path.contains("/gmtFormat") || path.contains("/gmtZeroFormat")) {
@@ -361,8 +440,7 @@ public class CheckForExemplars extends FactoryCheckCLDR {
                 if (disallowed.size() > 0) {
                     addMissingMessage(disallowed, errorOption,
                         Subtype.charactersNotInMainOrAuxiliaryExemplars,
-                        Subtype.asciiCharactersNotInMainOrAuxiliaryExemplars, "are not in the exemplar characters",
-                        result);
+                        "are not in the exemplar characters", result);
                 }
             }
         } else if (path.contains("/months") || path.contains("/quarters")) {
@@ -374,8 +452,7 @@ public class CheckForExemplars extends FactoryCheckCLDR {
                 if (disallowed.size() > 0) {
                     addMissingMessage(disallowed, errorOption,
                         Subtype.charactersNotInMainOrAuxiliaryExemplars,
-                        Subtype.asciiCharactersNotInMainOrAuxiliaryExemplars, "are not in the exemplar characters",
-                        result);
+                        "are not in the exemplar characters", result);
                 }
             }
         } else if (path.contains("/localeDisplayNames") && !path.contains("/localeDisplayPattern")) {
@@ -386,7 +463,7 @@ public class CheckForExemplars extends FactoryCheckCLDR {
                 }
                 if (disallowed.size() > 0) {
                     addMissingMessage(disallowed, errorOption, Subtype.charactersNotInMainOrAuxiliaryExemplars,
-                        Subtype.asciiCharactersNotInMainOrAuxiliaryExemplars, "are not in the exemplar characters", result);
+                        "are not in the exemplar characters", result);
                 }
             }
             if (path.contains("/codePatterns")) {
@@ -394,8 +471,8 @@ public class CheckForExemplars extends FactoryCheckCLDR {
                 if (!disallowed.isEmpty()) {
                     addMissingMessage(disallowed, CheckStatus.errorType,
                         Subtype.patternCannotContainDigits,
-                        Subtype.patternCannotContainDigits,
-                        "cannot occur in locale fields", result);
+                        "cannot occur in locale fields",
+                        result);
                 }
             }
         } else if (path.contains("/units")) {
@@ -405,53 +482,53 @@ public class CheckForExemplars extends FactoryCheckCLDR {
             if (!disallowed.isEmpty()) {
                 addMissingMessage(disallowed, CheckStatus.errorType,
                     Subtype.parenthesesNotAllowed,
-                    Subtype.parenthesesNotAllowed,
-                    "cannot occur in units", result);
+                    "cannot occur in units",
+                    result);
             }
-        } else if (path.endsWith("/exemplarCity")) {
-            disallowed = containsAllCountingParens(exemplars, exemplarsPlusAscii, value);
-            if (disallowed != null) {
-                if ("root".equals(sourceLocale)) {
-                    return this;
-                }
-                // Get script of locale.
-                LocaleIDParser parser = new LocaleIDParser().set(sourceLocale);
-                String script = parser.getScript();
-                if (script.length() == 0) {
-                    String localeID = sdi.getLikelySubtags().get(sourceLocale);
-                    if (localeID == null) {
-                        localeID = sdi.getLikelySubtags().get(parser.getLanguage());
-                        if (localeID == null) {
-                            throw new IllegalArgumentException(
-                                "A likely subtag for " + parser.getLanguage() +
-                                " is required to get its script.");
-                        }
-                    }
-                    script = parser.set(localeID).getScript();
-                }
-                int myscript = UScript.getCodeFromName(script);
-                UnicodeSet toRemove = new UnicodeSet();
-                for (int i = 0; i < disallowed.size(); i++) {
-                    int c = disallowed.charAt(i);
-                    if (UScript.getScript(c) == myscript) {
-                        toRemove.add(c);
-                    }
-                }
-                disallowed.removeAll(toRemove);
-                if (disallowed.size() > 0) {
-                    addMissingMessage(disallowed, errorOption, Subtype.charactersNotInMainOrAuxiliaryExemplars,
-                        Subtype.asciiCharactersNotInMainOrAuxiliaryExemplars, "are not in the exemplar characters", result);
-                }
-            }
-        } else if (path.contains("/annotations") && !path.contains("[@type")) {
-            if (null != (disallowed = containsAllCountingParens(exemplars, exemplarsPlusAscii, value))) {
-                addMissingMessage(disallowed, CheckStatus.warningType, Subtype.charactersNotInMainOrAuxiliaryExemplars,
-                    Subtype.asciiCharactersNotInMainOrAuxiliaryExemplars, "are not in the exemplar characters", result);
-            }
+//        } else if (path.endsWith("/exemplarCity")) {
+//            disallowed = containsAllCountingParens(exemplars, exemplarsPlusAscii, value);
+//            if (disallowed != null) {
+//                if ("root".equals(sourceLocale)) {
+//                    return this;
+//                }
+//                // Get script of locale.
+//                LocaleIDParser parser = new LocaleIDParser().set(sourceLocale);
+//                String script = parser.getScript();
+//                if (script.length() == 0) {
+//                    String localeID = sdi.getLikelySubtags().get(sourceLocale);
+//                    if (localeID == null) {
+//                        localeID = sdi.getLikelySubtags().get(parser.getLanguage());
+//                        if (localeID == null) {
+//                            throw new IllegalArgumentException(
+//                                "A likely subtag for " + parser.getLanguage() +
+//                                " is required to get its script.");
+//                        }
+//                    }
+//                    script = parser.set(localeID).getScript();
+//                }
+//                int myscript = UScript.getCodeFromName(script);
+//                UnicodeSet toRemove = new UnicodeSet();
+//                for (int i = 0; i < disallowed.size(); i++) {
+//                    int c = disallowed.charAt(i);
+//                    if (UScript.getScript(c) == myscript) {
+//                        toRemove.add(c);
+//                    }
+//                }
+//                disallowed.removeAll(toRemove);
+//                if (disallowed.size() > 0) {
+//                    addMissingMessage(disallowed, errorOption, Subtype.charactersNotInMainOrAuxiliaryExemplars,
+//                        "are not in the exemplar characters", result);
+//                }
+//            }
+//        } else if (path.contains("/annotations") && !path.contains("[@type")) {
+//            if (null != (disallowed = containsAllCountingParens(exemplars, exemplarsPlusAscii, value))) {
+//                addMissingMessage(disallowed, CheckStatus.warningType, Subtype.charactersNotInMainOrAuxiliaryExemplars,
+//                    Subtype.asciiCharactersNotInMainOrAuxiliaryExemplars, "are not in the exemplar characters", result);
+//            }
         } else {
             if (null != (disallowed = containsAllCountingParens(exemplars, exemplarsPlusAscii, value))) {
                 addMissingMessage(disallowed, errorOption, Subtype.charactersNotInMainOrAuxiliaryExemplars,
-                    Subtype.asciiCharactersNotInMainOrAuxiliaryExemplars, "are not in the exemplar characters", result);
+                    "are not in the exemplar characters", result);
             }
         }
 
@@ -673,37 +750,36 @@ public class CheckForExemplars extends FactoryCheckCLDR {
     static final String TEST = "؉";
 
     private void addMissingMessage(UnicodeSet missing, CheckStatus.Type warningVsError, Subtype subtype,
-        Subtype subtypeAscii,
-        String qualifier, List<CheckStatus> result) {
-        String fixedMissing = prettyPrint.format(missing);
-        BitSet scripts = getScripts(missing);
-        StringBuilder scriptString = new StringBuilder();
-        if (scripts.size() > 1) {
-            // if there is an unknown script, make warnings into errors
-//            if (warningVsError != CheckStatus.Type.Error
-//                && !exemplarScripts.equals(scripts)
-//                && !containsAll(exemplarScripts, scripts)) {
-//                warningVsError = CheckStatus.Type.Error;
-//            }
-            scriptString.append("{");
-            for (int i = scripts.nextSetBit(0); i >= 0; i = scripts.nextSetBit(i + 1)) {
-                if (scriptString.length() > 1) {
-                    scriptString.append(", ");
+        String qualifier,
+        List<CheckStatus> result) {
+
+        if (warningVsError == CheckStatus.Type.Error) {
+            if (exemplarScriptCharacters.containsSome(missing)) {
+                // Make a just a warning if in same script
+                UnicodeSet sameScript = new UnicodeSet(missing).retainAll(exemplarScriptCharacters);
+                addMissingMessage2(sameScript, CheckStatus.Type.Warning, subtype, qualifier, result);
+                // If there are any left over, we do the error for them, otherwise we bail
+                if (sameScript.size() == missing.size()) {
+                    return;
                 }
-                scriptString.append(UScript.getName(i));
+                missing.removeAll(exemplarScriptCharacters);
             }
-            scriptString.append("}");
         }
+        addMissingMessage2(missing, warningVsError, subtype, qualifier, result);
+    }
+
+    private void addMissingMessage2(UnicodeSet missing, CheckStatus.Type warningVsError, Subtype subtype, String qualifier, List<CheckStatus> result) {
+        String scriptString = getScriptMap(missing);
         final String helpUrl = "http://cldr.unicode.org/translation/-core-data/exemplars#TOC-Handling-Warnings-in-Exemplar-characters";
-        final String message = "The characters \u200E{0}\u200E {1} {2}. "
+        final String message = "The characters {0} {1}. "
             + "For what to do, see <i>Handling Warnings</i> in <a target='CLDR-ST-DOCS' href='"
             + helpUrl
             + "'>Exemplar Characters</a>.";
         result.add(new CheckStatus()
             .setCause(this)
             .setMainType(warningVsError)
-            .setSubtype(ASCII.containsAll(missing) ? subtypeAscii : subtype)
-            .setMessage(message, new Object[] { fixedMissing, scriptString, qualifier }));
+            .setSubtype(subtype)
+            .setMessage(message, new Object[] { scriptString, qualifier, warningVsError == CheckStatus.Type.Error ? missing : UnicodeSet.EMPTY}));
     }
 
     private boolean containsAll(BitSet exemplarScripts2, BitSet scripts) {
@@ -731,6 +807,29 @@ public class CheckForExemplars extends FactoryCheckCLDR {
             scripts.set(script);
         }
         return scripts;
+    }
+
+    private String getScriptMap(UnicodeSet missing) {
+        UnicodeMap<Integer> result = new UnicodeMap<>();
+        for (String s : missing) {
+            final int script = UScript.getScript(s.codePointAt(0));
+            if (script == UScript.INHERITED || script == UScript.COMMON) {
+                continue;
+            }
+            result.put(s, script);
+        }
+        StringBuilder result2 = new StringBuilder();
+        for (Integer value : result.values()) {
+            if (result2.length() != 0) {
+                result2.append(" and ");
+            }
+            result2.append("\u200E")
+            .append(prettyPrint.format(result.getSet(value)))
+            .append("\u200E (")
+            .append(UScript.getName(value))
+            .append(')');
+        }
+        return result2.toString();
     }
 
     static final Normalizer2 NFC = Normalizer2.getInstance(null, "nfc", Normalizer2.Mode.COMPOSE);

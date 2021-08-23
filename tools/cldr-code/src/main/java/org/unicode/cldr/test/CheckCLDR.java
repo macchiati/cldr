@@ -704,8 +704,8 @@ abstract public class CheckCLDR {
             missingEuroCountryInfo, deprecatedAttributeWithReplacement, missingOrExtraDateField, internalUnicodeSetFormattingError,
             auxiliaryExemplarsOverlap, missingPunctuationCharacters,
 
-            charactersNotInCurrencyExemplars, asciiCharactersNotInCurrencyExemplars,
-            charactersNotInMainOrAuxiliaryExemplars, asciiCharactersNotInMainOrAuxiliaryExemplars,
+            charactersNotInCurrencyExemplars,
+            charactersNotInMainOrAuxiliaryExemplars,
 
             narrowDateFieldTooWide, illegalCharactersInExemplars, orientationDisagreesWithExemplars,
             inconsistentDatePattern, inconsistentTimePattern, missingDatePattern, illegalDatePattern,

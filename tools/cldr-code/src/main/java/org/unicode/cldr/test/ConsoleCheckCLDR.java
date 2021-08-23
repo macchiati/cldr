@@ -49,6 +49,7 @@ import org.unicode.cldr.util.Organization;
 import org.unicode.cldr.util.Pair;
 import org.unicode.cldr.util.PathDescription;
 import org.unicode.cldr.util.PathHeader;
+import org.unicode.cldr.util.PathHeader.SectionId;
 import org.unicode.cldr.util.PathUtilities;
 import org.unicode.cldr.util.PatternCache;
 import org.unicode.cldr.util.SimpleFactory;
@@ -222,6 +223,7 @@ public class ConsoleCheckCLDR {
         }
     };
     private static final boolean PATH_IN_COUNT = false;
+    private static final boolean SHORT_LINK = false;
 
     /*
      * TODO: unused? Should be used?
@@ -594,7 +596,10 @@ public class ConsoleCheckCLDR {
                         continue;
                     }
                 }
-                paths.add(pathHeaderFactory.fromPath(path));
+                PathHeader pathHeader = pathHeaderFactory.fromPath(path);
+                if (pathHeader.getSectionId() != SectionId.Special) {
+                    paths.add(pathHeader);
+                }
             }
             // addPrettyPaths(file, pathFilter, prettyPathMaker, noaliases, false, paths);
             // addPrettyPaths(file, file.getExtraPaths(), pathFilter, prettyPathMaker, noaliases, false, paths);
@@ -690,9 +695,9 @@ public class ConsoleCheckCLDR {
                         Object[] parameters = status.getParameters();
 
                         if (parameters != null) {
-                            if (parameters.length >= 1 && status.getCause().getClass() == CheckForExemplars.class) {
+                            if (parameters.length > 2 && status.getCause().getClass() == CheckForExemplars.class) {
                                 try {
-                                    UnicodeSet set = new UnicodeSet(parameters[0].toString());
+                                    UnicodeSet set = new UnicodeSet(parameters[CheckForExemplars.PARAM_INDEX_FOR_EXEMPLARS].toString());
                                     if (status.getMessage().contains("currency")) {
                                         missingCurrencyExemplars.addAll(set);
                                     } else {
@@ -1538,7 +1543,7 @@ public class ConsoleCheckCLDR {
             String fillinValue = path == null ? null : cldrFile.getFillInValue(path);
             fillinValue = fillinValue == null ? "" : fillinValue.equals(value) ? "=" : fillinValue;
 
-            String pathLink = CLDR_CONFIG.urls().forXpath(localeID, path);
+            String pathLink = SHORT_LINK ? CLDR_CONFIG.urls().forXpath(localeID, path) : path;
 
             final String otherSource = path == null ? null
                 : (sourceLocaleID.equals(localeID) ? ""

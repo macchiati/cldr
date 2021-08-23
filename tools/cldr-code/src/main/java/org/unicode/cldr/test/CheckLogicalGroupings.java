@@ -301,9 +301,7 @@ public class CheckLogicalGroupings extends FactoryCheckCLDR {
         int lastScript = UScript.INVALID_CODE;
         for (Fingerprint item : fingerprintsIn) {
             int script = item.getScripts();
-            if (script < 0) {
-                return Subtype.multipleScripts;
-            } else if (lastScript == UScript.INVALID_CODE) {
+            if (lastScript == UScript.INVALID_CODE) {
                 lastScript = script;
             } else if (lastScript != script) {
                 return Subtype.mismatchedScriptsInLogicalGroup;
@@ -325,10 +323,7 @@ public class CheckLogicalGroupings extends FactoryCheckCLDR {
             Fingerprint fingerPrint = Fingerprint.make(pathValue);
             if (subtypeFound != null) { // check scr
                 int script = fingerPrint.getScripts();
-                if (script < 0) {
-                    subtypeFound.value = Subtype.multipleScripts;
-                    return -1;
-                } else if (script == UScript.COMMON) {
+                if (script == UScript.COMMON) {
                     // no action
                 } else if (lastScript == UScript.COMMON) {
                     lastScript = script;
