@@ -2660,7 +2660,6 @@ public class TestUnits extends TestFmwk {
             boolean siOrMetric = !Collections.disjoint(systems, UnitSystem.SiOrMetric);
 
             TranslationStatus status =
-
                 toTranslate.contains(longUnit) ? (siOrMetric ? TranslationStatus.has_grammar_M : TranslationStatus.has_grammar_X)
                     : siOrMetric ? TranslationStatus.add_grammar : TranslationStatus.skip_grammar;
             shortUnitToTranslationStatus40.put(shortUnit, status);

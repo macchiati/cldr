@@ -560,17 +560,18 @@ public class GrammarInfo implements Freezable<GrammarInfo>{
                     continue;
                 }
                 Set<UnitSystem> systems = converter.getSystemsEnum(shortUnit);
+
                 // v40 code added simple units that were metric
-                if (converter.isSimple(shortUnit)
-                    && !Collections.disjoint(systems, UnitSystem.SiOrMetric)) {
-                    _data.add(unit);
-                    continue;
-                }
-                // we now add all metric
-//                if (!Collections.disjoint(systems, UnitSystem.SiOrMetric)) {
+//                if (converter.isSimple(shortUnit)
+//                    && !Collections.disjoint(systems, UnitSystem.SiOrMetric)) {
 //                    _data.add(unit);
 //                    continue;
 //                }
+                // we now add all metric
+                if (!Collections.disjoint(systems, UnitSystem.SiOrMetric)) {
+                    _data.add(unit);
+                    continue;
+                }
                 missing.add(unit);
             }
             if (DEBUG) for (String unit : missing) {
