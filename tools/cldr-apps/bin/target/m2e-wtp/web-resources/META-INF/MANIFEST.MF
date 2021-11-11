@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Build-Jdk-Spec: 11
+Build-Time: 2021-11-06T21:43:36Z
+Built-By: markdavis
+CLDR-Apps-Git-Branch: 
+CLDR-Apps-Git-Commit: 
+Created-By: Maven Integration for Eclipse
+
