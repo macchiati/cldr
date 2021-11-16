@@ -47,6 +47,7 @@ import org.unicode.cldr.util.SupplementalDataInfo.PluralInfo.Count;
 import org.unicode.cldr.util.SupplementalDataInfo.PluralType;
 import org.unicode.cldr.util.TransliteratorUtilities;
 import org.unicode.cldr.util.UnitConverter;
+import org.unicode.cldr.util.UnitConverter.UnitId;
 import org.unicode.cldr.util.Units;
 import org.unicode.cldr.util.Validity;
 import org.unicode.cldr.util.Validity.Status;
@@ -427,6 +428,8 @@ public class ExampleGenerator {
             result = handleCompoundUnit1(parts, value);
         } else if (parts.getElement(-1).equals("unitPattern")) {
             result = handleFormatUnit(parts, value);
+        } else if (parts.getElement(-1).equals("gender") && parts.getElement(-2).equals("unit")) {
+            result = handleUnitGender(parts, value);
         } else if (parts.getElement(-1).equals("perUnitPattern")) {
             result = handleFormatPerUnit(parts, value);
         } else if (parts.getElement(-2).equals("minimalPairs")) {
@@ -736,6 +739,25 @@ public class ExampleGenerator {
         return UnitLength.valueOf(parts.getAttributeValue(-3, "type").toUpperCase(Locale.ENGLISH));
     }
 
+    private String handleUnitGender(XPathParts parts, String gender) {
+        //ldml/units/unitLength[@type="long"]/unit[@type="length-kilometer"]/displayName
+        //ldml/units/unitLength[@type="long"]/unit[@type="length-kilometer"]/gender
+        //ldml/units/unitLength[@type="long"]/unit[@type="length-kilometer"]/unitPattern[@count="one"]
+        String minimalPattern = cldrFile.getStringValue("//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"" + gender + "\"]");
+        if (minimalPattern == null) {
+            return null;
+        }
+        XPathParts modifiable = parts.cloneAsThawed();
+        modifiable.setElement(-1, "unitPattern");
+        modifiable.setAttribute(-1, "count", "one");
+        String singularUnitPath = modifiable.toString();
+        String singularUnitPattern = cldrFile.getStringValue(singularUnitPath);
+        singularUnitPattern = singularUnitPattern.replace("{0}", "").trim();
+        String example = minimalPattern.replace("{0}", backgroundStartSymbol + singularUnitPattern + backgroundEndSymbol);
+        List<String> examples = ImmutableList.of(example);
+        return formatExampleList(examples);
+    }
+
     private String handleFormatUnit(XPathParts parts, String value) {
         // Sample: //ldml/units/unitLength[@type="long"]/unit[@type="duration-day"]/unitPattern[@count="one"][@case="accusative"]
 
@@ -773,6 +795,13 @@ public class ExampleGenerator {
                     examples.add(backgroundStartSymbol + format(minimalPattern, backgroundEndSymbol + composed + backgroundStartSymbol) + backgroundEndSymbol);
                 } else if (unitCaseInfo != null && !unitCaseInfo.isEmpty()) {
                     examples.add("⚠️No Case Minimal Pair available yet️");
+                }
+                if (!UNIT_CONVERTER.isSimple(shortUnitId)) {
+                    final UnitId unitId = UNIT_CONVERTER.createUnitId(shortUnitId);
+                    final String actual = unitId.toString(cldrFile, "long", count, gCase, null, false);
+                    if (actual != null) {
+                        examples.add("❓ ️" + actual);
+                    }
                 }
             }
         }

@@ -451,6 +451,7 @@ public class TestExampleGenerator extends TestFmwk {
         final Factory cldrFactory = CLDRConfig.getInstance().getCldrFactory();
         String[][] tests = {
             // locale, path, value, expected-example
+
             { "en", "//ldml/units/unitLength[@type=\"long\"]/compoundUnit[@type=\"power2\"]/compoundUnitPattern1",
                 "LOCALE", "〖square ❬meters❭〗" }, //
             { "en", "//ldml/units/unitLength[@type=\"long\"]/compoundUnit[@type=\"power2\"]/compoundUnitPattern1[@count=\"one\"]",
@@ -906,6 +907,10 @@ public class TestExampleGenerator extends TestFmwk {
             {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"feminine\"]", "〖Die ❬Stunde❭ ist …〗〖❌  Die ❬Zentimeter❭ ist …〗"},
             {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"masculine\"]", "〖Der ❬Zentimeter❭ ist …〗〖❌  Der ❬Stunde❭ ist …〗"},
             {"//ldml/numbers/minimalPairs/genderMinimalPairs[@gender=\"neuter\"]", "〖Das ❬Jahrhundert❭ ist …〗〖❌  Das ❬Stunde❭ ist …〗"},
+
+            {"//ldml/units/unitLength[@type=\"long\"]/unit[@type=\"length-meter\"]/gender", "〖Der ❬Meter❭ ist …〗"},
+            {"//ldml/units/unitLength[@type=\"long\"]/unit[@type=\"duration-hour\"]/gender", "〖Die ❬Stunde❭ ist …〗"},
+            {"//ldml/units/unitLength[@type=\"long\"]/unit[@type=\"duration-century\"]/gender", "〖Das ❬Jahrhundert❭ ist …〗"},
         };
         boolean showWorkingExamples = false;
         for (String[] row : tests) {
