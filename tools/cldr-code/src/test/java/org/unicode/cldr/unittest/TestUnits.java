@@ -2667,15 +2667,26 @@ public class TestUnits extends TestFmwk {
                     : siOrMetric ? TranslationStatus.add_grammar : TranslationStatus.skip_grammar;
             shortUnitToTranslationStatus40.put(shortUnit, status);
         }
-        for (Entry<String, TranslationStatus> entry : shortUnitToTranslationStatus40.entrySet()) {
-            String shortUnit = entry.getKey();
-            TranslationStatus status40 = entry.getValue();
-            if (isVerbose()) System.out.println(shortUnit
-                + "\t" + converter.getQuantityFromUnit(shortUnit, false)
-                + "\t" + converter.getSystemsEnum(shortUnit)
-                + "\t" + (converter.isSimple(shortUnit) ? "simple" : "complex")
-                + "\t" + status40
-                );
+        if (isVerbose())  {
+            System.out.println();
+            for (String locale : GrammarInfo.getGrammarLocales()) {
+                GrammarInfo grammarInfo = SDI.getGrammarInfo(locale, true);
+                Collection<String> genders = grammarInfo.get(GrammaticalTarget.nominal, GrammaticalFeature.grammaticalGender, GrammaticalScope.units);
+                Collection<String> rawCases = grammarInfo.get(GrammaticalTarget.nominal, GrammaticalFeature.grammaticalCase, GrammaticalScope.units);
+                System.out.println(locale + "\t" + Joiner.on(' ').join(genders) + "\t" + Joiner.on(' ').join(rawCases));
+
+            }
+            System.out.println();
+            for (Entry<String, TranslationStatus> entry : shortUnitToTranslationStatus40.entrySet()) {
+                String shortUnit = entry.getKey();
+                TranslationStatus status40 = entry.getValue();
+                System.out.println(shortUnit
+                    + "\t" + converter.getQuantityFromUnit(shortUnit, false)
+                    + "\t" + converter.getSystemsEnum(shortUnit)
+                    + "\t" + (converter.isSimple(shortUnit) ? "simple" : "complex")
+                    + "\t" + status40
+                    );
+            }
         }
     }
 }
