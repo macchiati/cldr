@@ -1620,10 +1620,13 @@ In practice, the typical size of a locale or language identifier will be much sm
 <tr><td><code>Zzzz</code></td>
     <td>Unknown</td>
 <td colspan="2">&nbsp;</td></tr>
-</tbody></table><p>The private use subtags listed as <strong>excluded</strong> in <em>Section 3.5.3 <a href="#Private_Use_Codes">Private Use Codes</a></em> will never be given specific semantics in Unicode identifiers, and are thus safe for use for other purposes by other applications.</p><h4 id="unicode_region_subtag-also-known-as-a-unicode-region-code-or-_a-unicode-territory-code"><a name="unicode_region_subtag_validity" href="#unicode_region_subtag_validity"><code>unicode_region_subtag</code></a> (also known as a <em>Unicode region code,</em> or _a Unicode territory code)</h4><p>Subtags in the region.xml file (see <em>Section 3.11 <a href="#Validity_Data">Validity Data</a></em>). These are based on [<a href="#BCP47">BCP47</a>] subtag values marked as <strong>Type: region</strong></p><p>Unicode identifiers give specific semantics to the following subtags:</p><table>
+</tbody></table><p>The private use subtags listed as <strong>excluded</strong> in <em>Section 3.5.3 <a href="#Private_Use_Codes">Private Use Codes</a></em> will never be given specific semantics in Unicode identifiers, and are thus safe for use for other purposes by other applications.</p><h4 id="unicode_region_subtag-also-known-as-a-unicode-region-code-or-_a-unicode-territory-code"><a name="unicode_region_subtag_validity" href="#unicode_region_subtag_validity"><code>unicode_region_subtag</code></a> (also known as a <em>Unicode region code,</em> or _a Unicode territory code)</h4><p>Subtags in the region.xml file (see <em>Section 3.11 <a href="#Validity_Data">Validity Data</a></em>). These are based on [<a href="#BCP47">BCP47</a>] subtag values marked as <strong>Type: region</strong></p><p>Unicode identifiers give specific semantics to the following subtags.
+(The alpha2 codes are used as Unicode region subtags. The alpha3 and numeric codes are derived according to <em>Section 3.5.2 <a href="#Numeric_Codes">Numeric Codes</a></em> and listed here for additional documentation.)</p><table>
 <thead>
 <tr>
-<th></th>
+<th>alpha2</th>
+<th>alpha3</th>
+<th>num</th>
 <th>Name</th>
 <th>Comment</th>
 <th>ISO 3166-1 status</th>
@@ -1631,42 +1634,56 @@ In practice, the typical size of a locale or language identifier will be much sm
 </thead>
 <tbody><tr>
 <td><code>QO</code></td>
+<td><code>QOO</code></td>
+<td>961</td>
 <td>Outlying Oceania</td>
 <td>countries in Oceania [009] that do not have a <a href="https://unicode-org.github.io/cldr-staging/charts/38/supplemental/territory_containment_un_m_49.html">subcontinent</a>.</td>
 <td>private use</td>
 </tr>
 <tr>
 <td><code>QU</code></td>
+<td><code>QUU</code></td>
+<td>967</td>
 <td>European Union</td>
 <td><strong>deprecated</strong>: the <em>canonicalized</em> form is EU</td>
 <td>private use</td>
 </tr>
 <tr>
 <td><code>UK</code></td>
+<td>-</td>
+<td>-</td>
 <td>United Kingdom</td>
 <td><strong>deprecated</strong>: the <em>canonicalized</em> form is GB</td>
 <td>exceptionally reserved</td>
 </tr>
 <tr>
 <td><code>XA</code></td>
+<td><code>XAA</code></td>
+<td>973</td>
 <td>Pseudo-Accents</td>
 <td>special code indicating derived testing locale with English + added accents and lengthened</td>
 <td>private use</td>
 </tr>
 <tr>
 <td><code>XB</code></td>
+<td><code>XBB</code></td>
+<td>974</td>
 <td>Pseudo-Bidi</td>
 <td>special code indicating derived testing locale with forced RTL English</td>
 <td>private use</td>
 </tr>
 <tr>
 <td><code>XK</code></td>
+<td><code>XKK</code></td>
+<td>983</td>
 <td>Kosovo</td>
 <td>industry practice</td>
 <td>private use</td>
 </tr>
 <tr>
 <td><code>ZZ</code></td>
+<td><code>ZZZ</code></td>
+<td>999</td>
 <td>Unknown or Invalid Territory</td>
 <td>used in APIs or as replacement for invalid code</td>
 <td>private use</td>
