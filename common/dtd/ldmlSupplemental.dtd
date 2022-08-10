@@ -942,6 +942,8 @@ CLDR data files are interpreted according to the LDML specification (http://unic
 <!ELEMENT pluralRules ( pluralRule* ) >
 <!ATTLIST pluralRules locales NMTOKENS #REQUIRED >
     <!--@MATCH:set/validity/locale-->
+<!ATTLIST pluralRules scope NMTOKENS #REQUIRED >
+    <!--@MATCH:literal/nonNounPhrase-->
 <!ATTLIST pluralRules draft (approved | contributed | provisional | unconfirmed) #IMPLIED >
     <!--@METADATA-->
     <!--@DEPRECATED-->
