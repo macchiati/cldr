@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE supplementalData SYSTEM "../../common/dtd/ldmlSupplemental.dtd">
+<!-- Copyright © 1991-2015 Unicode, Inc.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+For terms of use, see http://www.unicode.org/copyright.html -->
+<supplementalData>
+	<version number="$Revision$" />
+	<transforms>
+		<transform source="lo" target="und_FONIPA" direction="forward" draft="provisional" alias="und-fonipa-t-lo und-fonipa-t-laoo">
+			<tRule>
+# Transformation from lo to its IPA transcription.
+# https://en.wikipedia.org/wiki/Romanization_of_Lao
+# Very basic, no attempt to take context into account
+
+::NFD;
+::Lower;
+ ເັຽະ →iə;
+ ເຶອະ →ɯə;
+ ເົາ →au;
+ ເິະ →ɤ;
+  ເື →ɤː;
+ ເາະ →ɔ;
+ ົວະ →uə;
+ #ອ →ɯə;
+ #ເັຽ →;
+ #ເືອ →;
+ າຍ →ai;
+ າຽ →ai;
+ ັຍ →ai;
+ ໍາ →am;
+ ເະ →e;
+ ເັ →e;
+ ແະ →ɛ;
+ ແັ →ɛ;
+ ເິ →ɤ;
+ ເີ →ɤː;
+ ັຽ →iə;
+ ໂະ →o;
+ ັອ →ɔ;
+ ວ →uə;
+ #ົວ →;
+  #ວ →;
+ ະ →a;
+ ັ →a;
+ າ →aː;
+ ໄ →ai;
+ ໃ →ai;
+ ບ →b;
+ ດ →d;
+ ເ →eː;
+ ແ →ɛː;
+ ຝ →f;
+ ຟ →f;
+ ຫ →h;
+ ຮ →h;
+ ິ →i;
+ ີ →iː;
+ ຢ →j;
+ ກ →k;
+ ຂ →kʰ;
+ ຄ →kʰ;
+ ລ →l;
+ ມ →m;
+ ນ →n;
+ ຍ →ɲ;
+ ງ →ŋ;
+ ົ →o;
+ ໂ →oː;
+ ໍ →ɔː;
+ ອ →ɔː;
+ ປ →p;
+ ຜ →pʰ;
+ ພ →pʰ;
+ ຣ →r;
+ ສ →s;
+ ຊ →s;
+ ຕ →t;
+ ຈ →tɕ;
+ ຖ →tʰ;
+ ທ →tʰ;
+ ຸ →u;
+ ູ →uː;
+ ຶ →ɯ;
+ ື →ɯː;
+ #ວ →w;
+ #ອ →ʔ;
+ #ຽ →;
+  			</tRule>
+		</transform>
+	</transforms>
+</supplementalData>

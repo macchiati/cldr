@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE supplementalData SYSTEM "../../common/dtd/ldmlSupplemental.dtd">
+<!-- Copyright © 1991-2015 Unicode, Inc.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+For terms of use, see http://www.unicode.org/copyright.html -->
+<supplementalData>
+	<version number="$Revision$" />
+	<transforms>
+		<transform source="und_FONIPA" target="und_Latn" direction="forward" draft="provisional" alias="und-Latn-t-und-fonipa">
+			<tRule>
+# Transformation from IPA to English.
+# Very basic, no attempt to take context into account
+
+::NFD;
+# handle accidental double letters
+# the left side is the transformed character, and the body is an untransformed character (or set)
+# a hyphenation point is inserted to distinguish from a sequence that has a different meaning
+# eg rathouse (from θ) vs rat‧house
+# digraphs
+ eɪ →ae;
+ aɪ →ie;
+ dʒ →j;
+ ɔɪ →oi;
+ oʊ →oe;
+ aʊ →ou;
+ hw →wh;
+# doubles
+[sdtcz]{h}→‧h ;
+[a]{[aɑɒ]}→‧a ;
+[aeio]{e}→‧e ;
+[n]{g}→‧g ;
+[o]{i}→‧i ;
+[o]{u}→‧u ;
+#
+ ɤ →o;
+ ɕ →sh;
+ ʰ →ḥ;
+ ɯ →u;
+ ʔ →’;
+ æ →a;
+ ɑː →aa;
+ ɒ →aa;
+ b →b;
+ tʃ →ch;
+ d →d;
+ ð →dh;
+ ɛ →e;
+ f →f;
+ ɡ →g;
+ h →h;
+ ɪ →i;
+ i →ee;
+ k →k;
+ l →l;
+ m →m;
+ n →n;
+ ŋ →ng;
+ ɲ →ny;
+ ɔ →o;
+ p →p;
+ r →r;
+ s →s;
+ ʃ →sh;
+ t →t;
+ θ →th;
+ ə →u;
+ ʊ →uu;
+ ʌ →u;
+ u →oo;
+ v →v;
+ w →w;
+ j →y;
+ z →z;
+ ʒ →zh;
+ ː →;
+::null;
+::NFC;
+			</tRule>
+		</transform>
+	</transforms>
+</supplementalData>
