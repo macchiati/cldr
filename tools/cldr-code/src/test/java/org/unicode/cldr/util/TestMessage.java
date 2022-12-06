@@ -1,13 +1,16 @@
 package org.unicode.cldr.util;
-import java.text.AttributedCharacterIterator;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Streams;
@@ -17,8 +20,6 @@ import com.ibm.icu.message2.FormatterFactory;
 import com.ibm.icu.message2.MessageFormatter;
 import com.ibm.icu.message2.Mf2FunctionRegistry;
 import com.ibm.icu.message2.PlainStringFormattedValue;
-import com.ibm.icu.text.ConstrainedFieldPosition;
-import com.ibm.icu.text.FormattedValue;
 import com.ibm.icu.text.PersonName;
 import com.ibm.icu.text.PersonName.NameField;
 import com.ibm.icu.text.PersonNameFormatter;
@@ -28,16 +29,30 @@ import com.ibm.icu.text.PersonNameFormatter.Length;
 import com.ibm.icu.text.PersonNameFormatter.Options;
 import com.ibm.icu.text.PersonNameFormatter.Usage;
 import com.ibm.icu.text.SimplePersonName;
+import com.ibm.icu.util.ULocale;
 
 public class TestMessage {
-    // each class should have reasonable toString methods
-    @SuppressWarnings("deprecation")
 
+    // Each MF2 class and each PersonName class (internal and external) should have reasonable toString methods;
+    // otherwise it is hard to debug.
+
+
+    // This is so that we can pass a set of options, using the Literal construct.
+    // https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#expressions
+    // Examples:
+    // {Hello, {$userObj :person length=LONG usage=ADDRESSING formality=FORMAL options=()}!}
+    // {Hello, {$userObj :person length=LONG usage=ADDRESSING formality=FORMAL options=(SORTING,SURNAME_ALLCAPS)}!}
+
+
+    static final Splitter COMMA_SPLITTER = Splitter.on(",").trimResults();
+    static final Joiner COMMA_JOINER = Joiner.on(',');
+
+    @SuppressWarnings("deprecation")
     static final class PersonNameFormatterFactory implements FormatterFactory {
 
-        // Formatter should allow for specification, eg Formatter<PersonName>
+        // Formatter should allow for specification?, eg Formatter<PersonName>
         static class PersonNameFormatterShim implements Formatter {
-            static final Splitter LIST_SPLITTER = Splitter.on('Ξ').trimResults();
+
             private final PersonNameFormatter personNameFormatter;
 
             public PersonNameFormatterShim(Locale locale, Map<String, Object> fixedOptions) {
@@ -56,13 +71,15 @@ public class TestMessage {
             }
 
             Set<Options> fromCommaString(String commaString) {
-                return Streams.stream(
-                    LIST_SPLITTER.splitToList(commaString))
-                    .filter(x -> !"NONE".equals(x))
-                    .map(Options::valueOf)
-                    .collect(Collectors.toSet());
+
+                return commaString.isBlank()
+                    ? Collections.emptySet()
+                        : Streams.stream(COMMA_SPLITTER.split(commaString))
+                        .map(Options::valueOf)
+                        .collect(Collectors.toSet());
             }
-            // Options should be Option (enums are singular)
+
+            // PersonName.Options should be Option (enums are singular)
 
             @Override
             public String formatToString(Object toFormat, Map<String, Object> variableOptions) {
@@ -74,63 +91,25 @@ public class TestMessage {
                 return new FormattedPlaceholder(toFormat,
                     new PlainStringFormattedValue(formatToString(toFormat, variableOptions)));
             }
-
-            static class FormattedPersonName implements FormattedValue {
-
-                @Override
-                public int length() {
-                    // TODO Auto-generated method stub
-                    return 0;
-                }
-
-                @Override
-                public char charAt(int index) {
-                    // TODO Auto-generated method stub
-                    return 0;
-                }
-
-                @Override
-                public CharSequence subSequence(int start, int end) {
-                    // TODO Auto-generated method stub
-                    return null;
-                }
-
-                @Override
-                public <A extends Appendable> A appendTo(A appendable) {
-                    // TODO Auto-generated method stub
-                    return null;
-                }
-
-                @Override
-                public boolean nextPosition(ConstrainedFieldPosition cfpos) {
-                    // TODO Auto-generated method stub
-                    return false;
-                }
-
-                @Override
-                public AttributedCharacterIterator toCharacterIterator() {
-                    // TODO Auto-generated method stub
-                    return null;
-                }
-
-            }
-
         }
         @Override
         public Formatter createFormatter(Locale locale, Map<String, Object> fixedOptions) {
-            // TODO Auto-generated method stub
             return new PersonNameFormatterShim(locale, fixedOptions);
         }
 
     }
 
+    @SuppressWarnings("deprecation")
     public static void main(String[] args) {
         final Locale SPANISH = Locale.forLanguageTag("es");
 
         Mf2FunctionRegistry functionRegistry = Mf2FunctionRegistry.builder()
-            //.setDefaultFormatterNameForType(PersonNameFormatter.class, "person")
-            // class should be required to implement an interface
-            // items in wrong order??
+
+            // The following doesn't seem to work.
+            // .setDefaultFormatterNameForType(PersonNameFormatter.class, "person")
+            // For it to work, I suspect simplest would be that the class should be required to implement an interface
+            // Should the String be in the same position in both method?
+
             .setFormatter("person", new PersonNameFormatterFactory())
             .build();
 
@@ -143,14 +122,22 @@ public class TestMessage {
             .addField(NameField.SURNAME2, null, "González Domingo")
             .setLocale(SPANISH)
             .build();
-        // toString of this should be useful; locale + map.toString()
 
-        boolean mfShown = false;
+        // Check different options.
+
+        List<Set<Options>> optionList = ImmutableList.of(
+            ImmutableSet.of(),
+            ImmutableSet.of(Options.SORTING),
+            ImmutableSet.of(Options.SORTING, Options.SURNAME_ALLCAPS));
+
+        // PersonName.toString should be useful; resulting in locale + ", " + map.toString()
+
         for (String localeString : Arrays.asList("en", "es")) {
             Locale locale = Locale.forLanguageTag(localeString);
 
-            // check different options. this wouldn't happen in practice
-            for (String options : Arrays.asList("none", "sorting", "sortingΞSURNAME_ALLCAPS")) {
+
+            for (Set<Options> options : optionList ) {
+                boolean mfShown = false;
                 for (Length length : Length.values()) {
                     for (Formality formality : Formality.values()) {
                         for (Usage usage : Usage.values()) {
@@ -158,34 +145,40 @@ public class TestMessage {
                                 .replace("%%L", length.toString())
                                 .replace("%%F", formality.toString())
                                 .replace("%%U", usage.toString())
-                                .replace("%%O", options)
+                                .replace("%%O", "(" + COMMA_JOINER.join(options) + ")")
                                 ;
+
+                            // We should be able to set up everything but the locale,
+                            // and pass in the locale later.
+                            // That way the pattern doesn't need to be parsed each time.
 
                             MessageFormatter mf = MessageFormatter.builder()
                                 .setPattern(pattern)
                                 .setFunctionRegistry(functionRegistry)
                                 .setLocale(locale)
                                 .build();
-                            // should be able to set up everything but the locale, and pass in the locale later
-                            // that way the pattern doesn't need to be parsed each time.
 
                             if (mfShown == false) {
-                                System.out.println(mf.getPattern() + ", " + mf.getLocale() + "\n");
+                                System.out.println(ULocale.getDisplayLanguage(localeString,
+                                    ULocale.ENGLISH) + ": " + mf.getPattern() + "\n");
                                 mfShown = true;
                             }
 
                             String formatted = mf.formatToString(ImmutableMap.of("userObj", personName));
                             Set<Object> arguments = ImmutableSet.of(options, length, formality, usage);
 
-                            System.out.println(locale + "\t" + arguments + "\t☞\t" + formatted);
+                            System.out.println(locale + "\t" + arguments + "\t➡︎\t" + formatted);
                         }
                         System.out.println();
                     }
                 }
             }
         }
-        // Question for messages. if an option is not supported should it silently fail?
-        // pros: gives some forward compatibility; an old message will not fail with new option
-        // cons: hides real errors
+        // Question for messages:
+        // If an option is not supported should it silently fail?
+        //   pros: gives some forward compatibility; an old message will not fail with new option
+        //   cons: hides real errors
     }
+
+    // FYI I couldn't build what I wanted to with PersonNames, because we don't have formatted values for them.
 }
