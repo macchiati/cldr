@@ -1,19 +1,24 @@
 package org.unicode.cldr.tool;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.text.UnicodeSet;
 import com.ibm.icu.util.Output;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import org.unicode.cldr.util.Timer;
 
 /**
  * Class to minimize certain types of regex. It does not work with open-ended quantifiers like * or
@@ -34,17 +39,85 @@ public class MinimizeRegex {
 
     public static void main(String[] args) {
         String defaultArg =
-                "zxx|zu|zh|zgh|yue|yo|yi|yav|xog|xh|wo|wae|vun|vo|vi|vai|uz|ur|und|uk|ug|tzm|twq|tt|tr|to|tk|ti|th|tg|teo|te|ta|sw|sv|su|st|sr|sq|so|sn|smn|sm|sl|sk|si|shi|sg|ses|seh|se|sd|sbp|saq|sah|sa|rwk|rw|ru|rof|ro|rn|rm|qu|pt|ps|prg|pl|pa|os|or|om|nyn|ny|nus|no|nnh|nn|nmg|nl|ne|nds|nd|nb|naq|mzn|my|mul|mua|mt|ms|mr|mn|ml|mk|mi|mgo|mgh|mg|mfe|mer|mas|lv|luy|luo|lu|lt|lrc|lo|ln|lkt|lg|lb|lag|la|ky|kw|ku|ksh|ksf|ksb|ks|kok|ko|kn|km|kln|kl|kkj|kk|ki|khq|kea|kde|kam|kab|ka|jv|jmc|jgo|ja|it|is|ii|ig|id|ia|hy|hu|ht|hsb|hr|hmn|hi|he|haw|ha|gv|guz|gu|gsw|gl|gd|ga|fy|fur|fr|fo|fil|fi|ff|fa|ewo|eu|et|es|eo|en|el|ee|ebu|dz|dyo|dua|dsb|dje|de|dav|da|cy|cu|cs|co|ckb|chr|cgg|ceb|ce|ccp|ca|bs|brx|br|bo|bn|bm|bg|bez|bem|be|bas|az|ast|asa|as|ar|am|ak|agq|af";
+                "(a([bfkmvyz]|ce|d[ay]|gq|in|l[et]|n[np]?|r[nps]?|s[at]?|tj|wa)|b([gm-os]|a[ns]?|e[mz]?|ho|in?|la|rx?|ug|yn)|c([ovy]|ay?|cp|eb?|gg|h[kmopry]?|kb|lc|r[gjklmr]|sw?)|d([evz]|a[krv]?|gr|je|oi|sb|ua|yo|zg)|e([elnos-u]|bu|fi|ka|wo)|f([afjy]|il?|on?|r[cr]?|ur)|fa_AF|g([dlnv]|aa?|ez|il|or|sw|uz?|wi)|h([ertyz]|a[iwx]?|il?|mn|sb|u[pr]?)|i([adgiostu]|b[ab]|kt|lo|nh)|j([av]|bo|go|mc)|k([ijnvy]|a[bcjm]?|bd|cg|de|ea|fo|gp|h[aq]|kj?|ln?|mb?|ok?|pe|r[clu]?|s[bfh]?|um?|wk?)|l([bgntv]|a[dg]?|ez|il?|kt|o[uz]?|rc|sm|u[anosy]?)|m([hklr-ty]|a[dgiks]|df|e[nr]|fe|g[ho]?|i[cn]?|ni?|o[ehs]|u[als]|wl|yv|zn)|n([bglrv]|a[pq]?|ds?|ew?|i[au]|mg|nh?|og?|qo|so|us|yn?)|o([cmrs]|j[bcsw]|ka)|p([lst]|a[gmpu]?|cm|is|qm)|qu|r([mn]|a[pr]|hg|of?|wk?|up?)|s([dgikoqsv]|a[dhqt]?|b[ap]|c[no]?|e[hs]?|h[in]|lh?|m[ns]?|nk?|rn?|tr?|uk?|wb?|yr)|t([akns]|ce|e[mot]?|gx?|ht?|ig?|l[hi]|ok?|pi|rv?|tm?|um|vl|wq|yv?|zm)|u([gkrz]|dm|mb|nd)|v([ei]|ai|un)|w(a[elr]?|o|uu)|x(al|h|og)|y([io]|av|bb|rl|ue)|z(gh|h|un?|xx|za))";
         // defaultArg =
         // "aa|ace|ad[ay]|ain|al[et]|anp?|arp|ast|av|awa|ay|ma[dgik]|mdf|men|mh|mi[cn]|mni|mos|mu[ls]|mwl|myv";
         String regexString = args.length < 1 ? defaultArg : args[0];
         UnicodeSet set = new UnicodeSet(args.length < 2 ? "[:ascii:]" : args[1]);
 
-        System.out.println(defaultArg + "\n");
+        System.out.println("default:\n" + defaultArg + "\n");
         Output<Set<String>> flattenedOut = new Output<>();
         String recompressed = compressWith(regexString, set, flattenedOut);
-        System.out.println(Joiner.on("|").join(flattenedOut.value) + "\n");
-        System.out.println(recompressed + "\n");
+        final String flattenedString = Joiner.on("|").join(flattenedOut.value);
+        System.out.println("flattened:\n" + flattenedString + "\n");
+        System.out.println("compressed:\n" + recompressed + "\n");
+
+        // try again
+        Output<Set<String>> flattenedOut2 = new Output<>();
+        String recompressed2 = compressWith(recompressed, set, flattenedOut2);
+        if (!flattenedOut.value.equals(flattenedOut2.value)) {
+            System.out.println(
+                    "flattened doesn't roundtrip:\n"
+                            + Joiner.on("|").join(flattenedOut2.value)
+                            + "\n");
+        }
+        if (!recompressed.equals(recompressed2)) {
+            System.out.println("recompressed doesn't roundtrip:\n" + recompressed2 + "\n");
+        }
+        List<String> all = generateAll();
+        Set<String> allSet = ImmutableSet.copyOf(all);
+
+        System.out.println("Warmup");
+        timeRegex("*source:\t", defaultArg, all, 1);
+        timeContains("*contains:\t", allSet, 1);
+
+        System.out.println("\nTime");
+        int count = 20;
+        timeRegex("source:\t", defaultArg, all, count);
+        timeRegex("flattened:\t", flattenedString, all, count);
+        timeRegex("recompressed:\t", recompressed, all, count);
+        timeContains("contains:\t", allSet, count);
+    }
+
+    public static void timeRegex(String message, String regex, List<String> all, int count) {
+        Matcher m = Pattern.compile(regex).matcher("");
+        timeFunction(message, all, count, s -> m.reset(s).matches());
+    }
+
+    public static void timeContains(String message, Set<String> all, int count) {
+        timeFunction(message, all, count, s -> all.contains(s));
+    }
+
+    public static void timeFunction(
+            String message, Collection<String> all, int count, Consumer<? super String> action) {
+        Timer t = new Timer();
+        t.start();
+        for (int i = count; i > 0; --i) {
+            for (String s : all) {
+                action.accept(s);
+            }
+        }
+        t.stop();
+        System.out.println(message + t.getNanoseconds());
+    }
+
+    public static List<String> generateAll() {
+        List<String> all = new ArrayList<>();
+        StringBuilder buffer = new StringBuilder();
+        for (char i = 'a'; i <= 'z'; ++i) {
+            buffer.append(i);
+            for (char j = 'a'; j <= 'z'; ++j) {
+                buffer.append(j);
+                for (char k = 'a'; k <= 'z'; ++k) {
+                    buffer.append(k);
+                    all.add(buffer.toString());
+                    buffer.setLength(buffer.length() - 1);
+                }
+                buffer.setLength(buffer.length() - 1);
+            }
+            buffer.setLength(buffer.length() - 1);
+        }
+        return all;
     }
 
     public static String compressWith(String regexString, UnicodeSet set) {
@@ -102,7 +175,7 @@ public class MinimizeRegex {
             throw new IllegalArgumentException(
                     "Failed to compress:\n" + flattened + "\n≠ " + flattened2);
         }
-        return recompressed;
+        return "(?>" + recompressed + ")";
     }
 
     private static String compress(Set<String> flattened, Output<Boolean> isSingle) {
@@ -152,12 +225,12 @@ public class MinimizeRegex {
                 throw new IllegalArgumentException();
             case 1:
                 isSingle.value = true;
-                return strings.iterator().next() + (hasEmpty ? "?" : "");
+                return strings.iterator().next() + (hasEmpty ? "?+" : "");
             default:
                 String result = Joiner.on("|").join(strings);
                 if (hasEmpty) {
                     isSingle.value = true;
-                    return '(' + result + ")?";
+                    return '(' + result + ")?+";
                 }
                 isSingle.value = false;
                 return result;
