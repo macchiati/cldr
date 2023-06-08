@@ -1,10 +1,12 @@
 package org.unicode.cldr.unittest;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Sets;
 import com.ibm.icu.dev.test.TestFmwk;
 import com.ibm.icu.impl.Relation;
 import com.ibm.icu.impl.Row.R2;
+import com.ibm.icu.util.Output;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +34,7 @@ import org.unicode.cldr.util.ChainedMap.M3;
 import org.unicode.cldr.util.CldrUtility;
 import org.unicode.cldr.util.Iso3166Data;
 import org.unicode.cldr.util.LanguageTagParser;
+import org.unicode.cldr.util.Level;
 import org.unicode.cldr.util.LocaleIDParser;
 import org.unicode.cldr.util.PatternCache;
 import org.unicode.cldr.util.StandardCodes;
@@ -43,7 +46,9 @@ import org.unicode.cldr.util.SupplementalDataInfo.PopulationData;
 
 public class TestInheritance extends TestFmwk {
 
-    static CLDRConfig testInfo = CLDRConfig.getInstance();
+    private static final CLDRConfig CLDR_CONFIG = CLDRConfig.getInstance();
+
+    static CLDRConfig testInfo = CLDR_CONFIG;
 
     private static boolean DEBUG = CldrUtility.getProperty("DEBUG", false);
 
@@ -1059,6 +1064,40 @@ public class TestInheritance extends TestFmwk {
 
         for (String[] test : tests) {
             assertEquals(test[0], test[1], LocaleIDParser.getParentChain(test[0]).toString());
+        }
+    }
+
+    public void testExplicitAboveRootAlias() {
+        String locale = "fr"; // can change to other locales for comparison
+        final CLDRFile cldrFile = CLDR_CONFIG.getCldrFactory().make(locale, true);
+        Set<String> sorted = ImmutableSortedSet.copyOf(cldrFile.fullIterable());
+        int count = 0;
+        for (String path : sorted) {
+            Level level = SupplementalDataInfo.getInstance().getCoverageLevel(path, locale);
+            if (level == Level.COMPREHENSIVE) {
+                continue;
+            }
+
+            Output<String> localeWhereFound = new Output<>();
+            Output<String> pathWhereFound = new Output<>();
+            String value =
+                    cldrFile.getStringValueWithBailey(path, pathWhereFound, localeWhereFound);
+            if (value != null && !path.equals(pathWhereFound.value)) {
+                if (count == 0) {
+                    warnln("Msg\tOriginal Path\tPath found\tLocale found\tLevel\tValue");
+                }
+                ++count;
+                errln(
+                        String.format(
+                                "%s %s\t%s\t%s\t%s\t%s\t%s",
+                                locale,
+                                "path inherits sideways",
+                                path,
+                                pathWhereFound,
+                                localeWhereFound,
+                                level,
+                                value));
+            }
         }
     }
 }
