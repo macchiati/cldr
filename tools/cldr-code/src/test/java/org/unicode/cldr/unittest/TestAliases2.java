@@ -41,13 +41,11 @@ import org.unicode.cldr.util.SupplementalDataInfo;
 import org.unicode.cldr.util.XMLSource;
 
 // make this a JUnit test?
-public class TestAliases extends TestFmwk {
-    private static final boolean DEBUG_LAT = false;
-
+public class TestAliases2 extends TestFmwk {
     static final CLDRConfig config = CLDRConfig.getInstance();
 
     public static void main(String[] args) {
-        new TestAliases().run(args);
+        new TestAliases2().run(args);
     }
 
     public void testAlias() {
@@ -253,7 +251,7 @@ public class TestAliases extends TestFmwk {
                 "//ldml/dates/calendars/calendar[@type=\"gregorian\"]/months/monthContext[@type=\"stand-alone\"]/monthWidth[@type=\"wide\"]/month[@type=\"1\"]";
         final String formatPath =
                 "//ldml/dates/calendars/calendar[@type=\"gregorian\"]/months/monthContext[@type=\"format\"]/monthWidth[@type=\"wide\"]/month[@type=\"1\"]";
-        new CheckValueSet("root", "en", "en_001")
+        new TestValueSet("root", "en", "en_001")
                 .add("en", inheritingPath, "X")
                 .add("en", formatPath, "X")
                 .add("en_001", inheritingPath, "X")
@@ -264,7 +262,7 @@ public class TestAliases extends TestFmwk {
         final String altPath =
                 "//ldml/localeDisplayNames/languages/language[@type=\"ug\"][@alt=\"variant\"]";
         final String noAlt = "//ldml/localeDisplayNames/languages/language[@type=\"ug\"]";
-        new CheckValueSet("root", "en", "en_001")
+        new TestValueSet("root", "en", "en_001")
                 .add("en", altPath, "Uighur")
                 .add("en", noAlt, "Uighur")
                 .add("en_001", altPath, "Uighur")
@@ -276,7 +274,7 @@ public class TestAliases extends TestFmwk {
                 "//ldml/units/unitLength[@type=\"short\"]/unit[@type=\"duration-hour\"]/unitPattern[@count=\"one\"]";
         final String otherpath =
                 "//ldml/units/unitLength[@type=\"short\"]/unit[@type=\"duration-hour\"]/unitPattern[@count=\"other\"]";
-        new CheckValueSet("root", "en", "en_001")
+        new TestValueSet("root", "en", "en_001")
                 .add("en", onepath, "{0} hrx")
                 .add("en", otherpath, "{0} hrx")
                 .add("en_001", onepath, "{0} hrx")
@@ -288,7 +286,7 @@ public class TestAliases extends TestFmwk {
                 "//ldml/units/unitLength[@type=\"long\"]/unit[@type=\"duration-day-person\"]/unitPattern[@count=\"one\"][@case=\"genitive\"]";
         final String nomPath =
                 "//ldml/units/unitLength[@type=\"long\"]/unit[@type=\"duration-day-person\"]/unitPattern[@count=\"one\"]";
-        new CheckValueSet("root", "de", "de_AT")
+        new TestValueSet("root", "de", "de_AT")
                 .add("de", genPath, "{0} Tagx")
                 .add("de", nomPath, "{0} Tagx")
                 .add("de_AT", genPath, "{0} Tagx")
@@ -298,7 +296,7 @@ public class TestAliases extends TestFmwk {
         section = "Constructed";
         final String basePath = "//ldml/localeDisplayNames/languages/language[@type=\"nl\"]";
         final String regPath = "//ldml/localeDisplayNames/languages/language[@type=\"nl_BE\"]";
-        new CheckValueSet("root", "fr", "fr_CA")
+        new TestValueSet("root", "fr", "fr_CA")
                 .add("fr", basePath, "dutch")
                 .add("fr", regPath, "flamandx")
                 .add("fr_CA", basePath, "{0} dutch")
@@ -323,16 +321,16 @@ public class TestAliases extends TestFmwk {
         }
     }
 
-    class CheckValueSet {
+    class TestValueSet {
         Set<LocalePathValue> testValues = new LinkedHashSet<>();
         ImmutableList<String> locales;
         Set<String> paths = new LinkedHashSet<>();
 
-        public CheckValueSet(String... locales) {
+        public TestValueSet(String... locales) {
             this.locales = ImmutableList.copyOf(locales);
         }
 
-        public CheckValueSet add(String locale, String path, String value) {
+        public TestValueSet add(String locale, String path, String value) {
             if (!locales.contains(locale)) {
                 throw new IllegalArgumentException(locale + " must be in " + locales);
             }
@@ -341,7 +339,7 @@ public class TestAliases extends TestFmwk {
             return this;
         }
 
-        public CheckValueSet checkReplacements(String section, Factory std) {
+        public TestValueSet checkReplacements(String section, Factory std) {
             TestFactory testFactory = copyIntoTestFactory(std);
             setValuesIn(testFactory);
             show("\n\t\t" + section + ", BEFORE replacing", testFactory);
@@ -434,7 +432,7 @@ public class TestAliases extends TestFmwk {
             }
         }
 
-        public CheckValueSet setValuesIn(TestFactory testFactory) {
+        public TestValueSet setValuesIn(TestFactory testFactory) {
             for (LocalePathValue entry : testValues) {
                 CLDRFile cldrFile = testFactory.make(entry.locale, true);
                 cldrFile.getUnresolved().add(entry.path, entry.value);
@@ -469,8 +467,7 @@ public class TestAliases extends TestFmwk {
                 Multimap<String, SuspiciousData> suspicious = getSuspicious(cldrFile, breakdownMap);
                 if (!suspicious.isEmpty()) {
                     errln(
-                            SuspiciousData.toHeader()
-                                    + "\t"
+                            "\t"
                                     + locale
                                     + "\t"
                                     + suspicious.entries().size()
@@ -494,17 +491,13 @@ public class TestAliases extends TestFmwk {
                 String locale = entry2.getKey();
                 Counter<String> c = entry2.getValue();
                 for (R2<Long, String> entry3 : c.getEntrySetSortedByCount(false, null)) {
-                    if (DEBUG_LAT) {
-                        System.out.println(
-                                dir + "\t" + locale + "\t" + entry3.get0() + "\t" + entry3.get1());
-                    }
+                    System.out.println(
+                            dir + "\t" + locale + "\t" + entry3.get0() + "\t" + entry3.get1());
                 }
             }
         }
         CLDRFile english = config.getEnglish();
-        if (DEBUG_LAT) {
-            System.out.println("\nlocale\tName\tTarget (Org=cldr)\t" + Breakdown.header());
-        }
+        System.out.println("\nlocale\tName\tTarget (Org=cldr)\t" + Breakdown.header());
         for (Entry<String, Breakdown> entry : breakdownMap.entrySet()) {
             final String locale = entry.getKey();
             Level target = StandardCodes.make().getLocaleCoverageLevel(Organization.cldr, locale);
@@ -518,16 +511,14 @@ public class TestAliases extends TestFmwk {
                     break;
             }
             // target == Level.UNDETERMINED ? "-" :
-            if (DEBUG_LAT) {
-                System.out.println(
-                        locale
-                                + "\t"
-                                + english.getName(locale)
-                                + "\t"
-                                + targetString
-                                + "\t"
-                                + entry.getValue());
-            }
+            System.out.println(
+                    locale
+                            + "\t"
+                            + english.getName(locale)
+                            + "\t"
+                            + targetString
+                            + "\t"
+                            + entry.getValue());
         }
     }
 
@@ -590,27 +581,8 @@ public class TestAliases extends TestFmwk {
         public String toString() {
             return "\t" + valueFound + "\n\t\t" + pathRequested + "\n\t\t" + pathFound;
         }
-
-        public static String toHeader() {
-            return "locale"
-                    + "\tsuspicious.entries().size()"
-                    + "\t(valueFound"
-                    + "\tpathRequested"
-                    + "\tpathFound)+\n";
-        }
     }
 
-    /**
-     * This test seems misnamed; it just finds lateral inheritance that doesn't hit root A path =>
-     * INHERITANCE_MARKER is suspicious when <br>
-     * if we get the baileyValue for the path <br>
-     * • the foundPath is not the original path <br>
-     * • and the foundLocale is not root/code-fallback
-     *
-     * @param cldrFile
-     * @param breakdownMap
-     * @return
-     */
     public Multimap<String, SuspiciousData> getSuspicious(
             CLDRFile cldrFile, Map<String, Breakdown> breakdownMap) {
         Multimap<String, SuspiciousData> suspicious = TreeMultimap.create();
@@ -635,8 +607,8 @@ public class TestAliases extends TestFmwk {
         if (breakdown == null) {
             breakdownMap.put(locale, breakdown = new Breakdown());
         }
-        for (String path : cldrFile) {
-            // TODO we only need to look at the actual items, not nulls. But right
+        for (String path :
+                cldrFile) { // TODO we only need to look at the actual items, not nulls. But right
             // now we are catching them.
             String unresolvedValue = unresolvedCldrFile.getStringValue(path);
 
