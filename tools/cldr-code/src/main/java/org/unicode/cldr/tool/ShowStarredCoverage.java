@@ -2,14 +2,13 @@ package org.unicode.cldr.tool;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
 import com.ibm.icu.impl.Relation;
 import com.ibm.icu.impl.Row.R2;
+import com.ibm.icu.impl.Row.R3;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -96,7 +95,8 @@ public class ShowStarredCoverage {
     static Matcher pathRegex = null;
     static int maxAttributes = 10;
 
-    static final Set<String> ALLOWED = ImmutableSet.of("main", "annotations");
+    static final Set<String> ALLOWED =
+            null; // ImmutableSet.of("main", "annotations", "supplemental");
 
     public static void main(String[] args) {
         MyOptions.parse(args, true);
@@ -116,10 +116,16 @@ public class ShowStarredCoverage {
             return;
         }
 
-        Set<DtdType> dtdTypes = EnumSet.noneOf(DtdType.class);
-        String[] values = MyOptions.dtdTypes.option.getValue().split("[, ]+");
-        for (String value : values) {
-            dtdTypes.add(DtdType.valueOf(value));
+        Set<DtdType> dtdTypes;
+        final String dtdTypeOption = MyOptions.dtdTypes.option.getValue();
+        if ("all".equals(dtdTypeOption)) {
+            dtdTypes = EnumSet.allOf(DtdType.class);
+        } else {
+            dtdTypes = EnumSet.noneOf(DtdType.class);
+            String[] values = dtdTypeOption.split("[, ]+");
+            for (String value : values) {
+                dtdTypes.add(DtdType.valueOf(value));
+            }
         }
 
         final String fileLocale = MyOptions.language.option.getValue();
@@ -131,7 +137,8 @@ public class ShowStarredCoverage {
                         Boolean.class);
 
         if (verbose) {
-            System.out.println("№\tLevel\tStarredPath\tPH Status\t?\tAttributes");
+            System.out.println(
+                    "№\tLevel\tSection\tPage\tStarredPath\tPH Status\tReq Votes\tAttributes");
         }
         for (DtdType dtdType : DtdType.values()) {
             if (dtdType.getStatus() != DtdType.DtdStatus.active) continue;
@@ -139,9 +146,10 @@ public class ShowStarredCoverage {
                 continue;
             }
             for (String dir : dtdType.directories) {
-                if (!ALLOWED.contains(dir)) {
+                if (ALLOWED != null && !ALLOWED.contains(dir)) {
                     continue;
                 }
+                System.out.println("directory:\t" + dir + "\tdtd:\t" + DtdType.ldml);
                 if (dtdType == DtdType.ldml) {
                     doLdml(dir, fileLocale, levelToPathHeaders);
                 } else {
@@ -260,8 +268,11 @@ public class ShowStarredCoverage {
             String dir,
             String fileLocale,
             M3<Level, PathHeader, Boolean> levelToPathHeaders) {
-        Matcher localeMatch = Pattern.compile("\\b" + fileLocale + "\\b").matcher("");
+        //        Matcher localeMatch = Pattern.compile("\\b" + fileLocale + "\\b").matcher("");
         // Not keyed by locale, need to dig into data for that.
+
+        Counter<R3<SectionId, PageId, String>> counter = new Counter<>();
+
         for (String file : new File(CLDRPaths.COMMON_DIRECTORY + dir).list()) {
             if (!file.endsWith(".xml")) {
                 continue;
@@ -299,46 +310,72 @@ public class ShowStarredCoverage {
                 if (dtdData.isMetadata(pathPlain)) {
                     continue;
                 }
-                Set<String> pathForValues = dtdData.getRegularizedPaths(pathPlain, extras);
-                if (pathForValues != null) {
-                    for (String pathForValue : pathForValues) {
-                        if (!localeMatch.reset(pathForValue).find()
-                                && !localeMatch.reset(value).find()) {
-                            continue;
-                        }
-                        PathHeader pathHeader = phf.fromPath(pathForValue);
-                        levelToPathHeaders.put(Level.UNDETERMINED, pathHeader, true);
-                        Splitter splitter = DtdData.getValueSplitter(pathPlain);
-                        for (String line : splitter.split(value)) {
-                            // special case # in transforms
-                            if (isComment(pathPlain, line)) {
-                                continue;
-                            }
-                        }
-                    }
+
+                String starred = pathStarrer.set(path);
+                if (starred == null) {
+                    System.out.println("Missing Starred info for:\t" + path);
+                    continue;
                 }
-                for (Entry<String, Collection<String>> entry : extras.asMap().entrySet()) {
-                    final String extraPath = entry.getKey();
-                    for (String value2 : entry.getValue()) {
-                        if (!localeMatch.reset(extraPath).find()
-                                && !localeMatch.reset(value2).find()) {
-                            continue;
-                        }
-                        final PathHeader pathHeaderExtra = phf.fromPath(extraPath);
-                        levelToPathHeaders.put(Level.UNDETERMINED, pathHeaderExtra, true);
-                        //                    final Collection<String> extraValue =
-                        // entry.getValue();
-                        //                    if (isExtraSplit(extraPath)) {
-                        //                        for (String items : extraValue) {
-                        //                            results.putAll(pathHeaderExtra,
-                        // DtdData.SPACE_SPLITTER.splitToList(items));
-                        //                        }
-                        //                    } else {
-                        //                        results.putAll(pathHeaderExtra, extraValue);
-                        //                    }
-                    }
+                PathHeader ph = null;
+                try {
+                    ph = phf.fromPath(path);
+                    counter.add(R3.of(ph.getSectionId(), ph.getPageId(), starred), 1);
+                } catch (Exception e) {
+                    counter.add(R3.of(SectionId.Supplemental, PageId.Unknown, starred), 1);
                 }
+                // №    Level   Section Page    StarredPath PH Status   Req Votes   Attributes
+
+                //                Set<String> pathForValues = dtdData.getRegularizedPaths(pathPlain,
+                // extras);
+                //                if (pathForValues != null) {
+                //                    for (String pathForValue : pathForValues) {
+                //                        if (!localeMatch.reset(pathForValue).find()
+                //                                && !localeMatch.reset(value).find()) {
+                //                            continue;
+                //                        }
+                //                        PathHeader pathHeader = phf.fromPath(pathForValue);
+                //                        levelToPathHeaders.put(Level.UNDETERMINED, pathHeader,
+                // true);
+                //                        Splitter splitter = DtdData.getValueSplitter(pathPlain);
+                //                        for (String line : splitter.split(value)) {
+                //                            // special case # in transforms
+                //                            if (isComment(pathPlain, line)) {
+                //                                continue;
+                //                            }
+                //                        }
+                //                    }
+                //                }
+                //                for (Entry<String, Collection<String>> entry :
+                // extras.asMap().entrySet()) {
+                //                    final String extraPath = entry.getKey();
+                //                    for (String value2 : entry.getValue()) {
+                //                        if (!localeMatch.reset(extraPath).find()
+                //                                && !localeMatch.reset(value2).find()) {
+                //                            continue;
+                //                        }
+                //                        final PathHeader pathHeaderExtra =
+                // phf.fromPath(extraPath);
+                //                        levelToPathHeaders.put(Level.UNDETERMINED,
+                // pathHeaderExtra, true);
+                //                    final Collection<String> extraValue =
+                // entry.getValue();
+                //                    if (isExtraSplit(extraPath)) {
+                //                        for (String items : extraValue) {
+                //                            results.putAll(pathHeaderExtra,
+                // DtdData.SPACE_SPLITTER.splitToList(items));
+                //                        }
+                //                    } else {
+                //                        results.putAll(pathHeaderExtra, extraValue);
+                //                    }
+                // }
+                // }
             }
+        }
+        // №    Level   Section Page    StarredPath PH Status   Req Votes   Attributes
+        for (R3<SectionId, PageId, String> key : counter.getKeysetSortedByKey()) {
+            long count = counter.get(key);
+            System.out.println(
+                    count + "\tn/a\t" + key.get0() + "\t" + key.get1() + "\t" + key.get2());
         }
     }
 
@@ -363,7 +400,6 @@ public class ShowStarredCoverage {
             String dir, String fileLocale, M3<Level, PathHeader, Boolean> levelToPathHeaders) {
         Status status = new Status();
         boolean isMain = "main".equals(dir);
-        System.out.println("directory:\t" + dir);
         final org.unicode.cldr.util.Factory cldrFactory =
                 org.unicode.cldr.util.Factory.make(
                         CLDRPaths.COMMON_DIRECTORY + dir, fileLocale, DraftStatus.unconfirmed);
@@ -419,7 +455,15 @@ public class ShowStarredCoverage {
             String attributes = Joiner.on("|").join(pathStarrer.getAttributes());
             levelToData.put(
                     level,
-                    starred + "|" + stStatus + "|" + requiredVotes,
+                    ph.getSectionId()
+                            + "|"
+                            + ph.getPage()
+                            + "|"
+                            + starred
+                            + "|"
+                            + stStatus
+                            + "|"
+                            + requiredVotes,
                     attributes,
                     Boolean.TRUE);
             counter.add(level, 1);
@@ -446,7 +490,7 @@ public class ShowStarredCoverage {
                         }
                         List<String> engList =
                                 sampleList.stream()
-                                        .map(x -> x + "[" + getEnglish(starredStatus[0], x) + "]")
+                                        .map(x -> x + "[" + getEnglish(starredStatus[2], x) + "]")
                                         .collect(Collectors.toList());
                         String samples = Joiner.on(", ").join(engList) + suffix;
                         System.out.println(
@@ -454,11 +498,7 @@ public class ShowStarredCoverage {
                                         + "\t"
                                         + level
                                         + "\t"
-                                        + starredStatus[0]
-                                        + "\t"
-                                        + starredStatus[1]
-                                        + "\t"
-                                        + starredStatus[2]
+                                        + Joiner.on('\t').join(starredStatus)
                                         + "\t"
                                         + samples);
                     }

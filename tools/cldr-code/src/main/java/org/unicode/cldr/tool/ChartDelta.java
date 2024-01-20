@@ -12,6 +12,7 @@ import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.UnicodeSet;
 import com.ibm.icu.util.ICUUncheckedIOException;
 import com.ibm.icu.util.Output;
+import com.ibm.icu.util.VersionInfo;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -89,6 +90,11 @@ public class ChartDelta extends Chart {
                         .setDefault(DEFAULT_DELTA_DIR_NAME)
                         .setMatch(".*")),
         verbose(new Params().setHelp("verbose debugging messages")),
+        baseVersion(
+                new Params()
+                        .setHelp("set the base for growth comparisons")
+                        .setMatch(".*")
+                        .setDefault(ToolConstants.PREV_CHART_VERSION)),
         highLevelOnly(new Params().setHelp("check high-level paths (churn) only").setFlag('H')),
         ;
 
@@ -118,6 +124,9 @@ public class ChartDelta extends Chart {
     private final String DIR; // full path of output folder
     private final Level minimumPathCoverage;
     private final boolean verbose;
+
+    private static String baseVersion = ToolConstants.PREV_CHART_VERSION;
+    private static String baseVersionInFile = "";
 
     /**
      * If true, check only high-level paths, i.e., paths for which any changes have high potential
@@ -165,6 +174,11 @@ public class ChartDelta extends Chart {
                             + DEFAULT_CHURN_DIR_NAME);
             dirName = DEFAULT_CHURN_DIR_NAME;
         }
+
+        baseVersion = MyOptions.baseVersion.option.getValue();
+        VersionInfo.getInstance(baseVersion); // check validity
+        baseVersionInFile = baseVersion.equals(ToolConstants.PREV_CHART_VERSION) ? "" : baseVersion;
+
         ChartDelta temp = new ChartDelta(fileFilter, coverage, dirName, verbose, highLevelOnly);
         temp.writeChart(null);
         temp.showTotals();
@@ -286,7 +300,9 @@ public class ChartDelta extends Chart {
 
     private void showTotals() {
         try (PrintWriter pw =
-                FileUtilities.openUTF8Writer(getTsvDir(DIR, dirName), dirName + "_summary.tsv")) {
+                FileUtilities.openUTF8Writer(
+                        getTsvDir(DIR, dirName),
+                        dirName + "_" + baseVersionInFile + "_summary.tsv")) {
             // pw.println("# percentages are of *new* total");
             pw.print("# dir\tfile");
             for (ChangeType item : ChangeType.values()) {
@@ -331,10 +347,13 @@ public class ChartDelta extends Chart {
      */
     private void writeLdml(Anchors anchors) throws IOException {
         try (PrintWriter tsvFile =
-                        FileUtilities.openUTF8Writer(getTsvDir(DIR, dirName), dirName + ".tsv");
+                        FileUtilities.openUTF8Writer(
+                                getTsvDir(DIR, dirName),
+                                dirName + "_" + baseVersionInFile + ".tsv");
                 PrintWriter tsvCountFile =
                         FileUtilities.openUTF8Writer(
-                                getTsvDir(DIR, dirName), dirName + "_count.tsv"); ) {
+                                getTsvDir(DIR, dirName),
+                                dirName + "_" + baseVersionInFile + "_count.tsv"); ) {
             tsvFile.println("# Section\tPage\tHeader\tCode\tLocale\tOld\tNew\tLevel");
 
             // set up factories
@@ -344,7 +363,7 @@ public class ChartDelta extends Chart {
             Counter<PathHeader> counts = new Counter<>();
 
             String dirBase = ToolConstants.getBaseDirectory(ToolConstants.CHART_VERSION);
-            String prevDirBase = ToolConstants.getBaseDirectory(ToolConstants.PREV_CHART_VERSION);
+            String prevDirBase = ToolConstants.getBaseDirectory(baseVersion);
 
             for (String dir : DtdType.ldml.directories) {
                 if (dir.equals("annotationsDerived") || dir.equals("casing")) {
@@ -1079,10 +1098,12 @@ public class ChartDelta extends Chart {
     private void writeNonLdmlPlain(Anchors anchors) throws IOException {
         try (PrintWriter tsvFile =
                         FileUtilities.openUTF8Writer(
-                                getTsvDir(DIR, dirName), dirName + "_supp.tsv");
+                                getTsvDir(DIR, dirName),
+                                dirName + "_" + baseVersionInFile + "_supp.tsv");
                 PrintWriter tsvCountFile =
                         FileUtilities.openUTF8Writer(
-                                getTsvDir(DIR, dirName), dirName + "_supp_count.tsv"); ) {
+                                getTsvDir(DIR, dirName),
+                                dirName + "_" + baseVersionInFile + "_supp_count.tsv"); ) {
             tsvFile.println("# Section\tPage\tHeader\tCode\tOld\tNew");
 
             Multimap<PathHeader, String> bcp = TreeMultimap.create();
