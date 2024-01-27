@@ -1,11 +1,5 @@
 package org.unicode.cldr.util;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedSet;
-import com.ibm.icu.util.Freezable;
-import com.ibm.icu.util.Output;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,7 +13,15 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import org.unicode.cldr.util.UnitConverter.UnitSystem;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
+import com.ibm.icu.util.Freezable;
+import com.ibm.icu.util.Output;
 
 /**
  * Get the info from supplemental data, eg
@@ -205,6 +207,8 @@ public class GrammarInfo implements Freezable<GrammarInfo> {
             } else {
                 int debug = 0;
             }
+        } else {
+
         }
     }
 
@@ -375,11 +379,11 @@ public class GrammarInfo implements Freezable<GrammarInfo> {
         Map<GrammaticalFeature, Map<GrammaticalScope, Set<String>>> featureToUsageToValues =
                 targetToFeatureToUsageToValues.get(target);
         if (featureToUsageToValues == null) {
-            return Collections.emptySet();
+            return null;
         }
         Map<GrammaticalScope, Set<String>> usageToValues = featureToUsageToValues.get(feature);
         if (usageToValues == null) {
-            return Collections.emptySet();
+            return null;
         }
         Collection<String> result = usageToValues.get(usage);
         return result == null ? usageToValues.get(GrammaticalScope.general) : result;
@@ -813,5 +817,9 @@ public class GrammarInfo implements Freezable<GrammarInfo> {
     /** Return the units that we should get grammar information for. */
     public static Set<String> getUnitsToAddGrammar() {
         return UnitsToAddGrammar.data;
+    }
+
+    public boolean isEmpty() {
+        return targetToFeatureToUsageToValues.isEmpty();
     }
 }

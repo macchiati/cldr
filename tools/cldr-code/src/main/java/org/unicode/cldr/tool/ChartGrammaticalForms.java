@@ -1,19 +1,5 @@
 package org.unicode.cldr.tool;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.TreeMultimap;
-import com.ibm.icu.impl.locale.XCldrStub.ImmutableMap;
-import com.ibm.icu.text.DecimalFormat;
-import com.ibm.icu.text.MessageFormat;
-import com.ibm.icu.text.PluralRules;
-import com.ibm.icu.text.PluralRules.SampleType;
-import com.ibm.icu.text.RuleBasedCollator;
-import com.ibm.icu.util.Output;
-import com.ibm.icu.util.ULocale;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -31,6 +17,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
+
 import org.unicode.cldr.draft.FileUtilities;
 import org.unicode.cldr.test.ExampleGenerator;
 import org.unicode.cldr.tool.FormattedFileWriter.Anchors;
@@ -62,6 +49,21 @@ import org.unicode.cldr.util.UnitConverter.UnitId;
 import org.unicode.cldr.util.UnitPathType;
 import org.unicode.cldr.util.Validity;
 import org.unicode.cldr.util.XPathParts;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.TreeMultimap;
+import com.ibm.icu.impl.locale.XCldrStub.ImmutableMap;
+import com.ibm.icu.text.DecimalFormat;
+import com.ibm.icu.text.MessageFormat;
+import com.ibm.icu.text.PluralRules;
+import com.ibm.icu.text.PluralRules.SampleType;
+import com.ibm.icu.text.RuleBasedCollator;
+import com.ibm.icu.util.Output;
+import com.ibm.icu.util.ULocale;
 
 /** Chart the grammatical forms, with unit examples */
 public class ChartGrammaticalForms extends Chart {
@@ -167,6 +169,16 @@ public class ChartGrammaticalForms extends Chart {
             Set<String> failures = new LinkedHashSet<>();
             GrammarInfo grammarInfo = SDI.getGrammarInfo(localeId, false);
             String localeName = CONFIG.getEnglish().getName(localeId);
+            if (grammarInfo.isEmpty()) {
+                addRow(
+                    tablePrinter,
+                    localeName,
+                    localeId,
+                    null,
+                    null,
+                    null);
+                continue;
+            }
             for (GrammaticalFeature feature : GrammaticalFeature.values()) {
                 Map<GrammaticalScope, Set<String>> scopeToValues =
                         grammarInfo.get(GrammaticalTarget.nominal, feature);
@@ -234,9 +246,9 @@ public class ChartGrammaticalForms extends Chart {
                 .addRow()
                 .addCell(locale)
                 .addCell(id)
-                .addCell(feature)
-                .addCell(usage)
-                .addCell(valueString)
+                .addCell(feature == null ? "none" : feature.toString())
+                .addCell(usage == null ? "" : usage)
+                .addCell(valueString == null ? "" : valueString)
                 .finishRow();
     }
 
