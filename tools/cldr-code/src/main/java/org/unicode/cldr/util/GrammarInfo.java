@@ -1,5 +1,11 @@
 package org.unicode.cldr.util;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
+import com.ibm.icu.util.Freezable;
+import com.ibm.icu.util.Output;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,15 +19,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import org.unicode.cldr.util.UnitConverter.UnitSystem;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedSet;
-import com.ibm.icu.util.Freezable;
-import com.ibm.icu.util.Output;
 
 /**
  * Get the info from supplemental data, eg
