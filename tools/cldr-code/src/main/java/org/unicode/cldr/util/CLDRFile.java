@@ -3316,7 +3316,7 @@ public class CLDRFile implements Freezable<CLDRFile>, Iterable<String>, LocaleSt
                 // This note is left for 'blame' to find the old code in case we revive that.
 
                 // TODO use UnitPathType to get paths
-                if (!genders.isEmpty()) {
+                if (genders != null && !genders.isEmpty()) {
                     for (String unit : GrammarInfo.getUnitsToAddGrammar()) {
                         toAddTo.add(
                                 "//ldml/units/unitLength[@type=\"long\"]/unit[@type=\""
@@ -3351,7 +3351,7 @@ public class CLDRFile implements Freezable<CLDRFile>, Iterable<String>, LocaleSt
                                         + "\"]");
                     }
                 }
-                if (!rawCases.isEmpty()) {
+                if (rawCases != null && !rawCases.isEmpty()) {
                     for (String case1 : rawCases) {
                         //          <caseMinimalPairs case="nominative">{0} kostet
                         // €3,50.</caseMinimalPairs>

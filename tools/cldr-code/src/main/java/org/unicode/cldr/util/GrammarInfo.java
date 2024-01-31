@@ -172,7 +172,8 @@ public class GrammarInfo implements Freezable<GrammarInfo> {
     public enum GrammaticalScope {
         general,
         units,
-        personNames
+        personNames;
+        public static final Set<GrammaticalScope> SUPPORTED = ImmutableSet.of(general, units);
     }
 
     private Map<GrammaticalTarget, Map<GrammaticalFeature, Map<GrammaticalScope, Set<String>>>>

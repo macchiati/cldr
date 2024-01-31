@@ -187,7 +187,7 @@ public class BestMinimalPairSamples {
                     }
                 }
             }
-            if (!unitCases.isEmpty()) {
+            if (unitCases != null && !unitCases.isEmpty()) {
                 unitPatternToCaseAndCounts.clear();
                 for (String count : pluralInfo.getKeywords()) {
                     for (String unitCase : unitCases) {

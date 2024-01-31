@@ -1,21 +1,8 @@
 package org.unicode.cldr.tool;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.TreeMultimap;
-import com.ibm.icu.impl.locale.XCldrStub.ImmutableMap;
-import com.ibm.icu.text.DecimalFormat;
-import com.ibm.icu.text.MessageFormat;
-import com.ibm.icu.text.PluralRules;
-import com.ibm.icu.text.PluralRules.SampleType;
-import com.ibm.icu.text.RuleBasedCollator;
-import com.ibm.icu.util.Output;
-import com.ibm.icu.util.ULocale;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -31,6 +19,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
+
 import org.unicode.cldr.draft.FileUtilities;
 import org.unicode.cldr.test.ExampleGenerator;
 import org.unicode.cldr.tool.FormattedFileWriter.Anchors;
@@ -46,15 +35,20 @@ import org.unicode.cldr.util.GrammarInfo.GrammaticalFeature;
 import org.unicode.cldr.util.GrammarInfo.GrammaticalScope;
 import org.unicode.cldr.util.GrammarInfo.GrammaticalTarget;
 import org.unicode.cldr.util.ICUServiceBuilder;
+import org.unicode.cldr.util.LanguageGroup;
 import org.unicode.cldr.util.LanguageTagParser;
+import org.unicode.cldr.util.Level;
+import org.unicode.cldr.util.Organization;
 import org.unicode.cldr.util.Pair;
 import org.unicode.cldr.util.PathHeader;
 import org.unicode.cldr.util.Rational;
 import org.unicode.cldr.util.Rational.FormatStyle;
+import org.unicode.cldr.util.StandardCodes;
 import org.unicode.cldr.util.StandardCodes.LstrType;
 import org.unicode.cldr.util.SupplementalDataInfo.PluralInfo;
 import org.unicode.cldr.util.SupplementalDataInfo.PluralInfo.Count;
 import org.unicode.cldr.util.SupplementalDataInfo.PluralType;
+import org.unicode.cldr.util.SupplementalDataInfo.PopulationData;
 import org.unicode.cldr.util.UnitConverter;
 import org.unicode.cldr.util.UnitConverter.ConversionInfo;
 import org.unicode.cldr.util.UnitConverter.PlaceholderLocation;
@@ -62,6 +56,28 @@ import org.unicode.cldr.util.UnitConverter.UnitId;
 import org.unicode.cldr.util.UnitPathType;
 import org.unicode.cldr.util.Validity;
 import org.unicode.cldr.util.XPathParts;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import com.google.common.collect.TreeMultimap;
+import com.ibm.icu.impl.locale.XCldrStub.ImmutableMap;
+import com.ibm.icu.number.LocalizedNumberFormatter;
+import com.ibm.icu.number.NumberFormatter;
+import com.ibm.icu.number.Precision;
+import com.ibm.icu.text.DecimalFormat;
+import com.ibm.icu.text.MessageFormat;
+import com.ibm.icu.text.PluralRules;
+import com.ibm.icu.text.PluralRules.SampleType;
+import com.ibm.icu.text.RuleBasedCollator;
+import com.ibm.icu.util.Output;
+import com.ibm.icu.util.ULocale;
 
 /** Chart the grammatical forms, with unit examples */
 public class ChartGrammaticalForms extends Chart {
@@ -116,6 +132,100 @@ public class ChartGrammaticalForms extends Chart {
         pw.setIndex("Main Chart Index", "../index.html");
         pw.write(anchors.toString());
         showInfo(pw);
+        showGrammarSummaryTSV();
+    }
+
+    private void showGrammarSummaryTSV() {
+        try (PrintWriter tsvFile =
+                FileUtilities.openUTF8Writer(
+                        CLDRPaths.CHART_DIRECTORY + "/tsv/", "grammar_summary.tsv")) {
+            // now raw data:
+            Set<String> mainCLDR =
+                    ImmutableSortedSet.copyOf(
+                            Sets.union(
+                                    SDI.hasGrammarInfo(),
+                                    Sets.difference(
+                                            StandardCodes.make()
+                                                    .getLocaleCoverageLocales(
+                                                            Organization.cldr,
+                                                            Sets.immutableEnumSet(Level.MODERN)),
+                                            StandardCodes.make()
+                                                    .getLocaleCoverageLocales(
+                                                            Organization.special))));
+            Multimap<LanguageGroup, String> sorted = LinkedHashMultimap.create();
+            LocalizedNumberFormatter nf =
+                    NumberFormatter.forSkeleton("0")
+                            .precision(Precision.fixedSignificantDigits(2))
+                            .locale(Locale.ENGLISH);
+
+            for (String locale : mainCLDR) {
+                if (locale.contains("_")) {
+                    continue; // skip
+                }
+                final ULocale uLocale = new ULocale(locale);
+                LanguageGroup languageGroup = LanguageGroup.get(uLocale);
+                String localeName = CONFIG.getEnglish().getName(locale);
+                PopulationData pop = SDI.getBaseLanguagePopulationData(locale);
+                String popString = nf.format(pop.getLiteratePopulation() / 1_000_000).toString();
+                GrammarInfo grammarInfo = SDI.getRawGrammarInfo(locale);
+
+                String prefix = localeName + "\t" + locale + "\t" + popString + "\t";
+                if (grammarInfo == null) {
+                    grammarInfo = SDI.getGrammarInfo(locale);
+                    if (grammarInfo == null) { // only show ones without parent info
+                        sorted.put(languageGroup, prefix + "Unavailable\t\t\t");
+                        // must have the same number of tabs in each value
+                    }
+                    continue;
+                }
+                boolean haveItem = false;
+                for (GrammaticalTarget target : GrammaticalTarget.values()) {
+                    for (GrammaticalFeature feature : GrammaticalFeature.values()) {
+                        Collection<String> generalValues = null;
+                        for (GrammaticalScope scope : GrammaticalScope.SUPPORTED) {
+                            Collection<String> values = grammarInfo.get(target, feature, scope);
+                            if (scope == GrammaticalScope.general) {
+                                generalValues = values;
+                            }
+                            // empty set means none, null means not present.
+                            if (values != null) {
+                                String joined = Joiner.on(' ').join(values);
+                                if (scope != GrammaticalScope.general
+                                        && Objects.equal(generalValues, values)) {
+                                    joined = "🟰general scope";
+                                }
+                                sorted.put(
+                                        languageGroup,
+                                        prefix
+                                                + target
+                                                + "\t"
+                                                + feature
+                                                + "\t"
+                                                + scope
+                                                + "\t"
+                                                + (joined.isEmpty() ? "None" : joined));
+                                // must have the same number of tabs in each value
+                                haveItem = true;
+                            }
+                        }
+                    }
+                }
+                if (!haveItem) {
+                    sorted.put(languageGroup, prefix + GrammaticalTarget.nominal + "\tNone\t\t");
+                    // must have the same number of tabs in each value
+                }
+            }
+            tsvFile.println(
+                    "Lang Group\tLocale\tCode\t~LPop (M)\tTarget\tFeature\tScope\tCategories");
+            // must have the same number of tabs in each value
+            for (LanguageGroup languageGroup : LanguageGroup.values()) {
+                for (String value : sorted.get(languageGroup)) {
+                    tsvFile.println(languageGroup + "\t" + value);
+                }
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     private void showInfo(FormattedFileWriter pw) throws IOException {
@@ -422,7 +532,9 @@ public class ChartGrammaticalForms extends Chart {
                                 GrammaticalFeature.grammaticalGender,
                                 GrammaticalScope.units);
                 sortedGenders.clear();
-                sortedGenders.addAll(genders);
+                if (genders != null) {
+                    sortedGenders.addAll(genders);
+                }
             }
             {
                 Collection<String> rawCases =
@@ -430,11 +542,13 @@ public class ChartGrammaticalForms extends Chart {
                                 GrammaticalTarget.nominal,
                                 GrammaticalFeature.grammaticalCase,
                                 GrammaticalScope.units);
-                if (rawCases.isEmpty()) {
+                if (rawCases == null) {
                     rawCases = ImmutableSet.of(GrammaticalFeature.grammaticalCase.getDefault(null));
                 }
                 sortedCases.clear();
-                sortedCases.addAll(rawCases);
+                if (rawCases != null) {
+                    sortedCases.addAll(rawCases);
+                }
             }
             if (sortedCases.size() <= 1 && sortedGenders.size() <= 1) {
                 continue;

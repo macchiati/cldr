@@ -6,8 +6,12 @@ import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.ibm.icu.number.LocalizedNumberFormatter;
+import com.ibm.icu.number.NumberFormatter;
+import com.ibm.icu.number.Precision;
 import com.ibm.icu.util.ULocale;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 import org.unicode.cldr.util.CLDRConfig;
@@ -22,6 +26,7 @@ import org.unicode.cldr.util.Level;
 import org.unicode.cldr.util.Organization;
 import org.unicode.cldr.util.StandardCodes;
 import org.unicode.cldr.util.SupplementalDataInfo;
+import org.unicode.cldr.util.SupplementalDataInfo.PopulationData;
 
 public class ListGrammarInfo {
     public static final CLDRConfig CONFIG = CLDRConfig.getInstance();
@@ -91,16 +96,27 @@ public class ListGrammarInfo {
                                         StandardCodes.make()
                                                 .getLocaleCoverageLocales(Organization.special))));
         Multimap<LanguageGroup, String> sorted = LinkedHashMultimap.create();
+        LocalizedNumberFormatter nf =
+                NumberFormatter.forSkeleton("0")
+                        .precision(Precision.fixedSignificantDigits(2))
+                        .locale(Locale.ENGLISH);
+
         for (String locale : mainCLDR) {
             if (locale.contains("_")) {
                 continue; // skip
             }
-            LanguageGroup languageGroup = LanguageGroup.get(new ULocale(locale));
+            final ULocale uLocale = new ULocale(locale);
+            LanguageGroup languageGroup = LanguageGroup.get(uLocale);
+            String localeName = CONFIG.getEnglish().getName(locale);
+            PopulationData pop = SDI.getBaseLanguagePopulationData(locale);
+            String popString = nf.format(pop.getLiteratePopulation() / 1_000_000).toString();
             GrammarInfo grammarInfo = SDI.getRawGrammarInfo(locale);
+
+            String prefix = localeName + "\t" + locale + "\t" + popString + "\t";
             if (grammarInfo == null) {
                 grammarInfo = SDI.getGrammarInfo(locale);
                 if (grammarInfo == null) { // only show ones without parent info
-                    sorted.put(languageGroup, locale + "\t" + "MISSING");
+                    sorted.put(languageGroup, prefix + "Unavailable");
                 }
                 continue;
             }
@@ -108,7 +124,7 @@ public class ListGrammarInfo {
             for (GrammaticalTarget target : GrammaticalTarget.values()) {
                 for (GrammaticalFeature feature : GrammaticalFeature.values()) {
                     Collection<String> generalValues = null;
-                    for (GrammaticalScope scope : GrammaticalScope.values()) {
+                    for (GrammaticalScope scope : GrammaticalScope.SUPPORTED) {
                         Collection<String> values = grammarInfo.get(target, feature, scope);
                         if (scope == GrammaticalScope.general) {
                             generalValues = values;
@@ -122,26 +138,25 @@ public class ListGrammarInfo {
                             }
                             sorted.put(
                                     languageGroup,
-                                    locale
-                                            + "\t"
+                                    prefix
                                             + target
                                             + "\t"
                                             + feature
                                             + "\t"
                                             + scope
                                             + "\t"
-                                            + (joined.isEmpty() ? "NONE" : joined));
+                                            + (joined.isEmpty() ? "None" : joined));
                             haveItem = true;
                         }
                     }
                 }
             }
             if (!haveItem) {
-                sorted.put(
-                        languageGroup,
-                        locale + "\t" + LanguageGroup.get(new ULocale(locale)) + "\t" + "NONE");
+                sorted.put(languageGroup, prefix + GrammaticalTarget.nominal + "\tNone");
             }
         }
+        System.out.println(
+                "Lang Group\tLocale\tCode\t~LPop (M)\tTarget\tFeature\tScope\tCategories");
         for (LanguageGroup languageGroup : LanguageGroup.values()) {
             for (String value : sorted.get(languageGroup)) {
                 System.out.println(languageGroup + "\t" + value);
