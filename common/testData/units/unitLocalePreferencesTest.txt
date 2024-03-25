@@ -17,7 +17,6 @@
 #		 • no localization
 #
 fahrenheit;	1;	default;	en-u-rg-uszzzz-ms-ussystem-mu-celsius;	celsius;	-155/9	# mu > ms > rg > (likely) region
-fahrenheit;	1;	default;	en-u-rg-uszzzz-ms-ussystem-mu-celsius;	celsius;	-155/9
 fahrenheit;	1;	default;	en-u-rg-uszzzz-ms-metric;	celsius;	-155/9
 fahrenheit;	1;	default;	en-u-rg-dezzzz;	celsius;	-155/9
 fahrenheit;	1;	default;	en-DE;	celsius;	-155/9	# explicit region > likely region
@@ -40,3 +39,6 @@ candela-per-byte;	1;	default;	en;	candela-per-bit;	0.125	# an input unit that ha
 candela-per-cubic-foot;	1;	default;	en;	candela-per-cubic-meter;	1,953,125,000/55306341	# an input unit that has no quantity should get base units
 foot;	1;	default;	de-u-mu-celsius;	centimeter;	30.48	# a -mu unit that is not convertible from the input unit should get ignored
 #pound;	28;	default;	en-u-mu-stone;	stone;	2 # only temperature units are supported
+byte-per-millisecond;	123;	default;	en;	bit-per-second;	984,000
+pound-square-foot-per-cubic-minute-ampere;	1;	default;	en;	volt;	0.0000005852793068584/3
+pound-square-foot-ampere-per-cubic-minute;	1;	default;	en;	kilogram-square-meter-ampere-per-cubic-second;	0.0000005852793068584/3

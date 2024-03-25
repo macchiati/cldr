@@ -1,5 +1,6 @@
 package org.unicode.cldr.tool;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
@@ -196,23 +197,55 @@ public class GenerateUnitTestData {
                         CLDRPaths.TEST_DATA + "units", "unitLocalePreferencesTest.txt")) {
 
             try {
-                Set<List<Object>> seen = new HashSet<>();
+                Set<SourcePreference> seen = new HashSet<>();
                 // first copy existing lines
                 // This includes the header, so modify the old header if changes are needed!
                 Files.lines(Path.of(CLDRPaths.TEST_DATA + "units/unitLocalePreferencesTest.txt"))
                         .forEach(line -> formatPwLocale(pwLocale, line, seen));
                 // TODO: add more lines
-                formatLocaleLine(
-                        "byte-per-millisecond", Rational.of(123), "default", "en", "", seen);
+                writeIfNotNull(
+                        pwLocale,
+                        formatLocaleLine(
+                                "byte-per-millisecond",
+                                Rational.of(123),
+                                "default",
+                                "en",
+                                "",
+                                seen));
+                writeIfNotNull(
+                        pwLocale,
+                        formatLocaleLine(
+                                "pound-square-foot-per-cubic-minute-ampere",
+                                Rational.ONE,
+                                "default",
+                                "en",
+                                "",
+                                seen));
+                writeIfNotNull(
+                        pwLocale,
+                        formatLocaleLine(
+                                "pound-square-foot-ampere-per-cubic-minute",
+                                Rational.ONE,
+                                "default",
+                                "en",
+                                "",
+                                seen));
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
         }
     }
 
+    private void writeIfNotNull(TempPrintWriter pwLocale, String formatLocaleLine) {
+        if (formatLocaleLine != null) {
+            pwLocale.println(formatLocaleLine);
+        }
+    }
+
     static final Splitter SPLIT_SEMI = Splitter.on(Pattern.compile("\\s*;\\s*")).trimResults();
 
-    private void formatPwLocale(TempPrintWriter pwLocale, String rawLine, Set<List<Object>> seen) {
+    private void formatPwLocale(
+            TempPrintWriter pwLocale, String rawLine, Set<SourcePreference> seen) {
         int hashPos = rawLine.indexOf('#');
         String line = hashPos < 0 ? rawLine : rawLine.substring(0, hashPos);
         String comment = hashPos < 0 ? "" : "#" + rawLine.substring(hashPos + 1);
@@ -235,15 +268,45 @@ public class GenerateUnitTestData {
         }
     }
 
+    static class SourcePreference {
+        final String sourceUnit;
+        final Rational sourceAmount;
+        final String usage;
+        final String languageTag;
+
+        public SourcePreference(
+                String sourceUnit, Rational sourceAmount, String usage, String languageTag) {
+            this.sourceUnit = sourceUnit;
+            this.sourceAmount = sourceAmount;
+            this.usage = usage;
+            this.languageTag = languageTag;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            SourcePreference that = (SourcePreference) obj;
+            return Objects.equal(sourceUnit, that.sourceUnit)
+                    && Objects.equal(sourceAmount, that.sourceAmount)
+                    && Objects.equal(usage, that.usage)
+                    && Objects.equal(languageTag, that.languageTag);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(sourceUnit, sourceAmount, usage, languageTag);
+        }
+    }
+
     public String formatLocaleLine(
             String sourceUnit,
             Rational sourceAmount,
             String usage,
             String languageTag,
             String comment,
-            Set<List<Object>> seen) {
-        List<Object> bundle = List.of(sourceUnit, sourceAmount, usage, languageTag);
-        if (bundle.contains(seen)) {
+            Set<SourcePreference> seen) {
+        SourcePreference bundle =
+                new SourcePreference(sourceUnit, sourceAmount, usage, languageTag);
+        if (seen.contains(bundle)) {
             return null;
         }
         seen.add(bundle);

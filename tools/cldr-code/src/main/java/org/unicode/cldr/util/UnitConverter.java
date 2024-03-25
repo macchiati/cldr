@@ -1,25 +1,5 @@
 package org.unicode.cldr.util;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-import com.google.common.collect.TreeMultimap;
-import com.ibm.icu.impl.Row.R2;
-import com.ibm.icu.lang.UCharacter;
-import com.ibm.icu.number.UnlocalizedNumberFormatter;
-import com.ibm.icu.text.PluralRules;
-import com.ibm.icu.util.Freezable;
-import com.ibm.icu.util.Output;
-import com.ibm.icu.util.ULocale;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.text.MessageFormat;
@@ -43,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import org.unicode.cldr.util.GrammarDerivation.CompoundUnitStructure;
 import org.unicode.cldr.util.GrammarDerivation.Values;
 import org.unicode.cldr.util.GrammarInfo.GrammaticalFeature;
@@ -50,8 +31,31 @@ import org.unicode.cldr.util.Rational.FormatStyle;
 import org.unicode.cldr.util.Rational.RationalParser;
 import org.unicode.cldr.util.SupplementalDataInfo.PluralInfo;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import com.google.common.collect.TreeMultimap;
+import com.ibm.icu.impl.Row.R2;
+import com.ibm.icu.lang.UCharacter;
+import com.ibm.icu.number.UnlocalizedNumberFormatter;
+import com.ibm.icu.text.PluralRules;
+import com.ibm.icu.util.Freezable;
+import com.ibm.icu.util.Output;
+import com.ibm.icu.util.ULocale;
+
 public class UnitConverter implements Freezable<UnitConverter> {
-    public static boolean DEBUG = false;
+    public static boolean DEBUG = true;
     public static final Integer INTEGER_ONE = 1;
 
     static final Splitter BAR_SPLITTER = Splitter.on('-');
@@ -204,32 +208,50 @@ public class UnitConverter implements Freezable<UnitConverter> {
 
     /**
      * Return the 'standard unit' for the source.
-     *
      * @return
      */
     private Map<String, String> buildSourceToStandard() {
-        Map<String, String> unitToStandard = new TreeMap<>();
+        Multimap<String, String> unitToStandards = TreeMultimap.create();
         for (Entry<String, TargetInfo> entry : sourceToTargetInfo.entrySet()) {
-            String source = entry.getKey();
             TargetInfo targetInfo = entry.getValue();
             if (targetInfo.unitInfo.factor.equals(Rational.ONE)
                     && targetInfo.unitInfo.offset.equals(Rational.ZERO)) {
-                final String target = targetInfo.target;
-                String old = unitToStandard.get(target);
-                if (old == null) {
-                    unitToStandard.put(target, source);
-                    if (DEBUG) System.out.println(target + " ⟹ " + source);
-                } else if (old.length() > source.length()) {
-                    unitToStandard.put(target, source);
-                    if (DEBUG)
-                        System.out.println(
-                                "TWO STANDARDS: " + target + " ⟹ " + source + "; was " + old);
-                } else {
-                    if (DEBUG)
-                        System.out.println(
-                                "TWO STANDARDS: " + target + " ⟹ " + old + ", was " + source);
-                }
+                unitToStandards.put(targetInfo.target, entry.getKey());
             }
+        }
+        // these are suppressed for various reasons
+        Map<String,String> remaps = Map.of(
+            // alternate versions of same unit
+            "dot", "pixel",
+            "year-person", "year",
+            // units with the same base unit as other
+            "sievert", "gray",
+        // units that are better expressed as per-X
+        "siemens", "per-ohm",
+        "becquerel", "per-second");
+
+        Map<String, String> unitToStandard = new TreeMap<>();
+        // now pick the best one
+        for (Entry<String, Collection<String>> entry : unitToStandards.asMap().entrySet()) {
+            Collection<String> standards = entry.getValue();
+            Set<String> best = Sets.difference(Set.copyOf(standards), remaps.keySet());
+            if (best.isEmpty()) {
+                for (Entry<String, String> entry2 : remaps.entrySet()) {
+                    if (standards.contains(entry2.getKey())) {
+                        System.out.println(entry2.getKey() + " => " +  entry2.getValue());
+                        unitToStandard.put(entry2.getKey(), entry2.getValue());
+                        best = Collections.singleton(entry2.getValue());
+                        break;
+                    }
+                }
+                if (best.isEmpty()) { // still empty is a failure
+                    throw new IllegalArgumentException("Source does not have unique stardard; look at suppressions & remaps: " + standards);
+                }
+            } else if (best.size() > 1) {
+                throw new IllegalArgumentException("Source does not have unique stardard; look at suppressions set: " + standards);
+            }
+            System.out.println(entry + " => " +  best.iterator().next());
+            unitToStandard.put(entry.getKey(), best.iterator().next());
         }
         return ImmutableMap.copyOf(unitToStandard);
     }
@@ -1470,6 +1492,13 @@ public class UnitConverter implements Freezable<UnitConverter> {
             return result;
         }
 
+        public UnitId divide(UnitId id2) {
+            UnitId result = new UnitId(comparator);
+            combine(numUnitsToPowers, id2.denUnitsToPowers, result.numUnitsToPowers);
+            combine(denUnitsToPowers, id2.numUnitsToPowers, result.denUnitsToPowers);
+            return result;
+        }
+
         public void combine(
                 Map<String, Integer> map1,
                 Map<String, Integer> map2,
@@ -1481,7 +1510,45 @@ public class UnitConverter implements Freezable<UnitConverter> {
                 resultMap.put(unit, (int1 == null ? 0 : int1) + (int2 == null ? 0 : int2));
             }
         }
+
+        public int getComplexity() {
+            int complexity = 0;
+            for (Entry<String, Integer> x : numUnitsToPowers.entrySet()) {
+                complexity += scaled[x.getValue()];
+            }
+            for (Entry<String, Integer> x : denUnitsToPowers.entrySet()) {
+                complexity += scaled[x.getValue()];
+            }
+            return complexity;
+        }
+
+        /**
+         * contains means that every unit in key is in value, with the same or smaller power
+         * (reversed if den)
+         */
+        public boolean contains(UnitId possibleSubunit) {
+            for (Entry<String, Integer> x : possibleSubunit.numUnitsToPowers.entrySet()) {
+                Integer thisValue = numUnitsToPowers.get(x.getKey());
+                if (thisValue == null || thisValue < x.getValue()) {
+                    return false;
+                }
+            }
+            for (Entry<String, Integer> x : possibleSubunit.denUnitsToPowers.entrySet()) {
+                Integer thisValue = denUnitsToPowers.get(x.getKey());
+                if (thisValue == null || thisValue < x.getValue()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public int size() {
+            return numUnitsToPowers.size() + denUnitsToPowers.size();
+        }
     }
+
+    /** as the value increases, the delta decreases */
+    private static int[] scaled = {0, 1, 4, 8, 16, 32};
 
     public enum PlaceholderLocation {
         before,
@@ -2282,5 +2349,102 @@ public class UnitConverter implements Freezable<UnitConverter> {
         String cldrFormattedNumber =
                 nf3.locale(uLocale).format(outputAmount.doubleValue()).toString();
         return com.ibm.icu.text.MessageFormat.format(pattern, cldrFormattedNumber);
+    }
+
+    /** o1 < o2 if o1 is greater complexity, or they are equal and the unitId is less */
+    private static final class UnitComplexityOrder implements Comparator<UnitId> {
+        @Override
+        public int compare(UnitId o1, UnitId o2) {
+            int complexity1 = o1.getComplexity();
+            int complexity2 = o2.getComplexity();
+            int diff = complexity2 - complexity1;
+            if (diff != 0) {
+                return diff;
+            }
+            return o1.compareTo(o2);
+        }
+    }
+
+    public Map<UnitId, String> getUnitIdToStandard() {
+        return unitIdToStandard.get();
+    }
+    /**
+     * Create a mapping from UnitIds to standards, ordered by complexity. This will be used to find
+     * the first most complex standard unit that is 'part' of a target unit.
+     */
+    private Supplier<Map<UnitId, String>> unitIdToStandard =
+            Suppliers.memoize(
+                    () -> {
+                        Map<UnitId, String> unitIdToStandard_ =
+                                new TreeMap<>(new UnitComplexityOrder());
+                        // make mapping
+                        for (String baseUnit : baseUnits()) {
+                            String standardUnit = getStandardUnit(baseUnit);
+                            if (standardUnit.equals(baseUnit)) {
+                                continue;
+                            }
+                            UnitId unitId = createUnitId(baseUnit);
+                            unitIdToStandard_.put(unitId, standardUnit);
+                        }
+                        return ImmutableMap.copyOf(unitIdToStandard_);
+                    });
+
+    private static final Joiner JOIN_HYPHEN = Joiner.on('-');
+
+    /**
+     * Simplify a metric unit, eg kilogram-meter-per-square-second -> newton
+     *
+     * @param shortId
+     * @param skipFirst
+     * @return
+     */
+    public String simplify(String inputUnit, boolean skipFirst) {
+        Output<String> outputBase = new Output<>();
+        ConversionInfo baseUnitInfo = this.parseUnitId(inputUnit, outputBase, false);
+        if (!baseUnitInfo.factor.equals(Rational.ONE)) {
+            throw new IllegalArgumentException("simplify can only be applied to combinations of base units");
+        }
+        UnitId source = createUnitId(outputBase.value);
+        UnitId sourceReciprocal = source.getReciprocal();
+        List<String> newNum = new ArrayList<>();
+        List<String> newDen = new ArrayList<>();
+        main:
+        for (Entry<UnitId, String> entry : getUnitIdToStandard().entrySet()) {
+            // if the key is entirely contained in the value, we have a match
+            // or if key is entirely contained in the inverse value, we have a match with the
+            // inverse
+            // while (true) { // we try the same item multiple times, to catch square-newton
+                UnitId key = entry.getKey();
+                if (source.contains(key)) {
+                    if (skipFirst) {
+                        skipFirst = false;
+                        continue main;
+                    }
+                    source = source.divide(key).resolve(); // could optimize
+                    newNum.add(entry.getValue());
+                    if (source.size() == 0) {
+                        break main;
+                    }
+                } else if (sourceReciprocal.contains(key)) {
+                    if (skipFirst) {
+                        skipFirst = false;
+                        continue main;
+                    }
+                    source = source.times(key).resolve(); // could optimize
+                    newDen.add(entry.getValue());
+                    if (source.size() == 0) {
+                        break main;
+                    }
+                }
+            //}
+        }
+        if (newNum.size() != 0) {
+            source = source.times(createUnitId(JOIN_HYPHEN.join(newNum)));
+        }
+        if (newDen.size() != 0) {
+            source = source.divide(createUnitId(JOIN_HYPHEN.join(newDen)));
+        }
+        final String result = source.toString();
+        return result;
     }
 }
