@@ -33,6 +33,8 @@ import com.ibm.icu.text.PluralRules;
 import com.ibm.icu.text.UnicodeSet;
 import com.ibm.icu.util.ICUUncheckedIOException;
 import com.ibm.icu.util.Measure;
+import com.ibm.icu.util.MeasureR;
+import com.ibm.icu.util.MeasureR.MixedMeasure;
 import com.ibm.icu.util.MeasureUnit;
 import com.ibm.icu.util.Output;
 import com.ibm.icu.util.ULocale;
@@ -750,7 +752,7 @@ public class TestUnits extends TestFmwk {
         assertEquals("", Rational.NEGATIVE_ONE, Rational.ONE.negate());
 
         assertEquals("", BigDecimal.valueOf(2), Rational.of(2, 1).toBigDecimal());
-        assertEquals("", BigDecimal.valueOf(0.5), Rational.of(1, 2).toBigDecimal());
+        assertEquals("", BigDecimal.valueOf(0.5), Rational.HALF.toBigDecimal());
 
         assertEquals("", BigDecimal.valueOf(100), Rational.of(100, 1).toBigDecimal());
         assertEquals("", BigDecimal.valueOf(0.01), Rational.of(1, 100).toBigDecimal());
@@ -4491,5 +4493,69 @@ public class TestUnits extends TestFmwk {
             {"light-speed-week", "meter-second-per-second", "299792458*604800"},
         };
         checkConversionToBase(tests);
+    }
+
+    public void testMixedConversions() {
+        System.out.println();
+        final String testUnit = "yard-and-foot-and-inch";
+        final List<Rational> units = Arrays.asList(Rational.ONE, Rational.TWO, Rational.of(3));
+        final String targetCore = "meter";
+
+        MixedMeasure source = MixedMeasure.from(testUnit, units);
+        Rational intermediate = converter.convertMixedToCore(source, targetCore);
+        System.out.println(source + " => " + targetCore + ": " + intermediate.doubleValue());
+        MeasureR measurePivot = MeasureR.from(intermediate, targetCore);
+        MixedMeasure roundTrip = converter.convertCoreToMixed(measurePivot, testUnit);
+        assertEquals(measurePivot.toString(), source, roundTrip);
+    }
+
+    public void testMixedFormat() {
+        String[][] tests = {
+            {"degree", "radian", "degree-and-arc-minute-and-arc-second"},
+            {"degree", "radian", "degree-and-arc-minute"},
+            {"meter", "centimeter", "foot-and-inch"},
+            {"kilogram", "stone", "stone-and-pound-and-ounce"},
+            {"kilogram", "pound", "pound-and-ounce"},
+        };
+        for (String[] test : tests) {
+            String unit1 = test[0];
+            String unit2 = test[1];
+            String unit3 = test[2];
+
+            double[] samples = {0.1, 1.7952, 1.8288, 1.88976, 77.12345};
+            for (double sample : samples) {
+                MeasureR measure1 = MeasureR.from(sample, unit1);
+                MeasureR measure2 = converter.convert(measure1, unit2);
+                MixedMeasure measure3 = converter.convertCoreToMixed(measure1, unit3);
+                showForms(measure1, measure2, measure3);
+            }
+        }
+    }
+
+    Measure convertToIcu(MeasureR measure2) {
+        return new Measure(measure2.amount.doubleValue(), MeasureUnit.forIdentifier(measure2.unit));
+    }
+
+    public void showForms(MeasureR measure1, MeasureR measure2, MixedMeasure measure3) {
+        System.out.println();
+        System.out.println("Sig Digits\t" + measure1 + "\t" + measure2 + "\t" + measure3);
+        System.out.println();
+        for (int sig = 1; sig < 8; ++sig) {
+            LocalizedNumberFormatter unf =
+                    NumberFormatter.with()
+                            .precision(Precision.minMaxSignificantDigits(sig, sig))
+                            .unitWidth(UnitWidth.NARROW)
+                            .locale(Locale.ENGLISH);
+            String first = unf.format(convertToIcu(measure1)).toString();
+            String second = unf.format(convertToIcu(measure2)).toString();
+            String third = converter.formatMixed(measure3, sig, unf);
+            if (third.matches(".*\\d{10}.*")) {
+                warnln("Too many digits in " + third);
+            }
+            if (third.matches(".*\\..* .*")) {
+                warnln("Space after dot (so probably fraction not in final unit) in " + third);
+            }
+            System.out.println(sig + "\t" + first + "\t" + second + "\t" + third);
+        }
     }
 }

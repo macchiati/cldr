@@ -17,9 +17,16 @@ import com.ibm.icu.impl.Row;
 import com.ibm.icu.impl.Row.R2;
 import com.ibm.icu.impl.Row.R4;
 import com.ibm.icu.lang.UCharacter;
+import com.ibm.icu.number.FormattedNumber;
+import com.ibm.icu.number.LocalizedNumberFormatter;
+import com.ibm.icu.number.Precision;
 import com.ibm.icu.number.UnlocalizedNumberFormatter;
 import com.ibm.icu.text.PluralRules;
 import com.ibm.icu.util.Freezable;
+import com.ibm.icu.util.Measure;
+import com.ibm.icu.util.MeasureR;
+import com.ibm.icu.util.MeasureR.MixedMeasure;
+import com.ibm.icu.util.MeasureUnit;
 import com.ibm.icu.util.Output;
 import com.ibm.icu.util.ULocale;
 import java.math.BigDecimal;
@@ -2439,6 +2446,47 @@ public class UnitConverter implements Freezable<UnitConverter> {
         return getStandardUnit(resolved.isBlank() ? unit : resolved);
     }
 
+    /** Convert mixed measure to core unit */
+    public Rational convertMixedToCore(MixedMeasure source, String targetCore) {
+        Rational result = null;
+        for (MeasureR unit : source.measures) {
+            Rational current = convert(unit.amount, unit.unit, targetCore, DEBUG);
+            result = result == null ? current : result.add(current);
+        }
+        return result;
+    }
+
+    /** Convert core measure to mixed unit. 15.5 feet-and-inch gets you 15 feet 6 inches */
+    public MixedMeasure convertCoreToMixed(MeasureR measure, String targetUnitString) {
+        List<String> units = MeasureR.AND_SPLITTER.splitToList(targetUnitString);
+        List<MeasureR> result = new ArrayList<>();
+        String higherUnit = measure.unit;
+        int lastIndex = units.size() - 1;
+        Rational amount = measure.amount;
+        for (int i = 0; i < units.size(); ++i) {
+            String unit = units.get(i);
+            amount = convert(amount, higherUnit, unit, DEBUG);
+            if (i == lastIndex) { // full amount, not just integer
+                result.add(MeasureR.from(amount, unit));
+            } else {
+                // for all but the last amount, we get the integer value,
+                // leaving the remainder for the next unit
+                Rational integerPart = Rational.of(amount.floor());
+                result.add(MeasureR.from(integerPart, unit));
+                amount = amount.subtract(integerPart);
+                higherUnit = unit;
+            }
+        }
+        return MixedMeasure.from(result);
+    }
+
+    /** Convert core measure * */
+    public MeasureR convert(MeasureR source, String targetUnit) {
+        Rational amount = convert(source.amount, source.unit, targetUnit, DEBUG);
+        return MeasureR.from(amount, targetUnit);
+    }
+
+    /** Formats with ICU; Warning: does not use CLDR data yet */
     public String format(
             final String languageTag,
             Rational outputAmount,
@@ -2463,5 +2511,70 @@ public class UnitConverter implements Freezable<UnitConverter> {
         String cldrFormattedNumber =
                 nf3.locale(uLocale).format(outputAmount.doubleValue()).toString();
         return com.ibm.icu.text.MessageFormat.format(pattern, cldrFormattedNumber);
+    }
+
+    /** Formats with ICU; Warning: does not use CLDR data yet */
+    public String formatMixed(
+            MixedMeasure mixedMeasure,
+            int significantDigits,
+            LocalizedNumberFormatter localizedNF) {
+        StringBuilder sb = new StringBuilder();
+        // doesn't handle rounding between units yet
+        List<MeasureR> measures = mixedMeasure.measures;
+        int last = measures.size() - 1;
+        for (int i = 0; i <= last; ++i) {
+            MeasureR measure = mixedMeasure.measures.get(i);
+            String unit = measure.unit;
+            Rational amount = measure.amount;
+            if (amount == Rational.ZERO) {
+                continue;
+            }
+            // get the number of digits to the left of the decimal point
+            // HACK!
+            int integerDigits = amount.floor().toString().length();
+            if (i == last || integerDigits >= significantDigits) {
+                // single unit left, terminate
+                if (!(integerDigits >= significantDigits)) {
+                    // Ran out of digits before hitting last.
+                    // Adjust by recombining the following measures to see if they are up to 0.5
+                    Rational trailing = null;
+                    for (int j = i + 1; j <= last; ++j) {
+                        MeasureR measureExtra = mixedMeasure.measures.get(j);
+                        Rational amountExtra =
+                                convert(measureExtra.amount, measureExtra.unit, unit, DEBUG);
+                        trailing = trailing == null ? amountExtra : trailing.add(amountExtra);
+                    }
+                    if (trailing != null && trailing.compareTo(Rational.HALF) >= 0) {
+                        amount = amount.add(trailing);
+                    }
+                }
+
+                if (sb.length() != 0) {
+                    sb.append(' ');
+                }
+                localizedNF =
+                        localizedNF.precision(Precision.fixedSignificantDigits(significantDigits));
+                sb.append(
+                        localizedNF.format(
+                                new Measure(
+                                        amount.toBigDecimal(), MeasureUnit.forIdentifier(unit))));
+                break;
+            }
+
+            final int used = Math.min(integerDigits, significantDigits);
+            if (used != 0 && !amount.equals(Rational.ZERO)) {
+                localizedNF = localizedNF.precision(Precision.fixedSignificantDigits(used));
+                FormattedNumber part =
+                        localizedNF.format(
+                                new Measure(
+                                        amount.toBigDecimal(), MeasureUnit.forIdentifier(unit)));
+                if (sb.length() != 0) {
+                    sb.append(' ');
+                }
+                sb.append(part);
+            }
+            significantDigits -= used;
+        }
+        return sb.toString();
     }
 }

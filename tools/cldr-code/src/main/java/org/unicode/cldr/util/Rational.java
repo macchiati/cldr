@@ -66,6 +66,7 @@ public final class Rational extends Number implements Comparable<Rational> {
     public static final Rational TWO = new Rational(BI_TWO, BigInteger.ONE);
     public static final Rational TEN = new Rational(BI_TEN, BigInteger.ONE);
     public static final Rational TENTH = TEN.reciprocal();
+    public static final Rational HALF = Rational.ONE.divide(Rational.TWO);
 
     public static final char REPTEND_MARKER = '˙';
     public static final String APPROX = "~";
@@ -218,6 +219,20 @@ public final class Rational extends Number implements Comparable<Rational> {
 
     public static Rational of(long numerator) {
         return Rational.of(BigInteger.valueOf(numerator), BigInteger.ONE);
+    }
+
+    public static Rational of(Number number) {
+        return number instanceof BigDecimal
+                ? Rational.of((BigDecimal) number)
+                : number instanceof BigInteger
+                        ? Rational.of((BigInteger) number)
+                        : number instanceof Rational
+                                ? (Rational) number
+                                : number instanceof Long
+                                        ? Rational.of(number)
+                                        : number instanceof Double || number instanceof Float
+                                                ? Rational.of(number.doubleValue())
+                                                : Rational.of(number.longValue());
     }
 
     public static Rational of(BigInteger numerator, BigInteger denominator) {
