@@ -788,4 +788,13 @@ public final class Rational extends Number implements Comparable<Rational> {
     public long longValue() {
         return toBigDecimal().longValue();
     }
+
+    /**
+     * Return the integer digits for an improper fraction so 11/3 → 2; proper fractions return 0, so
+     * 3/11 → 0
+     */
+    public int integerDigits() {
+        // Hack; optimize later
+        return numerator.compareTo(denominator) < 0 ? 0 : floor().toString().length();
+    }
 }

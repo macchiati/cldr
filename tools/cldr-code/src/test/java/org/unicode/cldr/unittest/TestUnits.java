@@ -111,6 +111,8 @@ import org.unicode.cldr.util.SupplementalDataInfo.UnitIdComponentType;
 import org.unicode.cldr.util.TempPrintWriter;
 import org.unicode.cldr.util.UnitConverter;
 import org.unicode.cldr.util.UnitConverter.ConversionInfo;
+import org.unicode.cldr.util.UnitConverter.PrecisionR;
+import org.unicode.cldr.util.UnitConverter.PrecisionType;
 import org.unicode.cldr.util.UnitConverter.TargetInfo;
 import org.unicode.cldr.util.UnitConverter.UnitComplexity;
 import org.unicode.cldr.util.UnitConverter.UnitId;
@@ -134,6 +136,8 @@ public class TestUnits extends TestFmwk {
 
     /** Flags to emit debugging information */
     private static final boolean SHOW_UNIT_ORDER = getFlag("TestUnits:SHOW_UNIT_ORDER");
+
+    private static final boolean SHOW_MIXED = getFlag("TestUnits:SHOW_MIXED");
 
     private static final boolean SHOW_UNIT_CATEGORY = getFlag("TestUnits:SHOW_UNIT_CATEGORY");
     private static final boolean SHOW_COMPOSE = getFlag("TestUnits:SHOW_COMPOSE");
@@ -4495,20 +4499,42 @@ public class TestUnits extends TestFmwk {
         checkConversionToBase(tests);
     }
 
+    /** Check for a range of values from 0/1 to 99/99, that changing to mixed and back works */
     public void testMixedConversions() {
         System.out.println();
-        final String testUnit = "yard-and-foot-and-inch";
-        final List<Rational> units = Arrays.asList(Rational.ONE, Rational.TWO, Rational.of(3));
-        final String targetCore = "meter";
-
-        MixedMeasure source = MixedMeasure.from(testUnit, units);
-        Rational intermediate = converter.convertMixedToCore(source, targetCore);
-        System.out.println(source + " => " + targetCore + ": " + intermediate.doubleValue());
-        MeasureR measurePivot = MeasureR.from(intermediate, targetCore);
-        MixedMeasure roundTrip = converter.convertCoreToMixed(measurePivot, testUnit);
-        assertEquals(measurePivot.toString(), source, roundTrip);
+        String[][] tests = {
+            {"kilogram", "stone-and-pound-and-ounce"},
+            {"kilogram", "pound-and-ounce"},
+        };
+        int count = 0;
+        HashSet<Rational> seen = new HashSet<>();
+        for (String[] test : tests) {
+            for (int num = 0; num < 100; ++num) {
+                for (int den = 1; den < 100; ++den) {
+                    final Rational rational = Rational.of(num, den);
+                    if (seen.contains(rational)) {
+                        continue; // skip duplicates
+                    }
+                    seen.add(rational);
+                    checkRoundtrip(++count, rational, test[0], test[1]);
+                }
+            }
+        }
     }
 
+    public void checkRoundtrip(
+            int iteration, Rational amount, final String coreUnit, final String mixedUnit) {
+        MeasureR measure = MeasureR.from(amount, coreUnit);
+        MixedMeasure mixedMeasure = converter.convertCoreToMixed(measure, mixedUnit);
+
+        MeasureR intermediate = converter.convertMixedToCore(mixedMeasure);
+        Rational roundtrip = converter.convert(intermediate, coreUnit).amount;
+        MeasureR roundtripMeasure = MeasureR.from(roundtrip, coreUnit);
+
+        assertEquals(iteration + ") " + mixedMeasure, measure, roundtripMeasure);
+    }
+
+    /** Check some specific cases to make sure they format reasonably */
     public void testMixedFormat() {
         String[][] tests = {
             {"degree", "radian", "degree-and-arc-minute-and-arc-second"},
@@ -4522,7 +4548,7 @@ public class TestUnits extends TestFmwk {
             String unit2 = test[1];
             String unit3 = test[2];
 
-            double[] samples = {0.1, 1.7952, 1.8288, 1.88976, 77.12345};
+            double[] samples = {0.123123123, 1.795234, 1.8288123, 1.88976123, 77.12345123};
             for (double sample : samples) {
                 MeasureR measure1 = MeasureR.from(sample, unit1);
                 MeasureR measure2 = converter.convert(measure1, unit2);
@@ -4537,9 +4563,11 @@ public class TestUnits extends TestFmwk {
     }
 
     public void showForms(MeasureR measure1, MeasureR measure2, MixedMeasure measure3) {
-        System.out.println();
-        System.out.println("Sig Digits\t" + measure1 + "\t" + measure2 + "\t" + measure3);
-        System.out.println();
+        if (SHOW_MIXED) {
+            System.out.println();
+            System.out.println("Fixed Sig Digits\t" + measure1 + "\t" + measure2 + "\t" + measure3);
+            System.out.println();
+        }
         for (int sig = 1; sig < 8; ++sig) {
             LocalizedNumberFormatter unf =
                     NumberFormatter.with()
@@ -4548,14 +4576,18 @@ public class TestUnits extends TestFmwk {
                             .locale(Locale.ENGLISH);
             String first = unf.format(convertToIcu(measure1)).toString();
             String second = unf.format(convertToIcu(measure2)).toString();
-            String third = converter.formatMixed(measure3, sig, unf);
+            final PrecisionR precisionMixed =
+                    PrecisionR.minMax(PrecisionType.significant, sig, sig);
+            String third = converter.formatMixed(measure3, precisionMixed, unf);
             if (third.matches(".*\\d{10}.*")) {
-                warnln("Too many digits in " + third);
+                errln("Too many digits in " + third);
             }
             if (third.matches(".*\\..* .*")) {
-                warnln("Space after dot (so probably fraction not in final unit) in " + third);
+                errln("Space after dot (so probably fraction not in final unit) in " + third);
             }
-            System.out.println(sig + "\t" + first + "\t" + second + "\t" + third);
+            if (SHOW_MIXED) {
+                System.out.println(sig + "\t" + first + "\t" + second + "\t" + third);
+            }
         }
     }
 }

@@ -2446,17 +2446,23 @@ public class UnitConverter implements Freezable<UnitConverter> {
         return getStandardUnit(resolved.isBlank() ? unit : resolved);
     }
 
-    /** Convert mixed measure to core unit */
-    public Rational convertMixedToCore(MixedMeasure source, String targetCore) {
-        Rational result = null;
+    /** Convert mixed measure to core unit: 15 feet 6 inches → 15.5 feet */
+    public MeasureR convertMixedToCore(MixedMeasure source) {
+        Rational amount = null;
+        String targetUnit = null;
         for (MeasureR unit : source.measures) {
-            Rational current = convert(unit.amount, unit.unit, targetCore, DEBUG);
-            result = result == null ? current : result.add(current);
+            if (amount == null) {
+                amount = unit.amount;
+                targetUnit = unit.unit;
+            } else {
+                Rational current = convert(unit.amount, unit.unit, targetUnit, DEBUG);
+                amount = amount.add(current);
+            }
         }
-        return result;
+        return MeasureR.from(amount, targetUnit);
     }
 
-    /** Convert core measure to mixed unit. 15.5 feet-and-inch gets you 15 feet 6 inches */
+    /** Convert core measure to mixed unit: 15.5 feet → 15 feet 6 inches */
     public MixedMeasure convertCoreToMixed(MeasureR measure, String targetUnitString) {
         List<String> units = MeasureR.AND_SPLITTER.splitToList(targetUnitString);
         List<MeasureR> result = new ArrayList<>();
@@ -2513,15 +2519,46 @@ public class UnitConverter implements Freezable<UnitConverter> {
         return com.ibm.icu.text.MessageFormat.format(pattern, cldrFormattedNumber);
     }
 
-    /** Formats with ICU; Warning: does not use CLDR data yet */
+    public enum PrecisionType {
+        significant,
+        fraction
+    }
+
+    public static class PrecisionR {
+        public final PrecisionType precisionType;
+        public int minimum;
+        public int maximum;
+
+        private PrecisionR(PrecisionType precisionType, int minimum, int maximum) {
+            this.precisionType = precisionType;
+            this.minimum = minimum;
+            this.maximum = maximum;
+        }
+
+        public static PrecisionR minMax(PrecisionType precisionType, int minimum, int maximum) {
+            return new PrecisionR(precisionType, minimum, maximum);
+        }
+
+        @Override
+        public String toString() {
+            return precisionType
+                    + (minimum == maximum
+                            ? String.valueOf(minimum)
+                            : " min=" + minimum + " max=" + maximum);
+        }
+    }
+
+    /** Formats with ICU; Warning: does not use CLDR data for localized terms yet */
     public String formatMixed(
-            MixedMeasure mixedMeasure,
-            int significantDigits,
-            LocalizedNumberFormatter localizedNF) {
+            MixedMeasure mixedMeasure, PrecisionR precision, LocalizedNumberFormatter localizedNF) {
         StringBuilder sb = new StringBuilder();
         // doesn't handle rounding between units yet
         List<MeasureR> measures = mixedMeasure.measures;
         int last = measures.size() - 1;
+        PrecisionType pType = precision.precisionType;
+        int minimum = precision.minimum;
+        int maximum = precision.maximum;
+
         for (int i = 0; i <= last; ++i) {
             MeasureR measure = mixedMeasure.measures.get(i);
             String unit = measure.unit;
@@ -2529,12 +2566,13 @@ public class UnitConverter implements Freezable<UnitConverter> {
             if (amount == Rational.ZERO) {
                 continue;
             }
-            // get the number of digits to the left of the decimal point
-            // HACK!
-            int integerDigits = amount.floor().toString().length();
-            if (i == last || integerDigits >= significantDigits) {
-                // single unit left, terminate
-                if (!(integerDigits >= significantDigits)) {
+            // get the number of digits in the integer part of a rational.
+            // Will be zero if num < den.
+            int integerDigits = amount.integerDigits();
+
+            if (i == last || integerDigits >= maximum) {
+                // handle the final measure
+                if (!(integerDigits <= maximum)) {
                     // Ran out of digits before hitting last.
                     // Adjust by recombining the following measures to see if they are up to 0.5
                     Rational trailing = null;
@@ -2546,14 +2584,18 @@ public class UnitConverter implements Freezable<UnitConverter> {
                     }
                     if (trailing != null && trailing.compareTo(Rational.HALF) >= 0) {
                         amount = amount.add(trailing);
+                        integerDigits = amount.integerDigits();
                     }
                 }
 
                 if (sb.length() != 0) {
                     sb.append(' ');
                 }
-                localizedNF =
-                        localizedNF.precision(Precision.fixedSignificantDigits(significantDigits));
+                Precision icuPrecision =
+                        integerDigits > 0
+                                ? Precision.minMaxSignificantDigits(minimum, maximum)
+                                : Precision.minMaxFraction(minimum, maximum);
+                localizedNF = localizedNF.precision(icuPrecision);
                 sb.append(
                         localizedNF.format(
                                 new Measure(
@@ -2561,9 +2603,12 @@ public class UnitConverter implements Freezable<UnitConverter> {
                 break;
             }
 
-            final int used = Math.min(integerDigits, significantDigits);
-            if (used != 0 && !amount.equals(Rational.ZERO)) {
-                localizedNF = localizedNF.precision(Precision.fixedSignificantDigits(used));
+            // Handle non-final measure
+            final int usedMin = Math.min(integerDigits, minimum);
+            final int usedMax = Math.min(integerDigits, maximum);
+            if (usedMin != 0 && !amount.equals(Rational.ZERO)) {
+                localizedNF =
+                        localizedNF.precision(Precision.minMaxSignificantDigits(usedMin, usedMax));
                 FormattedNumber part =
                         localizedNF.format(
                                 new Measure(
@@ -2573,7 +2618,11 @@ public class UnitConverter implements Freezable<UnitConverter> {
                 }
                 sb.append(part);
             }
-            significantDigits -= used;
+            // for the first measure, if significant, drop the integer digits
+            if (i == 0 && precision.precisionType == PrecisionType.significant) {
+                minimum -= integerDigits;
+                maximum -= integerDigits;
+            }
         }
         return sb.toString();
     }
