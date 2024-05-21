@@ -2,6 +2,7 @@ package org.unicode.cldr.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
@@ -2467,8 +2468,8 @@ public class UnitConverter implements Freezable<UnitConverter> {
         List<String> units = MeasureR.AND_SPLITTER.splitToList(targetUnitString);
         List<MeasureR> result = new ArrayList<>();
         String higherUnit = measure.unit;
-        int lastIndex = units.size() - 1;
         Rational amount = measure.amount;
+        int lastIndex = units.size() - 1;
         for (int i = 0; i < units.size(); ++i) {
             String unit = units.get(i);
             amount = convert(amount, higherUnit, unit, DEBUG);
@@ -2548,14 +2549,16 @@ public class UnitConverter implements Freezable<UnitConverter> {
         }
     }
 
-    /** Formats with ICU; Warning: does not use CLDR data for localized terms yet */
+    /**
+     * Formats a mixed measure. The PrecisionR contains precision information (ICU's version isn't
+     * readable). Warning: does not use CLDR data for localized terms yet.
+     */
     public String formatMixed(
             MixedMeasure mixedMeasure, PrecisionR precision, LocalizedNumberFormatter localizedNF) {
         StringBuilder sb = new StringBuilder();
         // doesn't handle rounding between units yet
         List<MeasureR> measures = mixedMeasure.measures;
         int last = measures.size() - 1;
-        PrecisionType pType = precision.precisionType;
         int minimum = precision.minimum;
         int maximum = precision.maximum;
 
@@ -2572,7 +2575,7 @@ public class UnitConverter implements Freezable<UnitConverter> {
 
             if (i == last || integerDigits >= maximum) {
                 // handle the final measure
-                if (!(integerDigits <= maximum)) {
+                if (i != last) {
                     // Ran out of digits before hitting last.
                     // Adjust by recombining the following measures to see if they are up to 0.5
                     Rational trailing = null;
@@ -2618,11 +2621,50 @@ public class UnitConverter implements Freezable<UnitConverter> {
                 }
                 sb.append(part);
             }
-            // for the first measure, if significant, drop the integer digits
-            if (i == 0 && precision.precisionType == PrecisionType.significant) {
+            // drop the integer digits
+            // but for the first measure, only if significant
+            if (!(i == 0 && precision.precisionType == PrecisionType.fraction)) {
                 minimum -= integerDigits;
                 maximum -= integerDigits;
             }
+        }
+        return sb.toString();
+    }
+
+    public String formatToPrecision(Rational source, Rational precision) {
+        Rational high = source.multiply(Rational.ONE.add(precision));
+        Rational low = source.multiply(Rational.ONE.subtract(precision));
+
+        // Quick hack. Examples use precision = 0.05
+
+        String highString = high.toBigDecimal().toPlainString(); // eg 59.173
+        String lowString = low.toBigDecimal().toPlainString(); // eg 59.073
+
+        boolean haveDecimal = false;
+        StringBuilder sb = new StringBuilder();
+        for (int pos = 0; ; ++pos) {
+            char highTop = highString.charAt(pos);
+            char lowTop = lowString.charAt(pos);
+            // find the first point where they are different
+            if (highTop != lowTop) {
+                // we are guaranteed that the actual value is between these.
+                String sourceString = source.toBigDecimal().toPlainString();
+                // pick the midpoint (rounding down)
+                char sourceChar = sourceString.charAt(pos);
+                sb.append(sourceChar);
+                break;
+            } else if (lowTop == '.') {
+                haveDecimal = true;
+            }
+            sb.append(lowTop);
+        }
+        // Now adjust for the decimal
+        if (!haveDecimal) {
+            int decPos = lowString.indexOf('.');
+            if (decPos < 0) {
+                decPos = lowString.length();
+            }
+            sb.append(Strings.repeat("0", decPos - sb.length()));
         }
         return sb.toString();
     }

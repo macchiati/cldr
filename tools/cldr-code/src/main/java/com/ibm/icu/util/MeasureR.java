@@ -23,7 +23,12 @@ public class MeasureR {
 
     @Override
     public String toString() {
-        return amount.toBigDecimal(MathContext.DECIMAL64) + " " + unit;
+        // hack to avoid trailing zero fractions.
+        String bigDecimal = amount.toBigDecimal(MathContext.DECIMAL64) + "";
+        if (bigDecimal.contains(".")) {
+            bigDecimal = bigDecimal.replaceFirst("0+$", "");
+        }
+        return bigDecimal + " " + unit;
     }
 
     @Override
@@ -52,9 +57,9 @@ public class MeasureR {
             return from(mixedUnitString, Arrays.asList(values));
         }
 
-        public static final MixedMeasure from(String mixedUnitString, List<Rational> values) {
+        public static final MixedMeasure from(String mixedUnitString, List<Number> values) {
             List<MeasureR> _measures = new ArrayList<>();
-            Iterator<Rational> it = values.iterator();
+            Iterator<Number> it = values.iterator();
             for (String core_unit : mixedUnitString.split("-and-")) {
                 _measures.add(MeasureR.from(it.next(), core_unit));
             }

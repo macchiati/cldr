@@ -29,6 +29,7 @@ import com.ibm.icu.number.NumberFormatter;
 import com.ibm.icu.number.NumberFormatter.UnitWidth;
 import com.ibm.icu.number.Precision;
 import com.ibm.icu.number.UnlocalizedNumberFormatter;
+import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.PluralRules;
 import com.ibm.icu.text.UnicodeSet;
 import com.ibm.icu.util.ICUUncheckedIOException;
@@ -4548,7 +4549,9 @@ public class TestUnits extends TestFmwk {
             String unit2 = test[1];
             String unit3 = test[2];
 
-            double[] samples = {0.123123123, 1.795234, 1.8288123, 1.88976123, 77.12345123};
+            double[] samples = {
+                0.000012345678, 1.795234, 177.12345123
+            }; // 0.123123123, 1.8288123, 1.88976123,
             for (double sample : samples) {
                 MeasureR measure1 = MeasureR.from(sample, unit1);
                 MeasureR measure2 = converter.convert(measure1, unit2);
@@ -4556,6 +4559,16 @@ public class TestUnits extends TestFmwk {
                 showForms(measure1, measure2, measure3);
             }
         }
+        MixedMeasure extreme =
+                MixedMeasure.from(
+                        MeasureR.from(3, "week"),
+                        MeasureR.from(4, "day"),
+                        MeasureR.from(13, "hour"),
+                        MeasureR.from(31, "minute"),
+                        MeasureR.from(31.2345, "second"));
+        MeasureR top = converter.convertMixedToCore(extreme);
+        MeasureR bottom = converter.convert(top, "second");
+        showForms(top, bottom, extreme);
     }
 
     Measure convertToIcu(MeasureR measure2) {
@@ -4563,31 +4576,116 @@ public class TestUnits extends TestFmwk {
     }
 
     public void showForms(MeasureR measure1, MeasureR measure2, MixedMeasure measure3) {
-        if (SHOW_MIXED) {
-            System.out.println();
-            System.out.println("Fixed Sig Digits\t" + measure1 + "\t" + measure2 + "\t" + measure3);
-            System.out.println();
-        }
-        for (int sig = 1; sig < 8; ++sig) {
-            LocalizedNumberFormatter unf =
-                    NumberFormatter.with()
-                            .precision(Precision.minMaxSignificantDigits(sig, sig))
-                            .unitWidth(UnitWidth.NARROW)
-                            .locale(Locale.ENGLISH);
-            String first = unf.format(convertToIcu(measure1)).toString();
-            String second = unf.format(convertToIcu(measure2)).toString();
-            final PrecisionR precisionMixed =
-                    PrecisionR.minMax(PrecisionType.significant, sig, sig);
-            String third = converter.formatMixed(measure3, precisionMixed, unf);
-            if (third.matches(".*\\d{10}.*")) {
-                errln("Too many digits in " + third);
-            }
-            if (third.matches(".*\\..* .*")) {
-                errln("Space after dot (so probably fraction not in final unit) in " + third);
-            }
+        for (PrecisionType precision : Arrays.asList(PrecisionType.significant)) {
             if (SHOW_MIXED) {
-                System.out.println(sig + "\t" + first + "\t" + second + "\t" + third);
+                System.out.println();
+                System.out.println(
+                        "Fixed " + precision + "\t" + measure1 + "\t" + measure2 + "\t" + measure3);
+                System.out.println();
             }
+            for (int min = 1; min < 8; ++min) {
+                int max = min; // for now
+                final PrecisionR precisionMixed = PrecisionR.minMax(precision, min, max);
+                final Precision precisionIcu =
+                        precision == PrecisionType.significant
+                                ? Precision.minMaxSignificantDigits(min, max)
+                                : Precision.minMaxSignificantDigits(min, max);
+
+                LocalizedNumberFormatter unf =
+                        NumberFormatter.with()
+                                .precision(precisionIcu)
+                                .unitWidth(UnitWidth.NARROW)
+                                .locale(Locale.ENGLISH);
+                String first = unf.format(convertToIcu(measure1)).toString();
+                checkDigits(null, first, min);
+                String second = unf.format(convertToIcu(measure2)).toString();
+                checkDigits(null, second, min);
+                String third = converter.formatMixed(measure3, precisionMixed, unf);
+                checkDigits(null, third, min);
+                if (third.matches(".*\\d{10}.*")) {
+                    errln("Too many digits in " + third);
+                }
+                if (third.matches(".*\\..* .*")) {
+                    errln("Space after dot (so probably fraction not in final unit) in " + third);
+                }
+                if (SHOW_MIXED) {
+                    System.out.println(min + "\t" + first + "\t" + second + "\t" + third);
+                }
+            }
+        }
+    }
+
+    private void checkDigits(PrecisionType type, String first, int count) {
+        // WIP
+        //        StringBuilder sb = new StringBuilder();
+        //        int lastReal = 0;
+        //        for (int i = 0; i < first.length(); ++i) {
+        //            char ch = first.charAt(i);
+        //            if ('0' < ch && ch < '9') {
+        //                if (ch == '0') {
+        //                    if (sb.length() == 0) {
+        //                        continue;
+        //                    }
+        //                } else {
+        //                    lastReal = sb.length()+1;
+        //                }
+        //                sb.append(ch);
+        //            }
+        //        }
+        //        assertEquals("digits in " + first, sig, lastReal);
+    }
+
+    public void testPrecisionFormat() {
+        NumberFormat nf = NumberFormat.getPercentInstance(Locale.ENGLISH);
+        nf.setMaximumFractionDigits(10);
+        final LocalizedNumberFormatter baseFormatter =
+                NumberFormatter.with()
+                        .precision(Precision.fixedSignificantDigits(5))
+                        .unitWidth(UnitWidth.SHORT)
+                        .locale(Locale.ENGLISH);
+        LocalizedNumberFormatter footFormatter = baseFormatter.unit(MeasureUnit.FOOT);
+        LocalizedNumberFormatter meterFormatter = baseFormatter.unit(MeasureUnit.METER);
+        final MeasureR source = MeasureR.from(4321, "meter");
+        final MeasureR value = converter.convert(source, "foot");
+        Rational precision = Rational.of(500).divide(source.amount);
+        System.out.println(
+                "\nPrecision\t"
+                        + source
+                        + "\tWithin…\tBetween…\tAnd…\t"
+                        + value
+                        + "\tWithin…\tBetween…\tAnd…");
+        for (int i = 1; i < 9; ++i) {
+            String formattedMeters = converter.formatToPrecision(source.amount, precision);
+            String formattedFeet = converter.formatToPrecision(value.amount, precision);
+            final Rational upper = Rational.ONE.add(precision);
+            final Rational lower = Rational.ONE.subtract(precision);
+            if (i > 4) {
+                final Precision extended = Precision.fixedSignificantDigits(i + 1);
+                footFormatter = footFormatter.precision(extended);
+                meterFormatter = meterFormatter.precision(extended);
+            }
+            System.out.println(
+                    baseFormatter.format(precision.multiply(Rational.of(100)).doubleValue())
+                            + "%"
+                            + "\t"
+                            + formattedMeters
+                            + " meters"
+                            + "\t±"
+                            + meterFormatter.format(source.amount.multiply(precision).doubleValue())
+                            + "\t"
+                            + meterFormatter.format(source.amount.multiply(lower).doubleValue())
+                            + "\t"
+                            + meterFormatter.format(source.amount.multiply(upper).doubleValue())
+                            + "\t"
+                            + formattedFeet
+                            + " feet"
+                            + "\t±"
+                            + footFormatter.format(value.amount.multiply(precision).doubleValue())
+                            + "\t"
+                            + footFormatter.format(value.amount.multiply(lower).doubleValue())
+                            + "\t"
+                            + footFormatter.format(value.amount.multiply(upper).doubleValue()));
+            precision = precision.divide(Rational.TEN);
         }
     }
 }
