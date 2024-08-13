@@ -1,25 +1,30 @@
 package org.unicode.cldr.test;
 
-import com.ibm.icu.impl.Relation;
-import com.ibm.icu.text.DateFormatSymbols;
-import com.ibm.icu.text.SimpleDateFormat;
-import com.ibm.icu.util.ULocale;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
+
+import org.unicode.cldr.tool.LikelySubtags;
 import org.unicode.cldr.tool.ToolConfig;
 import org.unicode.cldr.util.CLDRConfig;
 import org.unicode.cldr.util.CLDRFile;
+import org.unicode.cldr.util.CLDRLocale;
 import org.unicode.cldr.util.CLDRPaths;
 import org.unicode.cldr.util.CldrUtility;
 import org.unicode.cldr.util.DateTimeFormats;
@@ -33,6 +38,10 @@ import org.unicode.cldr.util.PathUtilities;
 import org.unicode.cldr.util.PatternCache;
 import org.unicode.cldr.util.PrettyPath;
 import org.unicode.cldr.util.StandardCodes;
+import org.unicode.cldr.util.StandardCodes.LstrType;
+import org.unicode.cldr.util.SupplementalDataInfo;
+import org.unicode.cldr.util.Validity;
+import org.unicode.cldr.util.Validity.Status;
 import org.unicode.cldr.util.XMLFileReader;
 import org.unicode.cldr.util.XPathParts;
 import org.xml.sax.ErrorHandler;
@@ -41,9 +50,25 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.TreeMultimap;
+import com.ibm.icu.impl.Relation;
+import com.ibm.icu.impl.locale.XCldrStub.Splitter;
+import com.ibm.icu.number.LocalizedNumberFormatter;
+import com.ibm.icu.number.NumberFormatter;
+import com.ibm.icu.number.NumberFormatter.UnitWidth;
+import com.ibm.icu.number.Precision;
+import com.ibm.icu.text.DateFormatSymbols;
+import com.ibm.icu.text.SimpleDateFormat;
+import com.ibm.icu.text.UnicodeSet;
+import com.ibm.icu.util.Measure;
+import com.ibm.icu.util.MeasureUnit;
+import com.ibm.icu.util.ULocale;
+
+
 /**
- * Simple test that loads each file in the cldr directory, thus verifying that the DTD works, and
- * also checks that the PrettyPaths work.
+ * Misc chunks of code for checks or listings.
  *
  * @author markdavis
  */
@@ -65,6 +90,28 @@ public class QuickCheck {
     private static boolean verbose;
 
     public static void main(String[] args) throws IOException {
+        showCountryDefaultLanguage();
+        if (true) return;
+
+        checkWattHour();
+        if (true) return;
+
+        UnicodeSet allowed_characters_ = new UnicodeSet("[:Identifier_Type=Recommended:]").freeze();
+
+        UnicodeSet NFKC_disallowed = new UnicodeSet("[:nfkcqc=n:]").freeze();
+        UnicodeSet recommended = new UnicodeSet("[:Identifier_Type=Recommended:]").freeze();
+
+        assertTrue(
+                "recommended.containsNone(NFKC_disallowed)",
+                recommended.containsNone(NFKC_disallowed));
+        assertTrue(
+                "recommended.containsAll(allowedInNFC)",
+                allowed_characters_.containsNone(NFKC_disallowed));
+
+        UnicodeSet mappedByNFC = new UnicodeSet("[\\p{dt=Can}\\p{dt=None}]");
+
+        if (true) return;
+
         CLDRConfig testInfo = ToolConfig.getToolInstance();
         Factory factory = testInfo.getCldrFactory();
         checkStock(factory);
@@ -104,6 +151,93 @@ public class QuickCheck {
             System.out.println("Elapsed: " + deltaTime / 1000.0 + " seconds");
             System.out.println("Basic Test Passes");
         }
+    }
+
+    static final Joiner JOIN_TAB = Joiner.on('\t').useForNull("∅");
+    static final Joiner JOIN_SPACE = Joiner.on(' ').useForNull("∅");
+    static final Splitter SPLIT_COMMA = Splitter.on(',').trimResults();
+
+    public static double getPopulationMillions(String o1) {
+        return SupplementalDataInfo.getInstance().getPopulationDataForTerritory(o1).getPopulation()/1000000;
+    }
+
+
+    private static void showCountryDefaultLanguage() {
+        Set<String> regularRegions = Validity.getInstance().getStatusToCodes(LstrType.region).get(Status.regular);
+        CLDRConfig testInfo = ToolConfig.getToolInstance();
+        LikelySubtags ls = new LikelySubtags();
+
+        Multimap<String,String> languageToRegions = TreeMultimap.create();
+        System.out.println(JOIN_TAB.join(SPLIT_COMMA.split("region, regionName, popM, defaultLanguage, defaultLanguageName")));
+        LocalizedNumberFormatter nf = NumberFormatter.with().precision(Precision.fixedFraction(1)).locale(Locale.ENGLISH);
+
+        for (String region : regularRegions) {
+            String regionName = testInfo.getEnglish().getName(CLDRFile.TERRITORY_NAME, region);
+            CLDRLocale max = CLDRLocale.getInstance(ls.maximize("und_" + region));
+            String likelyLanguage = max.getLanguage();
+            String likelyLanguageName = testInfo.getEnglish().getName(CLDRFile.LANGUAGE_NAME, likelyLanguage);
+            double regionPopulation = getPopulationMillions(region);
+            if (regionPopulation < 0.1) {
+                continue;
+            }
+            String popM = nf.format(regionPopulation).toString();
+            System.out.println(JOIN_TAB.join(region, regionName, popM, likelyLanguage, likelyLanguageName));
+            languageToRegions.put(likelyLanguage, region);
+        }
+        // descending order
+        Comparator<String> byPopulation = new Comparator<>() {
+            @Override
+            public int compare(String o1, String o2) {
+                double regionPopulation1 = getPopulationMillions(o1);
+                double regionPopulation2 = getPopulationMillions(o2);
+                return Double.compare(regionPopulation2, regionPopulation1);
+            }
+
+        };
+
+        System.out.println();
+        Set<String> regions = new TreeSet<>(byPopulation);
+
+        System.out.println(JOIN_TAB.join(SPLIT_COMMA.split("defaultLanguage, defaultLanguageName, regionList")));
+        for (Entry<String, Collection<String>> entry : languageToRegions.asMap().entrySet()) {
+            String likelyLanguage = entry.getKey();
+            String likelyLanguageName = testInfo.getEnglish().getName(CLDRFile.LANGUAGE_NAME, likelyLanguage);
+            regions.clear();
+            regions.addAll(entry.getValue());
+            entry.getValue();
+            String regionList = regions.stream().map(x -> x + "•" + nf.format(getPopulationMillions(x))).collect(Collectors.joining(" "));
+            System.out.println(JOIN_TAB.join(likelyLanguage, likelyLanguageName, regionList));
+        }
+
+        regions.clear();
+        regions.addAll(regularRegions);
+        regions.removeAll(languageToRegions.values());
+
+        String regionList = regions.stream().map(x -> x + "•" + nf.format(getPopulationMillions(x))).collect(Collectors.joining(" "));
+
+        System.out.println("Skipping regions with low population: " + regionList);
+    }
+
+    static Joiner TAB_Joiner = Joiner.on('\t');
+
+    private static void checkWattHour() {
+        MeasureUnit watt_hour = MeasureUnit.forIdentifier("watt-hour");
+        for (ULocale locale :
+                List.of(ULocale.ENGLISH, ULocale.FRENCH, ULocale.GERMAN, new ULocale("cs"))) {
+            for (MeasureUnit mu : List.of(MeasureUnit.KILOWATT_HOUR, watt_hour)) {
+                Measure m = new Measure(12.345, mu);
+                for (UnitWidth width : List.of(UnitWidth.FULL_NAME, UnitWidth.NARROW)) {
+                    LocalizedNumberFormatter nf =
+                            NumberFormatter.with().unitWidth(width).locale(locale);
+                    System.out.println(TAB_Joiner.join(locale, width, m, nf.format(m)));
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    private static void assertTrue(String message, boolean b) {
+        System.out.println(message + ": " + b);
     }
 
     private static void checkDtds() throws IOException {
