@@ -19,23 +19,6 @@ import com.ibm.icu.util.VersionInfo;
 import com.vdurmont.semver4j.Semver;
 import com.vdurmont.semver4j.Semver.SemverType;
 import com.vdurmont.semver4j.SemverException;
-import java.text.ParseException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.regex.Pattern;
-import org.unicode.cldr.util.StandardCodes.LstrType;
-import org.unicode.cldr.util.Validity.Status;
 
 public abstract class MatchValue implements Predicate<String> {
     public static final String DEFAULT_SAMPLE = "❓";
@@ -160,6 +143,7 @@ public abstract class MatchValue implements Predicate<String> {
         private final Predicate<String> script;
         private final Predicate<String> region;
         private final Predicate<String> variant;
+        private Boolean canonicalize;
 
         public LocaleMatchValue() {
             this(null, null, null, null); // use default status
@@ -178,6 +162,11 @@ public abstract class MatchValue implements Predicate<String> {
             script = new ValidityMatchValue(LstrType.script, scriptStatus, false);
             region = new ValidityMatchValue(LstrType.region, regionStatus, false);
             variant = new ValidityMatchValue(LstrType.variant, variantStatus, false);
+            setCanonicalize(true);
+        }
+
+        protected void setCanonicalize(boolean value) {
+            canonicalize = value;
         }
 
         @Override
@@ -193,12 +182,21 @@ public abstract class MatchValue implements Predicate<String> {
             if (!item.contains("_")) {
                 return checkLang(item);
             }
+
             LanguageTagParser ltp;
             try {
                 ltp = new LanguageTagParser().set(item);
             } catch (Exception e) {
                 return false;
             }
+            if (canonicalize) {
+            LanguageTagCanonicalizer ltc = new LanguageTagCanonicalizer();
+            String result = ltc.transform(item);
+            if (!item.equals(result)) {
+                return false;
+            }
+            }
+
             return checkLang(ltp.getLanguage())
                     && (ltp.getScript().isEmpty() || script.is(ltp.getScript()))
                     && (ltp.getRegion().isEmpty() || region.is(ltp.getRegion()))
@@ -224,6 +222,10 @@ public abstract class MatchValue implements Predicate<String> {
     public static class XLocaleMatchValue extends LocaleMatchValue {
         static final Set<String> exceptions = Set.of("in", "iw", "ji", "jw", "mo", "tl");
 
+        XLocaleMatchValue() {
+            super();
+            setCanonicalize(false);
+        }
         @Override
         public boolean checkLang(String language) {
             return super.checkLang(language) // first check normal

@@ -1,9 +1,5 @@
 package org.unicode.cldr.test;
 
-import com.ibm.icu.impl.Relation;
-import com.ibm.icu.text.DateFormatSymbols;
-import com.ibm.icu.text.SimpleDateFormat;
-import com.ibm.icu.util.ULocale;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +13,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
+
 import org.unicode.cldr.tool.ToolConfig;
 import org.unicode.cldr.util.CLDRConfig;
 import org.unicode.cldr.util.CLDRFile;
@@ -33,6 +30,8 @@ import org.unicode.cldr.util.PathUtilities;
 import org.unicode.cldr.util.PatternCache;
 import org.unicode.cldr.util.PrettyPath;
 import org.unicode.cldr.util.StandardCodes;
+import org.unicode.cldr.util.StandardCodes.LstrType;
+import org.unicode.cldr.util.Validity;
 import org.unicode.cldr.util.XMLFileReader;
 import org.unicode.cldr.util.XPathParts;
 import org.xml.sax.ErrorHandler;
@@ -40,6 +39,16 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
+import com.ibm.icu.impl.Relation;
+import com.ibm.icu.text.DateFormatSymbols;
+import com.ibm.icu.text.SimpleDateFormat;
+import com.ibm.icu.text.UnicodeSet;
+import com.ibm.icu.util.ULocale;
 
 /**
  * Simple test that loads each file in the cldr directory, thus verifying that the DTD works, and
@@ -65,6 +74,25 @@ public class QuickCheck {
     private static boolean verbose;
 
     public static void main(String[] args) throws IOException {
+        Set<String> emptyScript = new TreeSet<>();
+        for (String script : scriptCodes) {
+            UnicodeSet temp;
+            try {
+                temp = new UnicodeSet().applyPropertyAlias("script", script);
+            } catch (Exception e) {
+                temp = UnicodeSet.EMPTY;
+            }
+            if (temp.isEmpty()) {
+                emptyScript.add(script);
+            }
+        }
+        System.out.println(Joiner.on(' ').join(emptyScript));
+
+        ImmutableSortedSet<String> specials = ImmutableSortedSet.copyOf(Splitter.on(' ').split("Hanb Hrkt Kore Jpan Hans Hant Jamo Aran Cyrs Latf Latg Syre Syrj Syrn Zsye Zsym Qaag Zinh Zmth Zxxx Zyyy Zzzz"));
+        for (String special : specials) {
+            System.out.println(special + "\t" + Validity.getInstance().getCodeToStatus(LstrType.script).get(special));
+        }
+        if (true) return;
         CLDRConfig testInfo = ToolConfig.getToolInstance();
         Factory factory = testInfo.getCldrFactory();
         checkStock(factory);
@@ -462,4 +490,7 @@ public class QuickCheck {
                                         .format(SAMPLE_DATE)));
         return areSame ? 0 : 1;
     }
+
+    // https://unicode.org/iso15924/iso15924-codes.html
+    static final Set<String> scriptCodes = ImmutableSet.copyOf(Splitter.on(' ').splitToList("Adlm Afak Aghb Ahom Arab Aran Armi Armn Avst Bali Bamu Bass Batk Beng Bhks Blis Bopo Brah Brai Bugi Buhd Cakm Cans Cari Cham Cher Chis Chrs Cirt Copt Cpmn Cprt Cyrl Cyrs Deva Diak Dogr Dsrt Dupl Egyd Egyh Egyp Elba Elym Ethi Gara Geok Geor Glag Gong Gonm Goth Gran Grek Gujr Gukh Guru Hanb Hang Hani Hano Hans Hant Hatr Hebr Hira Hluw Hmng Hmnp Hrkt Hung Inds Ital Jamo Java Jpan Jurc Kali Kana Kawi Khar Khmr Khoj Kitl Kits Knda Kore Kpel Krai Kthi Lana Laoo Latf Latg Latn Leke Lepc Limb Lina Linb Lisu Loma Lyci Lydi Mahj Maka Mand Mani Marc Maya Medf Mend Merc Mero Mlym Modi Mong Moon Mroo Mtei Mult Mymr Nagm Nand Narb Nbat Newa Nkdb Nkgb Nkoo Nshu Ogam Olck Onao Orkh Orya Osge Osma Ougr Palm Pauc Pcun Pelm Perm Phag Phli Phlp Phlv Phnx Plrd Piqd Prti Psin Qaaa Qabx Ranj Rjng Rohg Roro Runr Samr Sara Sarb Saur Sgnw Shaw Shrd Shui Sidd Sidt Sind Sinh Sogd Sogo Sora Soyo Sund Sunu Sylo Syrc Syre Syrj Syrn Tagb Takr Tale Talu Taml Tang Tavt Tayo Telu Teng Tfng Tglg Thaa Thai Tibt Tirh Tnsa Todr Tols Toto Tutg Ugar Vaii Visp Vith Wara Wcho Wole Xpeo Xsux Yezi Yiii Zanb Zinh Zmth Zsye Zsym Zxxx Zyyy Zzzz"));
 }
